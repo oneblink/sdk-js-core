@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "ES2019",
-    "module": "ES6",
+    "module": "commonjs",
     "moduleResolution": "Node",
-    "lib": ["ES6", "webworker", "dom"],
+    "lib": ["ES2019"],
     "allowJs": true,
     "declaration": true,
     "outDir": "./dist",
