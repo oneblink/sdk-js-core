@@ -67,4 +67,57 @@ function findFormElement(
   }
 }
 
-export { forEachFormElement, forEachFormElementWithOptions, findFormElement }
+function parseFormElementOptionsSet(
+  data: unknown,
+): FormTypes.ChoiceElementOption[] {
+  if (!Array.isArray(data)) {
+    return []
+  }
+  return data.reduce(
+    (
+      options: FormTypes.ChoiceElementOption[],
+      record: unknown,
+      index: number,
+    ) => {
+      if (typeof record === 'string') {
+        options.push({
+          id: index.toString(),
+          value: record,
+          label: record,
+        })
+      } else if (typeof record === 'object') {
+        const option = record as Record<string, unknown>
+        const value =
+          typeof option.value === 'string' && option.value
+            ? option.value
+            : index.toString()
+        const id =
+          typeof option.id === 'string' && option.id ? option.id : value
+        const label =
+          typeof option.label === 'string' && option.label
+            ? option.label
+            : value
+        const colour =
+          typeof option.colour === 'string' && option.colour
+            ? option.colour
+            : undefined
+        options.push({
+          ...option,
+          id,
+          value,
+          label,
+          colour,
+        })
+      }
+      return options
+    },
+    [],
+  )
+}
+
+export {
+  forEachFormElement,
+  forEachFormElementWithOptions,
+  findFormElement,
+  parseFormElementOptionsSet,
+}

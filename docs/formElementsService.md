@@ -8,9 +8,10 @@ Helper functions for handling form elements
 import { formElementsService } from '@oneblink/sdk-core'
 ```
 
-- [`forEachFormElement`](#foreachformelement)
-- [`forEachFormElementWithOptions`](#foreachformelementwithoptions)
-- [`findFormElement`](#findformelement)
+- [`forEachFormElement()`](#foreachformelement)
+- [`forEachFormElementWithOptions()`](#foreachformelementwithoptions)
+- [`findFormElement()`](#findformelement)
+- [`parseFormElementOptionsSet()`](#parseformelementoptionsset)
 
 ### `forEachFormElement()`
 
@@ -46,4 +47,13 @@ const formElement = formElementsService.findFormElement(
     return formElement.id === '123-abc'
   },
 )
+```
+
+### `parseFormElementOptionsSet()`
+
+Parse unknown data as valid options for a forms element. This will always return an Array of valid options.
+
+```js
+const options = formElementsService.parseFormElementOptionsSet(data)
+// "options" are valid for a form element
 ```
