@@ -8,6 +8,7 @@ type CustomValuesOptions = {
   submissionTimestamp: string
   formatDate: (value: string) => string
   formatTime: (value: string) => string
+  previousApprovalId?: string
 }
 
 const CUSTOM_VALUES = [
@@ -54,6 +55,11 @@ const CUSTOM_VALUES = [
   {
     string: '{EXTERNAL_ID}',
     value: ({ externalId }: CustomValuesOptions) => externalId || '',
+  },
+  {
+    string: '{PREVIOUS_APPROVAL_ID}',
+    value: ({ previousApprovalId }: CustomValuesOptions) =>
+      previousApprovalId || '',
   },
 ]
 
@@ -145,6 +151,7 @@ export default function replaceCustomValues(
     submissionTimestamp,
     formatDate,
     formatTime,
+    previousApprovalId,
   }: CustomValuesOptions & {
     submission: SubmissionTypes.S3SubmissionData['submission']
   },
@@ -165,6 +172,7 @@ export default function replaceCustomValues(
         submissionId,
         formatDate,
         formatTime,
+        previousApprovalId,
       }),
     )
   }, string)
