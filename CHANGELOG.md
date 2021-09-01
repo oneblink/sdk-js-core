@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- [`userService`](./docs/userService.md)
+
 ## [0.1.1] - 2021-09-01
 
 ### Added
