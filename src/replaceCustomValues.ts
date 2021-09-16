@@ -85,23 +85,24 @@ function getElementSubmissionValue({
   )
 
   const value = submission[propertyName]
-  if (value !== undefined && value !== null) {
-    switch (formElement?.type) {
-      case 'datetime': {
-        return `${formatDate(value)} ${formatTime(value)}`
-      }
-      case 'date': {
-        return formatDate(value)
-      }
-      case 'time': {
-        return formatTime(value)
-      }
-      default: {
-        // do nothing
-      }
+  if (value === undefined || value === null) {
+    return ''
+  }
+
+  switch (formElement?.type) {
+    case 'datetime': {
+      return `${formatDate(value)} ${formatTime(value)}`
+    }
+    case 'date': {
+      return formatDate(value)
+    }
+    case 'time': {
+      return formatTime(value)
+    }
+    default: {
+      return value
     }
   }
-  return value
 }
 
 function replaceElementValues(
