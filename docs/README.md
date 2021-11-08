@@ -5,4 +5,5 @@
 - [`formElementsService`](./formElementsService.md)
 - [`conditionalLogicService`](./conditionalLogicService.md)
 - [`replaceCustomValues`](./replaceCustomValues.md)
+- [`getElementSubmissionValue`](./getElementSubmissionValue.md)
 - [`userService`](./userService.md)
