@@ -53,6 +53,6 @@ const result = getElementSubmissionValue({
   formatDate: (value) => new Date(value).toDateString(),
   formatTime: (value) => new Date(value).toTimeString(),
   formatNumber: (value) => Number(value).toString(),
-  formatCurrency: (value) => `$${Number(value).toFixed(2)}`,
+  formatCurrency: (value) => Number(value).toFixed(2),
 })
 ```
