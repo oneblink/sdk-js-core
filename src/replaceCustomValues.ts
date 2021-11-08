@@ -154,22 +154,19 @@ export function getElementSubmissionValue({
     case 'boolean': {
       return value ? 'Yes' : 'No'
     }
-    case 'calculation':
-      {
-        if (!Number.isNaN(value) && Number.isFinite(value)) {
-          let text
-          if (formElement.displayAsCurrency) {
-            text = formatCurrency(value)
-          } else {
-            text = formatNumber(value)
-          }
-          const newValue = formElement.defaultValue.replace('{RESULT}', text)
-          return newValue
-        } else if (formElement.preCalculationDisplay) {
-          return formElement.preCalculationDisplay
+    case 'calculation': {
+      if (!Number.isNaN(value) && Number.isFinite(value)) {
+        let text
+        if (formElement.displayAsCurrency) {
+          text = formatCurrency(value)
+        } else {
+          text = formatNumber(value)
         }
+        return text
       }
-      break
+      return undefined
+    }
+
     default: {
       return value
     }
