@@ -32,7 +32,7 @@ export function parseUserProfile(
         ? jwtPayload['custom:role']
         : undefined,
     username:
-      typeof jwtPayload.email === 'string' ? jwtPayload.email : undefined,
+      typeof jwtPayload.email === 'string' ? jwtPayload.email : jwtPayload.sub,
     supervisor: {
       fullName:
         typeof jwtPayload['custom:supervisor_name'] === 'string'

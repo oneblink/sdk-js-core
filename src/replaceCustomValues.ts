@@ -8,6 +8,8 @@ type CustomValuesOptions = {
   submissionTimestamp: string
   formatDate: (value: string) => string
   formatTime: (value: string) => string
+  formatNumber: (value: number) => string
+  formatCurrency: (value: number) => string
   previousApprovalId?: string
 }
 
@@ -63,19 +65,23 @@ const CUSTOM_VALUES = [
   },
 ]
 
-function getElementSubmissionValue({
+export function getElementSubmissionValue({
   propertyName,
   submission,
   form,
   formatDate,
   formatTime,
+  formatNumber,
+  formatCurrency,
 }: {
   propertyName: string
   form: FormTypes.Form
   submission: SubmissionTypes.S3SubmissionData['submission']
   formatDate: (value: string) => string
   formatTime: (value: string) => string
-}): string {
+  formatNumber: (value: number) => string
+  formatCurrency: (value: number) => string
+}): string | undefined | Array<string> {
   const formElement = findFormElement(
     form.elements,
     (element) =>
@@ -86,7 +92,7 @@ function getElementSubmissionValue({
 
   const value = submission[propertyName]
   if (value === undefined || value === null) {
-    return ''
+    return undefined
   }
 
   switch (formElement?.type) {
@@ -99,6 +105,68 @@ function getElementSubmissionValue({
     case 'time': {
       return formatTime(value)
     }
+    case 'radio':
+    case 'autocomplete': {
+      const option = formElement.options.find((opt) => opt.value === value)
+      return option?.label || ''
+    }
+
+    case 'checkboxes': {
+      const selectedOptionLabels: string[] = value.reduce(
+        (labels: string[], selectedOption: string) => {
+          const foundOption = formElement.options.find(
+            (o) => o.value === selectedOption,
+          )
+          if (foundOption) labels.push(foundOption.label)
+          return labels
+        },
+        [],
+      )
+      return selectedOptionLabels.length ? selectedOptionLabels : undefined
+    }
+    case 'compliance': {
+      const option = (formElement.options || []).find(
+        (option: FormTypes.ChoiceElementOption) => option.value === value.value,
+      )
+      return {
+        ...value,
+        value: option?.label || value.value,
+      }
+    }
+    case 'select': {
+      if (formElement.multi) {
+        const selectedOptionLabels: string[] = value.reduce(
+          (labels: string[], selectedOption: string) => {
+            const foundOption = formElement.options.find(
+              (o) => o.value === selectedOption,
+            )
+            if (foundOption) labels.push(foundOption.label)
+            return labels
+          },
+          [],
+        )
+        return selectedOptionLabels.length ? selectedOptionLabels : undefined
+      } else {
+        const option = formElement.options.find((opt) => opt.value === value)
+        return option?.label || ''
+      }
+    }
+    case 'boolean': {
+      return value ? 'Yes' : 'No'
+    }
+    case 'calculation': {
+      if (!Number.isNaN(value) && Number.isFinite(value)) {
+        let text
+        if (formElement.displayAsCurrency) {
+          text = formatCurrency(value)
+        } else {
+          text = formatNumber(value)
+        }
+        return text
+      }
+      return undefined
+    }
+
     default: {
       return value
     }
@@ -112,11 +180,15 @@ function replaceElementValues(
     submission,
     formatDate,
     formatTime,
+    formatNumber,
+    formatCurrency,
   }: {
     form: FormTypes.Form
     submission: SubmissionTypes.S3SubmissionData['submission']
     formatDate: (value: string) => string
     formatTime: (value: string) => string
+    formatNumber: (value: number) => string
+    formatCurrency: (value: number) => string
   },
 ): string {
   const matches = text.match(/({ELEMENT:)([^}]+)(})/g)
@@ -136,9 +208,11 @@ function replaceElementValues(
       submission,
       formatDate,
       formatTime,
+      formatNumber,
+      formatCurrency,
     })
 
-    return newString.replace(match, value)
+    return newString.replace(match, typeof value === 'string' ? value : '')
   }, text)
 }
 
@@ -152,6 +226,8 @@ export default function replaceCustomValues(
     submissionTimestamp,
     formatDate,
     formatTime,
+    formatNumber,
+    formatCurrency,
     previousApprovalId,
   }: CustomValuesOptions & {
     submission: SubmissionTypes.S3SubmissionData['submission']
@@ -162,6 +238,8 @@ export default function replaceCustomValues(
     submission,
     formatDate,
     formatTime,
+    formatNumber,
+    formatCurrency,
   })
   return CUSTOM_VALUES.reduce((newString, customValue) => {
     return newString.replace(
@@ -173,6 +251,8 @@ export default function replaceCustomValues(
         submissionId,
         formatDate,
         formatTime,
+        formatNumber,
+        formatCurrency,
         previousApprovalId,
       }),
     )

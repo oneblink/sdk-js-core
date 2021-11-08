@@ -75,6 +75,8 @@ describe('replaceCustomValues()', () => {
     submissionTimestamp: new Date().toISOString(),
     formatDate: () => '',
     formatTime: () => '',
+    formatCurrency: () => '',
+    formatNumber: () => '',
   }
   describe('Form redirect URL', () => {
     test('should replace all instances of {ELEMENT} with correct property value', () => {
