@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.2.3] - 2021-11-11
+
 ### Changed
 
 - **[BREAKING]** `getElementSubmissionValue` function to use labels and obey element rules for certain elements
