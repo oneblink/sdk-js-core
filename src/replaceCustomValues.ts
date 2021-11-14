@@ -107,14 +107,14 @@ export function getElementSubmissionValue({
     }
     case 'radio':
     case 'autocomplete': {
-      const option = formElement.options.find((opt) => opt.value === value)
-      return option?.label || ''
+      const option = formElement.options?.find((opt) => opt.value === value)
+      return option?.label || value
     }
 
     case 'checkboxes': {
       const selectedOptionLabels: string[] = value.reduce(
         (labels: string[], selectedOption: string) => {
-          const foundOption = formElement.options.find(
+          const foundOption = formElement.options?.find(
             (o) => o.value === selectedOption,
           )
           if (foundOption) labels.push(foundOption.label)
@@ -137,7 +137,7 @@ export function getElementSubmissionValue({
       if (formElement.multi) {
         const selectedOptionLabels: string[] = value.reduce(
           (labels: string[], selectedOption: string) => {
-            const foundOption = formElement.options.find(
+            const foundOption = formElement.options?.find(
               (o) => o.value === selectedOption,
             )
             if (foundOption) labels.push(foundOption.label)
@@ -147,7 +147,7 @@ export function getElementSubmissionValue({
         )
         return selectedOptionLabels.length ? selectedOptionLabels : undefined
       } else {
-        const option = formElement.options.find((opt) => opt.value === value)
+        const option = formElement.options?.find((opt) => opt.value === value)
         return option?.label || ''
       }
     }

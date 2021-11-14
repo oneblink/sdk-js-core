@@ -19,7 +19,7 @@ function evaluateConditionalOptionsPredicate({
   predicateElement: FormTypes.FormElementWithOptions
 }): boolean {
   return predicate.optionIds.some((optionId) => {
-    const option = predicateElement.options.find((o) => o.id === optionId)
+    const option = predicateElement.options?.find((o) => o.id === optionId)
     if (option) {
       const value = submission[predicateElement.name]
       if (Array.isArray(value)) {

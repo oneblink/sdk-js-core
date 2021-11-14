@@ -6,7 +6,6 @@
   "bugs": {
     "url": "https://github.com/oneblink/sdk-core-js/issues"
   },
-  "dependencies": {},
   "devDependencies": {
     "@oneblink/release-cli": "^1.0.0",
     "@oneblink/types": "github:oneblink/types",
@@ -28,7 +27,7 @@
   },
   "engines": {
     "node": ">=12",
-    "npm": ">=6"
+    "npm": ">=8"
   },
   "files": [
     "dist"
@@ -55,6 +54,7 @@
     "release": "oneblink-release",
     "start": "tsc-watch",
     "test": "jest",
+    "types": "npm install --save-dev github:oneblink/types",
     "typescript": "tsc --noEmit"
   }
 }
