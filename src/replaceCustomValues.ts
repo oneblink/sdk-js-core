@@ -81,7 +81,7 @@ export function getElementSubmissionValue({
   formatTime: (value: string) => string
   formatNumber: (value: number) => string
   formatCurrency: (value: number) => string
-}): string | undefined | Array<string> {
+}): unknown {
   const formElement = findFormElement(
     form.elements,
     (element) =>
@@ -212,7 +212,10 @@ function replaceElementValues(
       formatCurrency,
     })
 
-    return newString.replace(match, typeof value === 'string' ? value : '')
+    return newString.replace(
+      match,
+      value === undefined ? '' : (value as string),
+    )
   }, text)
 }
 
