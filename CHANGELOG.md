@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- `replaceCustomValues()` only replacing element submission data that is a string
+
 ## [0.2.4] - 2021-11-15
 
 ### Fixed
