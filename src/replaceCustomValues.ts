@@ -68,14 +68,14 @@ const CUSTOM_VALUES = [
 export function getElementSubmissionValue({
   propertyName,
   submission,
-  form,
+  formElements,
   formatDate,
   formatTime,
   formatNumber,
   formatCurrency,
 }: {
   propertyName: string
-  form: FormTypes.Form
+  formElements: FormTypes.FormElement[]
   submission: SubmissionTypes.S3SubmissionData['submission']
   formatDate: (value: string) => string
   formatTime: (value: string) => string
@@ -83,7 +83,7 @@ export function getElementSubmissionValue({
   formatCurrency: (value: number) => string
 }): unknown {
   const formElement = findFormElement(
-    form.elements,
+    formElements,
     (element) =>
       element.type !== 'page' &&
       element.type !== 'section' &&
@@ -204,7 +204,7 @@ function replaceElementValues(
 
     const value = getElementSubmissionValue({
       propertyName,
-      form,
+      formElements: form.elements,
       submission,
       formatDate,
       formatTime,
