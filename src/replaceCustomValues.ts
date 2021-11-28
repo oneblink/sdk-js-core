@@ -166,7 +166,20 @@ export function getElementSubmissionValue({
       }
       return undefined
     }
-
+    case 'pointAddress':
+    case 'geoscapeAddress': {
+      return value?.addressDetails?.formattedAddress || value?.addressId
+    }
+    case 'civicaStreetName': {
+      return value?.formattedStreet
+    }
+    case 'civicaNameRecord': {
+      return (
+        [value?.title, value?.givenName1, value?.familyName]
+          .filter((t) => t)
+          .join(' ') || value?.emailAddress
+      )
+    }
     default: {
       return value
     }
