@@ -53,6 +53,7 @@ const toLookupElement = (
     case 'checkboxes':
     case 'date':
     case 'datetime':
+    case 'files':
     case 'location':
     case 'number':
     case 'compliance':
@@ -67,6 +68,7 @@ const toLookupElement = (
     case 'pointAddress':
     case 'geoscapeAddress':
     case 'civicaStreetName':
+    case 'bsb':
     case 'autocomplete': {
       return e
     }

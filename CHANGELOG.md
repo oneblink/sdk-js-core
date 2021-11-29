@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `bsb` and `files` to lookup form elements
+
 ### Changed
 
 - **[BREAKING]** `getElementSubmissionValue` `form` parameter to `formElements`
