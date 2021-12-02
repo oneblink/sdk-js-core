@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.3.0] - 2021-12-02
+
+## [0.3.0] - 2021-12-02
+
 ### Added
 
 - `bsb` and `files` to lookup form elements
