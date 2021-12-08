@@ -69,7 +69,8 @@ const toLookupElement = (
     case 'geoscapeAddress':
     case 'civicaStreetName':
     case 'bsb':
-    case 'autocomplete': {
+    case 'autocomplete':
+    case 'abn': {
       return e
     }
     default: {
