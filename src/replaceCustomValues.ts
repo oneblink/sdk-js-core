@@ -180,6 +180,9 @@ export function getElementSubmissionValue({
           .join(' ') || value?.emailAddress
       )
     }
+    case 'abn': {
+      return value?.ABN.identifierValue
+    }
     default: {
       return value
     }
