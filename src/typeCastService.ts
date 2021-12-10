@@ -166,7 +166,7 @@ const formElements = {
 }
 
 const toPaymentSubmissionEvent = (
-  e: SubmissionEventTypes.PaymentSubmissionEvent,
+  e: SubmissionEventTypes.FormEvent,
 ): SubmissionEventTypes.PaymentSubmissionEvent | undefined => {
   switch (e.type) {
     case 'BPOINT':
