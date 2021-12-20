@@ -1,8 +1,28 @@
 import { ABNRecord } from '@oneblink/types/typescript/misc'
 
+const createLegalName = ({
+  familyName,
+  givenName,
+  otherGivenName,
+}: NonNullable<ABNRecord['legalName']>) => {
+  let legalName = ''
+  if (givenName) legalName += `${givenName} `
+  // Concat middle name
+  if (otherGivenName) legalName += `${otherGivenName} `
+  // Concat last name
+  if (familyName) legalName += `${familyName}`
+
+  return legalName
+}
+
 export const getBusinessNameFromABNRecord = (
   abnRecord: ABNRecord,
 ): string | undefined => {
+  if (abnRecord.entityType.entityTypeCode === 'IND' && abnRecord.legalName) {
+    const legalName = createLegalName(abnRecord.legalName)
+    if (legalName) return legalName.trim()
+  }
+
   if (abnRecord.mainName?.organisationName) {
     return abnRecord.mainName.organisationName
   }
@@ -10,18 +30,11 @@ export const getBusinessNameFromABNRecord = (
     return abnRecord.mainTradingName.organisationName
   }
   if (abnRecord.legalName) {
-    const { givenName, otherGivenName, familyName } = abnRecord.legalName
-
-    let legalName = ''
-    if (givenName) legalName += `${givenName} `
-    // Concat middle name
-    if (otherGivenName) legalName += `${otherGivenName} `
-    // Concat last name
-    if (familyName) legalName += `${familyName}`
-
+    const legalName = createLegalName(abnRecord.legalName)
     if (legalName) return legalName.trim()
   }
 }
+
 export const displayBusinessNameFromABNRecord = (
   abnRecord: ABNRecord,
 ): string => {
