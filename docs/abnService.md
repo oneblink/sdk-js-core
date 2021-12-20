@@ -42,5 +42,5 @@ const ABN = abnService.getABNNumberFromABNRecord(abnRecord)
 Attempts to get the most recent ABN number from the data returned in an `ABNRecord`. Will return "Unknown ABN Number" if an ABN is not found.
 
 ```js
-const businessName = abnService.displayBusinessNameFromABNRecord(abnRecord)
+const ABN = abnService.displayABNNumberFromABNRecord(abnRecord)
 ```
