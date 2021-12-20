@@ -1,5 +1,6 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { findFormElement } from './formElementsService'
+import { getABNNumberFromABNRecord } from './abnService'
 
 type CustomValuesOptions = {
   form: FormTypes.Form
@@ -181,7 +182,7 @@ export function getElementSubmissionValue({
       )
     }
     case 'abn': {
-      return value?.ABN.identifierValue
+      return value ? getABNNumberFromABNRecord(value) : undefined
     }
     default: {
       return value
