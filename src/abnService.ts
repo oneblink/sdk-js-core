@@ -7,11 +7,11 @@ const createLegalName = ({
 }: NonNullable<ABNRecord['legalName']>) => {
   let legalName = ''
   // Concat last name
-  if (familyName) legalName += `${givenName}, `
+  if (familyName) legalName += `${familyName}, `
   // Concat first name
-  if (givenName) legalName += `${otherGivenName} `
+  if (givenName) legalName += `${givenName} `
   // Concat middle name
-  if (otherGivenName) legalName += `${familyName}`
+  if (otherGivenName) legalName += `${otherGivenName}`
 
   return legalName
 }
