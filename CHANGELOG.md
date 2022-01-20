@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- contentDisposition function for file upload
+
 ## [0.3.2] - 2021-12-21
 
 ### Added
