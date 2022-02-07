@@ -1,5 +1,8 @@
 import { FormTypes } from '@oneblink/types'
-import { evaluateConditionalPredicates } from '../src/conditionalLogicService'
+import {
+  evaluateConditionalPredicates,
+  generateFormElementsConditionallyShown,
+} from '../src/conditionalLogicService'
 
 describe('evaluateConditionalPredicates', () => {
   const generateFormElements = (): FormTypes.FormElement[] => [
@@ -152,5 +155,66 @@ describe('evaluateConditionalPredicates', () => {
       },
     })
     expect(result).toBe(false)
+  })
+
+  test('should generate formElementsConditionallyShown', () => {
+    const result = generateFormElementsConditionallyShown({
+      submission: {
+        radio: ['hide'],
+        text: 'hidden text'
+      },
+      formElements: [
+        {
+          name: 'radio',
+          label: 'Radio',
+          type: 'radio',
+          required: false,
+          id: '5ef3beb8-8ac8-4c8d-9fd3-d8197113bf54',
+          conditionallyShow: false,
+          options: [
+            {
+              id: '9a44e15a-5929-419d-825e-b3dc0a29591f',
+              label: 'Show',
+              value: 'show',
+            },
+            {
+              id: 'd776ed42-072c-4bf8-9879-874b2bef85d3',
+              label: 'Hide',
+              value: 'Hide',
+            },
+          ],
+          readOnly: false,
+          isDataLookup: false,
+          isElementLookup: false,
+          buttons: false,
+          optionsType: 'CUSTOM',
+          conditionallyShowOptions: false,
+        },
+        {
+          name: 'text',
+          label: 'Text',
+          type: 'text',
+          required: false,
+          id: '8fbddb41-348d-494c-904b-56a2c4361f13',
+          requiresAllConditionallyShowPredicates: false,
+          conditionallyShow: true,
+          conditionallyShowPredicates: [
+            {
+              elementId: '5ef3beb8-8ac8-4c8d-9fd3-d8197113bf54',
+              optionIds: ['9a44e15a-5929-419d-825e-b3dc0a29591f'],
+              type: 'OPTIONS',
+            },
+          ],
+          readOnly: false,
+          isDataLookup: false,
+          isElementLookup: false,
+        },
+      ],
+      parentFormElementsCtrl: undefined,
+    })
+    expect(result.text).toBeDefined()
+    expect(result.text?.isHidden).toBe(true)
+    expect(result.radio).toBeDefined()
+    expect(result.radio?.isHidden).toBe(false)
   })
 })

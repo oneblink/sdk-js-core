@@ -168,14 +168,15 @@ const evaluation = conditionalLogicService.evaluateConditionalOptionsPredicate({
 
 ### `generateFormElementsConditionallyShown()`
 
-Given a form element and submission data, evaluate which elements are currently shown. `true` indicates the element is currently shown and `false` indicates the element is not currently shown.
+Given a form element and submission data, evaluate which elements are currently shown.
 The function also takes an optional errorCallback for handling errors caught during the evaluation.
 
 ```js
 const formElementsConditionallyShown =
   conditionalLogicService.generateFormElementsConditionallyShown({
     submission: {
-      checkboxes: ['a'],
+      radio: ['hide'],
+        text: 'hidden text'
     },
     formElements: [
       {
@@ -230,4 +231,13 @@ const formElementsConditionallyShown =
       console.error(error)
     },
   })
+```
+
+The above example returns an object like below
+
+```js
+  {
+    radio: { isHidden: false, type: "formElement" },
+    text: { isHidden: true, type: "formElement" }
+  }
 ```
