@@ -1,11 +1,6 @@
 import { FormTypes, ConditionTypes } from '@oneblink/types'
 import { evaluateConditionalPredicate } from './evaluationService'
-
-export type FormElementsCtrl = {
-  model: Record<string, unknown>
-  flattenedElements: import('@oneblink/types').FormTypes.FormElement[]
-  parentFormElementsCtrl?: FormElementsCtrl
-}
+import { FormElementsCtrl } from '../types'
 
 const getParentFormElements = (
   formElementsCtrl: FormElementsCtrl,

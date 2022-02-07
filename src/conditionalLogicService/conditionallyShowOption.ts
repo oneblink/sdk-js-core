@@ -1,9 +1,8 @@
 import { FormTypes } from '@oneblink/types'
 import { evaluateConditionalOptionsPredicate } from './evaluationService'
+import { FormElementsCtrl } from '../types'
 
-import conditionallyShowElement, {
-  FormElementsCtrl,
-} from './conditionallyShowElement'
+import conditionallyShowElement from './conditionallyShowElement'
 
 const handleAttributePredicate = (
   predicate: FormTypes.ChoiceElementOptionAttribute,
