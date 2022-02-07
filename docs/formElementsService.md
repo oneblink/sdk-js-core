@@ -12,6 +12,7 @@ import { formElementsService } from '@oneblink/sdk-core'
 - [`forEachFormElementWithOptions()`](#foreachformelementwithoptions)
 - [`findFormElement()`](#findformelement)
 - [`parseFormElementOptionsSet()`](#parseformelementoptionsset)
+- [`flattenFormElements()`](#flattenFormElements)
 
 ### `forEachFormElement()`
 
@@ -56,4 +57,12 @@ Parse unknown data as valid options for a forms element. This will always return
 ```js
 const options = formElementsService.parseFormElementOptionsSet(data)
 // "options" are valid for a form element
+```
+
+### `flattenFormElements()`
+
+Takes the nested definition structure and returns all form elements as 1d array.
+
+```js
+const flattenedElements = formElementsService.flattenFormElements(form.elements)
 ```
