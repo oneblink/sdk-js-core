@@ -11,6 +11,7 @@ import { conditionalLogicService } from '@oneblink/sdk-core'
 - [`evaluateConditionalPredicates`](#evaluateconditionalpredicates)
 - [`evaluateConditionalPredicate`](#evaluateconditionalpredicate)
 - [`evaluateConditionalOptionsPredicate`](#evaluateconditionaloptionspredicate)
+- [`generateFormElementsConditionallyShown`](#generateFormElementsConditionallyShown)
 
 ### `evaluateConditionalPredicates()`
 
@@ -163,4 +164,70 @@ const evaluation = conditionalLogicService.evaluateConditionalOptionsPredicate({
     requiresAllConditionallyShowPredicates: false,
   },
 })
+```
+
+### `generateFormElementsConditionallyShown()`
+
+Given a form element and submission data, evaluate which elements are currently shown. `true` indicates the element is currently shown and `false` indicates the element is not currently shown.
+The function also takes an optional errorCallback for handling errors caught during the evaluation.
+
+```js
+const formElementsConditionallyShown =
+  conditionalLogicService.generateFormElementsConditionallyShown({
+    submission: {
+      checkboxes: ['a'],
+    },
+    formElements: [
+      {
+        name: 'radio',
+        label: 'Radio',
+        type: 'radio',
+        required: false,
+        id: '5ef3beb8-8ac8-4c8d-9fd3-d8197113bf54',
+        conditionallyShow: false,
+        options: [
+          {
+            id: '9a44e15a-5929-419d-825e-b3dc0a29591f',
+            label: 'Show',
+            value: 'show',
+          },
+          {
+            id: 'd776ed42-072c-4bf8-9879-874b2bef85d3',
+            label: 'Hide',
+            value: 'Hide',
+          },
+        ],
+        readOnly: false,
+        isDataLookup: false,
+        isElementLookup: false,
+        buttons: false,
+        optionsType: 'CUSTOM',
+        conditionallyShowOptions: false,
+      },
+      {
+        name: 'text',
+        label: 'Text',
+        type: 'text',
+        required: false,
+        id: '8fbddb41-348d-494c-904b-56a2c4361f13',
+        requiresAllConditionallyShowPredicates: false,
+        conditionallyShow: true,
+        conditionallyShowPredicates: [
+          {
+            elementId: '5ef3beb8-8ac8-4c8d-9fd3-d8197113bf54',
+            optionIds: ['9a44e15a-5929-419d-825e-b3dc0a29591f'],
+            type: 'OPTIONS',
+          },
+        ],
+        readOnly: false,
+        isDataLookup: false,
+        isElementLookup: false,
+      },
+    ],
+    parentFormElementsCtrl: undefined,
+    errorCallback: (error) => {
+      //do something with the error here
+      console.error(error)
+    },
+  })
 ```

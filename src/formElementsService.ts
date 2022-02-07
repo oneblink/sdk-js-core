@@ -115,9 +115,28 @@ function parseFormElementOptionsSet(
   )
 }
 
+function flattenFormElements(
+  elements: FormTypes.FormElement[],
+): FormTypes.FormElement[] {
+  return elements.reduce<FormTypes.FormElement[]>(
+    (flattenedElements, element) => {
+      flattenedElements.push(element)
+      switch (element.type) {
+        case 'section':
+        case 'page': {
+          flattenedElements.push(...flattenFormElements(element.elements))
+        }
+      }
+      return flattenedElements
+    },
+    [],
+  )
+}
+
 export {
   forEachFormElement,
   forEachFormElementWithOptions,
   findFormElement,
   parseFormElementOptionsSet,
+  flattenFormElements
 }

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added 
+
+- added generateFormElementsConditionallyShown to conditionalLogicService
+- added flattenFormElements to formElementService
+
 ## [0.3.3] - 2022-01-24
 
 ### Added
