@@ -46,7 +46,7 @@ const generateFormElementsConditionallyShown = ({
 }: {
   formElements: FormTypes.FormElement[]
   submission: Record<string, unknown>
-  parentFormElementsCtrl: FormElementsCtrl['parentFormElementsCtrl']
+  parentFormElementsCtrl?: FormElementsCtrl['parentFormElementsCtrl']
   errorCallback?: ErrorCallback
 }): FormElementsConditionallyShown => {
   const formElementsCtrl = {
