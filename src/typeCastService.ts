@@ -153,6 +153,22 @@ const toRepeatableSetElement = (
   }
 }
 
+const toStorageElement = (
+  e: FormTypes.FormElement,
+): FormTypes.StorageElement | undefined => {
+  switch (e.type) {
+    case 'files':
+    case 'draw':
+    case 'compliance':
+    case 'camera': {
+      return e
+    }
+    default: {
+      return
+    }
+  }
+}
+
 const formElements = {
   toOptionsElement,
   toFormElementWithForm,
@@ -163,6 +179,7 @@ const formElements = {
   toNonNestedElementsElement,
   toPageElement,
   toRepeatableSetElement,
+  toStorageElement,
 }
 
 const toPaymentSubmissionEvent = (

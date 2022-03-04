@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-### Added 
+### Added
 
+- `toStorageElement` to `typeCastService.formElements`
 - added generateFormElementsConditionallyShown to conditionalLogicService
 - added flattenFormElements to formElementService
 
