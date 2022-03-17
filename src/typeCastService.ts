@@ -94,10 +94,9 @@ const toNestedElementsElement = (
   }
 }
 
-type NamelessElement = FormTypes.PageElement | FormTypes.SectionElement
 const toNamelessElement = (
   e: FormTypes.FormElement,
-): NamelessElement | undefined => {
+): FormTypes.FormElementWithoutName | undefined => {
   switch (e.type) {
     case 'section':
     case 'page': {
@@ -105,6 +104,20 @@ const toNamelessElement = (
     }
     default: {
       return
+    }
+  }
+}
+
+function toNamedElement(
+  e: FormTypes.FormElement,
+): FormTypes.FormElementWithName | undefined {
+  switch (e.type) {
+    case 'page':
+    case 'section': {
+      return undefined
+    }
+    default: {
+      return e
     }
   }
 }
@@ -176,6 +189,7 @@ const formElements = {
   toLookupElement,
   toNestedElementsElement,
   toNamelessElement,
+  toNamedElement,
   toNonNestedElementsElement,
   toPageElement,
   toRepeatableSetElement,
