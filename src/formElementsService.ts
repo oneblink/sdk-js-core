@@ -133,10 +133,32 @@ function flattenFormElements(
   )
 }
 
+function getRootElementValueById(
+  formElementId: string,
+  formElements: FormTypes.FormElement[],
+  submission: { readonly [key: string]: unknown },
+): unknown {
+  for (const formElement of formElements) {
+    if (formElement.type === 'page' || formElement.type === 'section') {
+      const value = getRootElementValueById(
+        formElementId,
+        formElement.elements,
+        submission,
+      )
+      if (value !== undefined) {
+        return value
+      }
+    } else if (formElement.id === formElementId) {
+      return submission[formElement.name]
+    }
+  }
+}
+
 export {
+  getRootElementValueById,
   forEachFormElement,
   forEachFormElementWithOptions,
   findFormElement,
   parseFormElementOptionsSet,
-  flattenFormElements
+  flattenFormElements,
 }
