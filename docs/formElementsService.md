@@ -13,6 +13,7 @@ import { formElementsService } from '@oneblink/sdk-core'
 - [`findFormElement()`](#findformelement)
 - [`parseFormElementOptionsSet()`](#parseformelementoptionsset)
 - [`flattenFormElements()`](#flattenFormElements)
+- [`getRootElementValueById()`](#getrootelementvaluebyid)
 
 ### `forEachFormElement()`
 
@@ -65,4 +66,16 @@ Takes the nested definition structure and returns all form elements as 1d array.
 
 ```js
 const flattenedElements = formElementsService.flattenFormElements(form.elements)
+```
+
+### `getRootElementValueById()`
+
+Takes a form element's id, the form elements and the submission data to return a value from the submission.
+
+```js
+const value = formElementsService.getRootElementById(
+  formElementId,
+  form.elements,
+  submission,
+)
 ```
