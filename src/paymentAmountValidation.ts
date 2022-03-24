@@ -1,9 +1,8 @@
 import { FormTypes, SubmissionEventTypes } from '@oneblink/types'
-import { formElementsService } from '.'
+import { conditionalLogicService, formElementsService } from '.'
 import { getRootElementValueById } from './formElementsService'
 
 export function validatePaymentAmount(
-  paymentSubmissionEvent: SubmissionEventTypes.PaymentSubmissionEvent,
   definition: FormTypes.Form,
   submission: { readonly [key: string]: unknown },
 ):
@@ -12,6 +11,27 @@ export function validatePaymentAmount(
       amount: number
     }
   | undefined {
+  const paymentSubmissionEvents = definition.paymentEvents || []
+  const paymentSubmissionEvent = paymentSubmissionEvents.find(
+    (paymentSubmissionEvent) => {
+      return (
+        paymentSubmissionEvent &&
+        conditionalLogicService.evaluateConditionalPredicates({
+          isConditional: !!paymentSubmissionEvent.conditionallyExecute,
+          requiresAllConditionalPredicates:
+            !!paymentSubmissionEvent.requiresAllConditionallyExecutePredicates,
+          conditionalPredicates:
+            paymentSubmissionEvent.conditionallyExecutePredicates || [],
+          submission: submission,
+          formElements: definition.elements,
+        })
+      )
+    },
+  )
+
+  if (!paymentSubmissionEvent) {
+    return
+  }
   console.log(
     'Checking if submission with payment submission event needs processing',
   )
