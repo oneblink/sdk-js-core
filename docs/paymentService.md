@@ -8,12 +8,12 @@ Helper functions for payments
 import { paymentService } from '@oneblink/sdk-core'
 ```
 
-- [`checkFormPaymentEvent()`](#checkformpaymentevent)
+- [`checkForPaymentEvent()`](#checkforpaymentevent)
 
-### `checkFormPaymentEvent()`
+### `checkForPaymentEvent()`
 
 Examine a submission and its form definition to validate whether a payment workflow event needs to run.
 
 ```js
-const result = paymentService.checkFormPaymentEvent(form, submission)
+const result = paymentService.checkForPaymentEvent(form, submission)
 ```

@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Removed
 
-- **[BREAKING]** `validatePaymentAmount()` function. Replaced by [`paymentService.checkFormPaymentEvent()`](./docs/paymentService.md#checkformpaymentevent)
+- **[BREAKING]** `validatePaymentAmount()` function. Replaced by [`paymentService.checkForPaymentEvent()`](./docs/paymentService.md#checkforpaymentevent)
 - **[BREAKING]** `getContentDisposition()` function. Replaced by [`fileUploadService.getContentDisposition()`](./docs/fileUploadService.md#getcontentdisposition)
 - **[BREAKING]** `conditionalLogicService.evaluateConditionalPredicate()` function.
 - **[BREAKING]** `conditionalLogicService.evaluateConditionalOptionsPredicate()` function.

@@ -2,7 +2,7 @@ import { FormTypes, SubmissionEventTypes } from '@oneblink/types'
 import { conditionalLogicService, formElementsService } from '.'
 import { getRootElementValueById } from './formElementsService'
 
-export function checkFormPaymentEvent(
+export function checkForPaymentEvent(
   definition: FormTypes.Form,
   submission: { readonly [key: string]: unknown },
 ):
