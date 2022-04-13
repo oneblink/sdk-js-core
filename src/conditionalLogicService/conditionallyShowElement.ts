@@ -1,6 +1,6 @@
 import { FormTypes, ConditionTypes } from '@oneblink/types'
-import { evaluateConditionalPredicate } from './evaluationService'
 import { FormElementsCtrl } from '../types'
+import evaluateConditionalPredicate from './evaluateConditionalPredicate'
 
 const getParentFormElements = (
   formElementsCtrl: FormElementsCtrl,
@@ -29,26 +29,13 @@ const conditionallyShowByPredicate = (
   predicate: ConditionTypes.ConditionalPredicate,
   elementsEvaluated: Array<{ id: string; label: string }>,
 ): FormTypes.FormElement | boolean => {
-  const predicateElement = formElementsCtrl.flattenedElements.find(
-    (element: FormTypes.FormElement) => {
-      return element.id === predicate.elementId
-    },
-  )
+  const predicateElement = evaluateConditionalPredicate({
+    predicate,
+    formElementsCtrl,
+  })
 
-  // If we cant find the element used for the predicate,
-  // we can check to see if the element being evaluated
-  // is in a repeatable set and the predicate element is
-  // in a parent list of elements.
   if (!predicateElement) {
-    if (formElementsCtrl.parentFormElementsCtrl) {
-      return conditionallyShowByPredicate(
-        formElementsCtrl.parentFormElementsCtrl,
-        predicate,
-        elementsEvaluated,
-      )
-    } else {
-      return false
-    }
+    return false
   }
 
   // Here we will also need to check if the predicate element
@@ -70,17 +57,10 @@ const conditionallyShowByPredicate = (
   }
 
   // Check to see if the model has one of the valid values to show the element
-  return (
-    conditionallyShowElement(
-      formElementsCtrl,
-      predicateElement,
-      elementsEvaluated,
-    ) &&
-    evaluateConditionalPredicate({
-      predicate,
-      submission: formElementsCtrl.model,
-      predicateElement,
-    })
+  return conditionallyShowElement(
+    formElementsCtrl,
+    predicateElement,
+    elementsEvaluated,
   )
 }
 

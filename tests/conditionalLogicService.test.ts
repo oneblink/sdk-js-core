@@ -156,12 +156,22 @@ describe('evaluateConditionalPredicates', () => {
     })
     expect(result).toBe(false)
   })
+})
 
+describe('generateFormElementsConditionallyShown', () => {
   test('should generate formElementsConditionallyShown', () => {
     const result = generateFormElementsConditionallyShown({
       submission: {
         radio: ['hide'],
-        text: 'hidden text'
+        text: 'hidden text',
+        predicateNumber: 1,
+        comparisonNumber: 2,
+        repeatableSet: [
+          {
+            repeatableSetPredicateNumber: 1,
+            repeatableSetComparisonNumber: 2,
+          },
+        ],
       },
       formElements: [
         {
@@ -169,16 +179,16 @@ describe('evaluateConditionalPredicates', () => {
           label: 'Radio',
           type: 'radio',
           required: false,
-          id: '5ef3beb8-8ac8-4c8d-9fd3-d8197113bf54',
+          id: 'radio',
           conditionallyShow: false,
           options: [
             {
-              id: '9a44e15a-5929-419d-825e-b3dc0a29591f',
+              id: 'show',
               label: 'Show',
               value: 'show',
             },
             {
-              id: 'd776ed42-072c-4bf8-9879-874b2bef85d3',
+              id: 'hide',
               label: 'Hide',
               value: 'Hide',
             },
@@ -195,13 +205,13 @@ describe('evaluateConditionalPredicates', () => {
           label: 'Text',
           type: 'text',
           required: false,
-          id: '8fbddb41-348d-494c-904b-56a2c4361f13',
+          id: 'text',
           requiresAllConditionallyShowPredicates: false,
           conditionallyShow: true,
           conditionallyShowPredicates: [
             {
-              elementId: '5ef3beb8-8ac8-4c8d-9fd3-d8197113bf54',
-              optionIds: ['9a44e15a-5929-419d-825e-b3dc0a29591f'],
+              elementId: 'radio',
+              optionIds: ['show'],
               type: 'OPTIONS',
             },
           ],
@@ -209,12 +219,353 @@ describe('evaluateConditionalPredicates', () => {
           isDataLookup: false,
           isElementLookup: false,
         },
+        {
+          name: 'predicateNumber',
+          label: 'Predicate Number',
+          type: 'number',
+          required: false,
+          isSlider: false,
+          id: 'predicateNumber',
+          requiresAllConditionallyShowPredicates: false,
+          conditionallyShow: false,
+          readOnly: false,
+          isDataLookup: false,
+          isElementLookup: false,
+        },
+        {
+          name: 'comparisonNumber',
+          label: 'comparison Number',
+          type: 'number',
+          required: false,
+          isSlider: false,
+          id: 'comparisonNumber',
+          requiresAllConditionallyShowPredicates: false,
+          conditionallyShow: false,
+          readOnly: false,
+          isDataLookup: false,
+          isElementLookup: false,
+        },
+        {
+          name: 'textHiddenByNumbers',
+          label: 'text',
+          type: 'text',
+          required: false,
+          id: 'textHiddenByNumbers',
+          requiresAllConditionallyShowPredicates: false,
+          conditionallyShow: true,
+          conditionallyShowPredicates: [
+            {
+              elementId: 'predicateNumber',
+              operator: '===',
+              compareWith: 'ELEMENT',
+              value: 'comparisonNumber',
+              type: 'NUMERIC',
+            },
+          ],
+          readOnly: false,
+          isDataLookup: false,
+          isElementLookup: false,
+        },
+        {
+          name: 'textShownByNumbers',
+          label: 'text',
+          type: 'text',
+          required: false,
+          id: 'textHiddenByNumbers',
+          requiresAllConditionallyShowPredicates: false,
+          conditionallyShow: true,
+          conditionallyShowPredicates: [
+            {
+              elementId: 'predicateNumber',
+              operator: '!==',
+              compareWith: 'ELEMENT',
+              value: 'comparisonNumber',
+              type: 'NUMERIC',
+            },
+          ],
+          readOnly: false,
+          isDataLookup: false,
+          isElementLookup: false,
+        },
+        {
+          name: 'repeatableSet',
+          label: 'repeatableSet',
+          type: 'repeatableSet',
+          id: 'repeatableSet',
+          requiresAllConditionallyShowPredicates: false,
+          conditionallyShow: false,
+          elements: [
+            {
+              name: 'repeatableSetTextHiddenByNumbers',
+              label: 'text',
+              type: 'text',
+              required: false,
+              id: 'repeatableSetTextHiddenByNumbers',
+              requiresAllConditionallyShowPredicates: false,
+              conditionallyShow: true,
+              conditionallyShowPredicates: [
+                {
+                  elementId: 'predicateNumber',
+                  operator: '===',
+                  compareWith: 'ELEMENT',
+                  value: 'comparisonNumber',
+                  type: 'NUMERIC',
+                },
+              ],
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+            },
+            {
+              name: 'repeatableSetTextShownByNumbers',
+              label: 'text',
+              type: 'text',
+              required: false,
+              id: 'repeatableSetTextShownByNumbers',
+              requiresAllConditionallyShowPredicates: false,
+              conditionallyShow: true,
+              conditionallyShowPredicates: [
+                {
+                  elementId: 'predicateNumber',
+                  operator: '!==',
+                  compareWith: 'ELEMENT',
+                  value: 'comparisonNumber',
+                  type: 'NUMERIC',
+                },
+              ],
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+            },
+            {
+              name: 'repeatableSetPredicateNumber',
+              label: 'Predicate Number',
+              type: 'number',
+              required: false,
+              isSlider: false,
+              id: 'repeatableSetPredicateNumber',
+              requiresAllConditionallyShowPredicates: false,
+              conditionallyShow: false,
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+            },
+            {
+              name: 'repeatableSetComparisonNumber',
+              label: 'comparison Number',
+              type: 'number',
+              required: false,
+              isSlider: false,
+              id: 'repeatableSetComparisonNumber',
+              requiresAllConditionallyShowPredicates: false,
+              conditionallyShow: false,
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+            },
+            {
+              name: 'repeatableSetTextShownByRepeatableSetNumbers',
+              label: 'text',
+              type: 'text',
+              required: false,
+              id: 'repeatableSetTextShownByRepeatableSetNumbers',
+              requiresAllConditionallyShowPredicates: false,
+              conditionallyShow: true,
+              conditionallyShowPredicates: [
+                {
+                  elementId: 'repeatableSetPredicateNumber',
+                  operator: '!==',
+                  compareWith: 'ELEMENT',
+                  value: 'repeatableSetComparisonNumber',
+                  type: 'NUMERIC',
+                },
+              ],
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+            },
+            {
+              name: 'repeatableSetTextHiddenByRepeatableSetNumbers',
+              label: 'text',
+              type: 'text',
+              required: false,
+              id: 'repeatableSetTextHiddenByRepeatableSetNumbers',
+              requiresAllConditionallyShowPredicates: false,
+              conditionallyShow: true,
+              conditionallyShowPredicates: [
+                {
+                  elementId: 'repeatableSetPredicateNumber',
+                  operator: '===',
+                  compareWith: 'ELEMENT',
+                  value: 'repeatableSetComparisonNumber',
+                  type: 'NUMERIC',
+                },
+              ],
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+            },
+            {
+              name: 'repeatableSetTextHiddenByRepeatableSetNumberAndRootNumber',
+              label: 'text',
+              type: 'text',
+              required: false,
+              id: 'repeatableSetTextHiddenByRepeatableSetNumberAndRootNumber',
+              requiresAllConditionallyShowPredicates: false,
+              conditionallyShow: true,
+              conditionallyShowPredicates: [
+                {
+                  elementId: 'predicateNumber',
+                  operator: '===',
+                  compareWith: 'ELEMENT',
+                  value: 'repeatableSetComparisonNumber',
+                  type: 'NUMERIC',
+                },
+              ],
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+            },
+            {
+              name: 'repeatableSetTextShownByRepeatableSetNumberAndRootNumber',
+              label: 'text',
+              type: 'text',
+              required: false,
+              id: 'repeatableSetTextShownByRepeatableSetNumberAndRootNumber',
+              requiresAllConditionallyShowPredicates: false,
+              conditionallyShow: true,
+              conditionallyShowPredicates: [
+                {
+                  elementId: 'predicateNumber',
+                  operator: '!==',
+                  compareWith: 'ELEMENT',
+                  value: 'repeatableSetComparisonNumber',
+                  type: 'NUMERIC',
+                },
+              ],
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+            },
+            {
+              name: 'repeatableSetTextHiddenByRepeatableSetNumberAndRootNumberOpposite',
+              label: 'text',
+              type: 'text',
+              required: false,
+              id: 'repeatableSetTextHiddenByRepeatableSetNumberAndRootNumberOpposite',
+              requiresAllConditionallyShowPredicates: false,
+              conditionallyShow: true,
+              conditionallyShowPredicates: [
+                {
+                  elementId: 'repeatableSetPredicateNumber',
+                  operator: '===',
+                  compareWith: 'ELEMENT',
+                  value: 'comparisonNumber',
+                  type: 'NUMERIC',
+                },
+              ],
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+            },
+            {
+              name: 'repeatableSetTextShownByRepeatableSetNumberAndRootNumberOpposite',
+              label: 'text',
+              type: 'text',
+              required: false,
+              id: 'repeatableSetTextShownByRepeatableSetNumberAndRootNumberOpposite',
+              requiresAllConditionallyShowPredicates: false,
+              conditionallyShow: true,
+              conditionallyShowPredicates: [
+                {
+                  elementId: 'repeatableSetPredicateNumber',
+                  operator: '!==',
+                  compareWith: 'ELEMENT',
+                  value: 'comparisonNumber',
+                  type: 'NUMERIC',
+                },
+              ],
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+            },
+          ],
+        },
       ],
-      parentFormElementsCtrl: undefined,
     })
-    expect(result.text).toBeDefined()
-    expect(result.text?.isHidden).toBe(true)
-    expect(result.radio).toBeDefined()
-    expect(result.radio?.isHidden).toBe(false)
+    expect(result).toEqual({
+      comparisonNumber: {
+        isHidden: false,
+        type: 'formElement',
+      },
+      predicateNumber: {
+        isHidden: false,
+        type: 'formElement',
+      },
+      radio: {
+        isHidden: false,
+        type: 'formElement',
+      },
+      text: {
+        isHidden: true,
+        type: 'formElement',
+      },
+      textHiddenByNumbers: {
+        isHidden: true,
+        type: 'formElement',
+      },
+      textShownByNumbers: {
+        isHidden: false,
+        type: 'formElement',
+      },
+      repeatableSet: {
+        entries: {
+          '0': {
+            repeatableSetComparisonNumber: {
+              isHidden: false,
+              type: 'formElement',
+            },
+            repeatableSetPredicateNumber: {
+              isHidden: false,
+              type: 'formElement',
+            },
+            repeatableSetTextHiddenByNumbers: {
+              isHidden: true,
+              type: 'formElement',
+            },
+            repeatableSetTextShownByNumbers: {
+              isHidden: false,
+              type: 'formElement',
+            },
+            repeatableSetTextShownByRepeatableSetNumbers: {
+              isHidden: false,
+              type: 'formElement',
+            },
+            repeatableSetTextHiddenByRepeatableSetNumbers: {
+              isHidden: true,
+              type: 'formElement',
+            },
+            repeatableSetTextShownByRepeatableSetNumberAndRootNumber: {
+              isHidden: false,
+              type: 'formElement',
+            },
+            repeatableSetTextHiddenByRepeatableSetNumberAndRootNumber: {
+              isHidden: true,
+              type: 'formElement',
+            },
+            repeatableSetTextHiddenByRepeatableSetNumberAndRootNumberOpposite: {
+              isHidden: true,
+              type: 'formElement',
+            },
+            repeatableSetTextShownByRepeatableSetNumberAndRootNumberOpposite: {
+              isHidden: false,
+              type: 'formElement',
+            },
+          },
+        },
+        isHidden: false,
+        type: 'repeatableSet',
+      },
+    })
   })
 })
