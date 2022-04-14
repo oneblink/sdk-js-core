@@ -9,15 +9,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- [`schedulingService`](./docs/schedulingService.md)
-- [`paymentService`](./docs/paymentService.md)
-- [`fileUploadService`](./docs/fileUploadService.md)
+- `schedulingService`
+- `submissionService`
+- `paymentService`
+- `fileUploadService`
 - `'ELEMENT'` based `'NUMERIC'` conditional predicates to allow showing a form element based on the numeric value of another form element
 
 ### Removed
 
-- **[BREAKING]** `validatePaymentAmount()` function. Replaced by [`paymentService.checkForPaymentEvent()`](./docs/paymentService.md#checkforpaymentevent)
-- **[BREAKING]** `getContentDisposition()` function. Replaced by [`fileUploadService.getContentDisposition()`](./docs/fileUploadService.md#getcontentdisposition)
+- **[BREAKING]** `validatePaymentAmount()` function. Replaced by `paymentService.checkForPaymentEvent()`
+- **[BREAKING]** `getContentDisposition()` function. Replaced by `fileUploadService.getContentDisposition()`
+- **[BREAKING]** `replaceCustomValues()` function. Moved into `submissionService`
+- **[BREAKING]** `getElementSubmissionValue()` function. Moved into `submissionService`
 - **[BREAKING]** `conditionalLogicService.evaluateConditionalPredicate()` function.
 - **[BREAKING]** `conditionalLogicService.evaluateConditionalOptionsPredicate()` function.
 

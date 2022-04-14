@@ -16,6 +16,19 @@ const createLegalName = ({
   return legalName
 }
 
+/**
+ * Attempts to get the most relevant business name from the data returned in an
+ * `ABNRecord`. Will return `undefined` if a suitable name is not found.
+ *
+ * #### Example
+ *
+ * ```js
+ * const businessName = abnService.getBusinessNameFromABNRecord(abnRecord)
+ * ```
+ *
+ * @param abnRecord
+ * @returns
+ */
 export const getBusinessNameFromABNRecord = (
   abnRecord: ABNRecord,
 ): string | undefined => {
@@ -36,6 +49,20 @@ export const getBusinessNameFromABNRecord = (
   }
 }
 
+/**
+ * Get the most relevant business name from the data returned in an `ABNRecord`.
+ * Will return "Unknown Business Name" if a suitable name is not found.
+ *
+ * #### Example
+ *
+ * ```js
+ * const businessName =
+ *   abnService.displayBusinessNameFromABNRecord(abnRecord)
+ * ```
+ *
+ * @param abnRecord
+ * @returns
+ */
 export const displayBusinessNameFromABNRecord = (
   abnRecord: ABNRecord,
 ): string => {
@@ -43,6 +70,19 @@ export const displayBusinessNameFromABNRecord = (
   return businessName || 'Unknown Business Name'
 }
 
+/**
+ * Attempts to get the most recent ABN number from the data returned in an
+ * `ABNRecord`. Will return `undefined` if an ABN is not found.
+ *
+ * #### Example
+ *
+ * ```js
+ * const ABN = abnService.getABNNumberFromABNRecord(abnRecord)
+ * ```
+ *
+ * @param abnRecord
+ * @returns
+ */
 export const getABNNumberFromABNRecord = (
   abnRecord: ABNRecord,
 ): string | undefined => {
@@ -53,6 +93,20 @@ export const getABNNumberFromABNRecord = (
   }
   return abnRecord.ABN.identifierValue
 }
+
+/**
+ * Attempts to get the most recent ABN number from the data returned in an
+ * `ABNRecord`. Will return "Unknown ABN Number" if an ABN is not found.
+ *
+ * #### Example
+ *
+ * ```js
+ * const ABN = abnService.displayABNNumberFromABNRecord(abnRecord)
+ * ```
+ *
+ * @param abnRecord
+ * @returns
+ */
 export const displayABNNumberFromABNRecord = (abnRecord: ABNRecord): string => {
   const abnNumber = getABNNumberFromABNRecord(abnRecord)
   return abnNumber || 'Unknown ABN Number'

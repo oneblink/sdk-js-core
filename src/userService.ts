@@ -1,5 +1,23 @@
 import { MiscTypes } from '@oneblink/types'
 
+/**
+ * Parse a User Profile based on a JWT payload. Will return `undefined` if not a
+ * valid JWT payload
+ *
+ * #### Example
+ *
+ * ```js
+ * import jwtDecode from 'jwt-decode'
+ *
+ * const jwtPayload = jwtDecode('a valid token from a user')
+ * const userProfile = userService.parseUserProfile(jwtPayload)
+ * if (userProfile) {
+ *   // continue
+ * }
+ * ```
+ *
+ * @param data An object containing all parameters to be passed to the function
+ */
 export function parseUserProfile(
   data: unknown,
 ): MiscTypes.UserProfile | undefined {
@@ -74,6 +92,23 @@ export function parseUserProfile(
   return userProfile
 }
 
+/**
+ * A friendly `string` that represents the a [User Profile](#user-profile). Uses
+ * first name, last name, full name, email address or username.
+ *
+ * #### Example
+ *
+ * ```js
+ * const userProfile = userService.parseUserProfile(jwtPayload)
+ * const name = userService.getUserFriendlyName(userProfile)
+ * if (name) {
+ *   // Display current user's name
+ * }
+ * ```
+ *
+ * @param userProfile
+ * @returns
+ */
 export function getUserFriendlyName(
   userProfile: MiscTypes.UserProfile,
 ): string {

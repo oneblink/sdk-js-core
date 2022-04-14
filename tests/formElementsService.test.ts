@@ -1,8 +1,6 @@
-import { FormTypes } from '@oneblink/types'
-import {
-  findFormElement,
-  getRootElementValueById,
-} from '../src/formElementsService'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { findFormElement } from '../src/formElementsService'
+import { getRootElementValueById } from '../src/submissionService'
 
 describe('findPaymentElementValue()', () => {
   const createTextElement = (name: string) => {
@@ -85,7 +83,7 @@ describe('findPaymentElementValue()', () => {
     ]),
     createPageElement('Page2', [createTextElement('Page2Text')]),
   ]
-  const submission: { readonly [key: string]: unknown } = {
+  const submission: SubmissionTypes.S3SubmissionData['submission'] = {
     A: 'AText',
     B_A: 'B_AText',
     B_B_A: 'B_B_AText',

@@ -1,5 +1,20 @@
 import { FormTypes } from '@oneblink/types'
 
+/**
+ * Iterate over all form elements, also iterating over nested form element (e.g.
+ * page elements).
+ *
+ * #### Example
+ *
+ * ```js
+ * formElementsService.forEachFormElement(form.elements, (formElement) => {
+ *   // do something with formElement
+ * })
+ * ```
+ *
+ * @param elements The form elements to iterate over
+ * @param forEach Function to execute on each form element
+ */
 function forEachFormElement(
   elements: FormTypes.FormElement[],
   forEach: (
@@ -13,6 +28,24 @@ function forEachFormElement(
   })
 }
 
+/**
+ * Iterate over all form elements that have options (e.g. `'select'` type
+ * elements), also iterating over nested form element (e.g. page elements).
+ *
+ * #### Example
+ *
+ * ```js
+ * formElementsService.forEachFormElementWithOptions(
+ *   form.elements,
+ *   (formElementWithOptions) => {
+ *     // do something with formElementWithOptions
+ *   },
+ * )
+ * ```
+ *
+ * @param elements The form elements to iterate over
+ * @param forEach Function to execute on each form element with options
+ */
 function forEachFormElementWithOptions(
   elements: FormTypes.FormElement[],
   forEach: (
@@ -34,6 +67,27 @@ function forEachFormElementWithOptions(
   })
 }
 
+/**
+ * Iterate over all form elements and return an element that matches a
+ * predicate, also iterating over nested form element (e.g. page elements). Will
+ * return `undefined` if no matching element is found.
+ *
+ * #### Example
+ *
+ * ```js
+ * const formElement = formElementsService.findFormElement(
+ *   form.elements,
+ *   (formElement) => {
+ *     return formElement.id === '123-abc'
+ *   },
+ * )
+ * ```
+ *
+ * @param elements The form elements to iterate over
+ * @param predicate Predicate function to execute on each form element
+ * @param parentElements
+ * @returns
+ */
 function findFormElement(
   elements: FormTypes.FormElement[],
   predicate: (
@@ -67,6 +121,20 @@ function findFormElement(
   }
 }
 
+/**
+ * Parse unknown data as valid options for a forms element. This will always
+ * return an Array of valid options.
+ *
+ * #### Example
+ *
+ * ```js
+ * const options = formElementsService.parseFormElementOptionsSet(data)
+ * // "options" are valid for a form element
+ * ```
+ *
+ * @param data
+ * @returns
+ */
 function parseFormElementOptionsSet(
   data: unknown,
 ): FormTypes.ChoiceElementOption[] {
@@ -115,6 +183,20 @@ function parseFormElementOptionsSet(
   )
 }
 
+/**
+ * Takes the nested definition structure and returns all form elements as 1d array.
+ *
+ * #### Example
+ *
+ * ```js
+ * const flattenedElements = formElementsService.flattenFormElements(
+ *   form.elements,
+ * )
+ * ```
+ *
+ * @param elements
+ * @returns
+ */
 function flattenFormElements(
   elements: FormTypes.FormElement[],
 ): FormTypes.FormElement[] {
@@ -133,29 +215,7 @@ function flattenFormElements(
   )
 }
 
-function getRootElementValueById(
-  formElementId: string,
-  formElements: FormTypes.FormElement[],
-  submission: { readonly [key: string]: unknown },
-): unknown {
-  for (const formElement of formElements) {
-    if (formElement.type === 'page' || formElement.type === 'section') {
-      const value = getRootElementValueById(
-        formElementId,
-        formElement.elements,
-        submission,
-      )
-      if (value !== undefined) {
-        return value
-      }
-    } else if (formElement.id === formElementId) {
-      return submission[formElement.name]
-    }
-  }
-}
-
 export {
-  getRootElementValueById,
   forEachFormElement,
   forEachFormElementWithOptions,
   findFormElement,
