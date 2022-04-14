@@ -32,12 +32,11 @@ export type ErrorCallback = (error: Error) => void
 const handleConditionallyShowElement = (
   formElementsCtrl: FormElementsCtrl,
   element: FormTypes.FormElement,
-  errorCallback?: ErrorCallback,
+  errorCallback: ErrorCallback | undefined,
 ) => {
   try {
     return conditionallyShowElement(formElementsCtrl, element, [])
   } catch (error) {
-    console.warn('Error while checking if element is conditional shown', error)
     errorCallback && errorCallback(error as Error)
     return false
   }
@@ -47,7 +46,7 @@ const handleConditionallyShowOption = (
   formElementsCtrl: FormElementsCtrl,
   element: FormTypes.FormElementWithOptions,
   option: FormTypes.ChoiceElementOption,
-  errorCallback?: ErrorCallback,
+  errorCallback: ErrorCallback | undefined,
 ) => {
   try {
     return conditionallyShowOption(formElementsCtrl, element, option, [])
@@ -128,7 +127,7 @@ const generateFormElementsConditionallyShownWithParent = ({
             break
           }
           const nestedModel = submission[element.name] as
-            | Record<string, unknown>
+            | SubmissionTypes.S3SubmissionData['submission']
             | undefined
           formElementsConditionallyShown[element.name] = {
             type: 'formElements',
@@ -150,7 +149,7 @@ const generateFormElementsConditionallyShownWithParent = ({
             break
           }
           const entries = formElementsCtrl.model[element.name] as
-            | Array<Record<string, unknown>>
+            | Array<SubmissionTypes.S3SubmissionData['submission']>
             | undefined
           formElementsConditionallyShown[element.name] = {
             type: 'repeatableSet',
