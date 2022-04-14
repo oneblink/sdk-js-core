@@ -88,5 +88,3 @@ export * as schedulingService from './schedulingService'
  * ```
  */
 export * as fileUploadService from './fileUploadService'
-
-export * from '@oneblink/types'
