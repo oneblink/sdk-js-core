@@ -1,5 +1,5 @@
 import { FormTypes } from '@oneblink/types'
-import { evaluateConditionalOptionsPredicate } from './evaluationService'
+import evaluateConditionalOptionsPredicate from './evaluateConditionalOptionsPredicate'
 import { FormElementsCtrl } from '../types'
 
 import conditionallyShowElement from './conditionallyShowElement'
@@ -26,7 +26,7 @@ const handleAttributePredicate = (
       elementId: predicate.elementId,
       optionIds: predicate.optionIds,
     },
-    submission: model,
+    predicateValue: values,
     predicateElement,
   })
 }

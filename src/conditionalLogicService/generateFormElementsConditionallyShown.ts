@@ -1,4 +1,4 @@
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import {
   FormElementsCtrl,
   FormElementsConditionallyShown,
@@ -38,16 +38,19 @@ const handleConditionallyShowOption = (
   }
 }
 
-const generateFormElementsConditionallyShown = ({
+export type FormElementsConditionallyShownParameters = {
+  formElements: FormTypes.FormElement[]
+  submission: SubmissionTypes.S3SubmissionData['submission']
+  errorCallback?: ErrorCallback
+}
+
+const generateFormElementsConditionallyShownWithParent = ({
   formElements,
   submission,
   parentFormElementsCtrl,
   errorCallback,
-}: {
-  formElements: FormTypes.FormElement[]
-  submission: Record<string, unknown>
+}: FormElementsConditionallyShownParameters & {
   parentFormElementsCtrl?: FormElementsCtrl['parentFormElementsCtrl']
-  errorCallback?: ErrorCallback
 }): FormElementsConditionallyShown => {
   const formElementsCtrl = {
     flattenedElements: flattenFormElements(formElements),
@@ -112,7 +115,7 @@ const generateFormElementsConditionallyShown = ({
               element,
               errorCallback,
             ),
-            formElements: generateFormElementsConditionallyShown({
+            formElements: generateFormElementsConditionallyShownWithParent({
               formElements: element.elements || [],
               submission: nestedModel || {},
               parentFormElementsCtrl: formElementsCtrl,
@@ -144,7 +147,7 @@ const generateFormElementsConditionallyShown = ({
                 index,
               ) => {
                 result[index.toString()] =
-                  generateFormElementsConditionallyShown({
+                  generateFormElementsConditionallyShownWithParent({
                     formElements: element.elements,
                     submission: entry,
                     parentFormElementsCtrl: formElementsCtrl,
@@ -206,4 +209,8 @@ const generateFormElementsConditionallyShown = ({
   )
 }
 
-export default generateFormElementsConditionallyShown
+export function generateFormElementsConditionallyShown(
+  parameters: FormElementsConditionallyShownParameters,
+): FormElementsConditionallyShown {
+  return generateFormElementsConditionallyShownWithParent(parameters)
+}
