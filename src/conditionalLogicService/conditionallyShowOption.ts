@@ -1,4 +1,4 @@
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import evaluateConditionalOptionsPredicate from './evaluateConditionalOptionsPredicate'
 import { FormElementsCtrl } from '../types'
 
@@ -6,7 +6,7 @@ import conditionallyShowElement from './conditionallyShowElement'
 
 const handleAttributePredicate = (
   predicate: FormTypes.ChoiceElementOptionAttribute,
-  model: Record<string, unknown>,
+  model: SubmissionTypes.S3SubmissionData['submission'],
   predicateElement: FormTypes.FormElementWithOptions,
 ) => {
   const values = model[predicateElement.name]

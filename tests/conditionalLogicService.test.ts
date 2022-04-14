@@ -568,4 +568,126 @@ describe('generateFormElementsConditionallyShown', () => {
       },
     })
   })
+
+  test('should pass error to error callback', () => {
+    const errorCallback = jest.fn()
+    const result = generateFormElementsConditionallyShown({
+      submission: {
+        first_option: 'one_a',
+        second_option: 'two_a',
+        third_option: 'three_a',
+      },
+      formElements: [
+        {
+          id: 'first_option',
+          name: 'first_option',
+          type: 'radio',
+          label: 'First Option',
+          required: false,
+          buttons: false,
+          isDataLookup: false,
+          isElementLookup: false,
+          optionsType: 'CUSTOM',
+          options: [
+            {
+              id: 'one_a',
+              label: 'one_a',
+              value: 'one_a',
+            },
+            {
+              id: 'one_b',
+              label: 'one_b',
+              value: 'one_b',
+            },
+          ],
+          conditionallyShow: true,
+          conditionallyShowPredicates: [
+            {
+              type: 'OPTIONS',
+              elementId: 'third_option',
+              optionIds: ['three_a'],
+            },
+          ],
+        },
+        {
+          id: 'second_option',
+          name: 'second_option',
+          type: 'radio',
+          label: 'Second Option',
+          required: false,
+          buttons: false,
+          isDataLookup: false,
+          isElementLookup: false,
+          optionsType: 'CUSTOM',
+          options: [
+            {
+              id: 'two_a',
+              label: 'two_a',
+              value: 'two_a',
+            },
+            {
+              id: 'two_b',
+              label: 'two_b',
+              value: 'two_b',
+            },
+          ],
+          conditionallyShow: true,
+          conditionallyShowPredicates: [
+            {
+              elementId: 'first_option',
+              type: 'OPTIONS',
+              optionIds: ['one_a'],
+            },
+          ],
+        },
+        {
+          id: 'third_option',
+          name: 'third_option',
+          type: 'radio',
+          label: 'Third Option',
+          required: false,
+          buttons: false,
+          isDataLookup: false,
+          isElementLookup: false,
+          optionsType: 'CUSTOM',
+          options: [
+            {
+              id: 'three_a',
+              label: 'three_a',
+              value: 'three_a',
+            },
+            {
+              id: 'three_b',
+              label: 'three_b',
+              value: 'three_b',
+            },
+          ],
+          conditionallyShow: true,
+          conditionallyShowPredicates: [
+            {
+              elementId: 'second_option',
+              type: 'OPTIONS',
+              optionIds: ['two_a'],
+            },
+          ],
+        },
+      ],
+      errorCallback,
+    })
+    expect(result).toEqual({
+      first_option: {
+        isHidden: true,
+        type: 'formElement',
+      },
+      second_option: {
+        isHidden: true,
+        type: 'formElement',
+      },
+      third_option: {
+        isHidden: true,
+        type: 'formElement',
+      },
+    })
+    expect(errorCallback).toBeCalled()
+  })
 })
