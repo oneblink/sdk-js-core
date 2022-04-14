@@ -1,9 +1,30 @@
-import { FormTypes, SubmissionEventTypes } from '@oneblink/types'
+import {
+  FormTypes,
+  SubmissionEventTypes,
+  SubmissionTypes,
+} from '@oneblink/types'
 import { conditionalLogicService } from '.'
 
+/**
+ * Examine a submission and its form definition to validate whether a scheduling
+ * workflow event needs to run.
+ *
+ * #### Example
+ *
+ * ```js
+ * const result = schedulingService.checkFormSchedulingEvent(
+ *   form,
+ *   submission,
+ * )
+ * ```
+ *
+ * @param definition
+ * @param submission
+ * @returns
+ */
 export function checkForSchedulingEvent(
   definition: FormTypes.Form,
-  submission: { readonly [key: string]: unknown },
+  submission: SubmissionTypes.S3SubmissionData['submission'],
 ): SubmissionEventTypes.SchedulingSubmissionEvent | undefined {
   const schedulingSubmissionEvents = definition.schedulingEvents || []
   return schedulingSubmissionEvents.find((schedulingSubmissionEvent) =>

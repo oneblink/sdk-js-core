@@ -1,5 +1,5 @@
 import { FormTypes } from '@oneblink/types'
-import replaceCustomValues from '../src/replaceCustomValues'
+import { replaceCustomValues } from '../src/submissionService'
 
 describe('replaceCustomValues()', () => {
   const form: FormTypes.Form = {

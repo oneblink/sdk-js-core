@@ -1,10 +1,28 @@
-import { FormTypes, SubmissionEventTypes } from '@oneblink/types'
+import {
+  FormTypes,
+  SubmissionEventTypes,
+  SubmissionTypes,
+} from '@oneblink/types'
 import { conditionalLogicService, formElementsService } from '.'
-import { getRootElementValueById } from './formElementsService'
+import { getRootElementValueById } from './submissionService'
 
+/**
+ * Examine a submission and its form definition to validate whether a payment
+ * workflow event needs to run.
+ *
+ * #### Example
+ *
+ * ```js
+ * const result = paymentService.checkForPaymentEvent(form, submission)
+ * ```
+ *
+ * @param definition
+ * @param submission
+ * @returns
+ */
 export function checkForPaymentEvent(
   definition: FormTypes.Form,
-  submission: { readonly [key: string]: unknown },
+  submission: SubmissionTypes.S3SubmissionData['submission'],
 ):
   | {
       paymentSubmissionEvent: SubmissionEventTypes.PaymentSubmissionEvent

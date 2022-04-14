@@ -122,7 +122,7 @@ function toNamedElement(
   }
 }
 
-type NonNestedElementsFormElement =
+export type NonNestedElementsFormElement =
   | FormTypes.NonNestedElementsElement
   | FormTypes.FormElementWithForm
 const toNonNestedElementsElement = (

@@ -2,7 +2,7 @@ import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { findFormElement } from './formElementsService'
 import { getABNNumberFromABNRecord } from './abnService'
 
-type CustomValuesOptions = {
+export type CustomValuesOptions = {
   form: FormTypes.Form
   externalId?: string
   submissionId: string
@@ -66,6 +66,50 @@ const CUSTOM_VALUES = [
   },
 ]
 
+/**
+ * Function to get the display value of a property in submission
+ *
+ * #### Example
+ *
+ * ```typescript
+ *
+ * const result = submissionService.getElementSubmissionValue({
+ *   propertyName: 'search',
+ *   submission: {
+ *     search: 'Entered By User',
+ *   },
+ *   formElements: [
+ *     {
+ *       id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
+ *       name: 'search',
+ *       type: 'text',
+ *       label: 'Search',
+ *       readOnly: false,
+ *       required: false,
+ *       conditionallyShow: false,
+ *       requiresAllConditionallyShowPredicates: false,
+ *       isElementLookup: false,
+ *       isDataLookup: false,
+ *     },
+ *   ],
+ *   formatDate: (value) => new Date(value).toDateString(),
+ *   formatTime: (value) => new Date(value).toTimeString(),
+ *   formatNumber: (value) => Number(value).toString(),
+ *   formatCurrency: (value) => Number(value).toFixed(2),
+ * }: {
+ *   propertyName: string
+ *   formElements: FormTypes.FormElement[]
+ *   submission: SubmissionTypes.S3SubmissionData['submission']
+ *   formatDate: (value: string) => string
+ *   formatTime: (value: string) => string
+ *   formatNumber: (value: number) => string
+ *   formatCurrency: (value: number) => string
+ * })
+ * ```
+ *
+ * @param options
+ * @returns
+ */
 export function getElementSubmissionValue({
   propertyName,
   submission,
@@ -236,7 +280,59 @@ function replaceElementValues(
   }, text)
 }
 
-export default function replaceCustomValues(
+/**
+ * Function to replace a custom values in text
+ *
+ * #### Example
+ *
+ * ```js
+ * const result = submissionService.replaceCustomValues(
+ *   'https://example.com/path?submissionId={SUBMISSION_ID}&externalId={EXTERNAL_ID}&search{ELEMENT:search}',
+ *   {
+ *     submissionId: 'abc-123',
+ *     submissionTimestamp: '2021-07-02T02:19:13.670Z',
+ *     formatDate: (value) => new Date(value).toDateString(),
+ *     formatTime: (value) => new Date(value).toTimeString(),
+ *     submission: {
+ *       search: 'Entered By User',
+ *     },
+ *     form: {
+ *       id: 1,
+ *       name: 'Form',
+ *       organisationId: '',
+ *       formsAppEnvironmentId: 1,
+ *       formsAppIds: [],
+ *       isAuthenticated: false,
+ *       isMultiPage: false,
+ *       isInfoPage: false,
+ *       postSubmissionAction: 'FORMS_LIBRARY',
+ *       cancelAction: 'FORMS_LIBRARY',
+ *       submissionEvents: [],
+ *       tags: [],
+ *       elements: [
+ *         {
+ *           id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
+ *           name: 'search',
+ *           type: 'text',
+ *           label: 'Search',
+ *           readOnly: false,
+ *           required: false,
+ *           conditionallyShow: false,
+ *           requiresAllConditionallyShowPredicates: false,
+ *           isElementLookup: false,
+ *           isDataLookup: false,
+ *         },
+ *       ],
+ *     },
+ *   },
+ * )
+ * ```
+ *
+ * @param text
+ * @param options
+ * @returns
+ */
+export function replaceCustomValues(
   text: string,
   {
     form,

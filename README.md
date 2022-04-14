@@ -2,12 +2,6 @@
 
 OneBlink SDK for JavaScript (works in Browsers and NodeJS).
 
-## Installation
+## Documentation
 
-```sh
-npm install @oneblink/sdk-core --save
-```
-
-## Usage
-
-- [Usage Documentation](./docs/README.md)
+See the [Documentation](https://oneblink.github.io/sdk-core-js/) for more details.
