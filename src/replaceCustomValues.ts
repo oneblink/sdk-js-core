@@ -1,4 +1,11 @@
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import {
+  CivicaTypes,
+  FormTypes,
+  GeoscapeTypes,
+  MiscTypes,
+  PointTypes,
+  SubmissionTypes,
+} from '@oneblink/types'
 import { findFormElement } from './formElementsService'
 import { getABNNumberFromABNRecord } from './abnService'
 
@@ -135,28 +142,33 @@ export function getElementSubmissionValue({
       element.name === propertyName,
   )
 
-  const value = submission[propertyName]
-  if (value === undefined || value === null) {
+  const unknown = submission[propertyName]
+  if (unknown === undefined || unknown === null) {
     return undefined
   }
 
   switch (formElement?.type) {
     case 'datetime': {
+      const value = unknown as string
       return `${formatDate(value)} ${formatTime(value)}`
     }
     case 'date': {
+      const value = unknown as string
       return formatDate(value)
     }
     case 'time': {
+      const value = unknown as string
       return formatTime(value)
     }
     case 'radio':
     case 'autocomplete': {
+      const value = unknown as string
       const option = formElement.options?.find((opt) => opt.value === value)
       return option?.label || value
     }
 
     case 'checkboxes': {
+      const value = unknown as string[]
       const selectedOptionLabels: string[] = value.reduce(
         (labels: string[], selectedOption: string) => {
           const foundOption = formElement.options?.find(
@@ -170,6 +182,9 @@ export function getElementSubmissionValue({
       return selectedOptionLabels.length ? selectedOptionLabels : undefined
     }
     case 'compliance': {
+      const value = unknown as {
+        value?: string
+      }
       const option = (formElement.options || []).find(
         (option: FormTypes.ChoiceElementOption) => option.value === value.value,
       )
@@ -180,6 +195,7 @@ export function getElementSubmissionValue({
     }
     case 'select': {
       if (formElement.multi) {
+        const value = unknown as string[]
         const selectedOptionLabels: string[] = value.reduce(
           (labels: string[], selectedOption: string) => {
             const foundOption = formElement.options?.find(
@@ -192,14 +208,17 @@ export function getElementSubmissionValue({
         )
         return selectedOptionLabels.length ? selectedOptionLabels : undefined
       } else {
+        const value = unknown as string
         const option = formElement.options?.find((opt) => opt.value === value)
         return option?.label || ''
       }
     }
     case 'boolean': {
+      const value = unknown as boolean
       return value ? 'Yes' : 'No'
     }
     case 'calculation': {
+      const value = unknown as number
       if (!Number.isNaN(value) && Number.isFinite(value)) {
         let text
         if (formElement.displayAsCurrency) {
@@ -213,12 +232,17 @@ export function getElementSubmissionValue({
     }
     case 'pointAddress':
     case 'geoscapeAddress': {
+      const value = unknown as
+        | PointTypes.PointAddress
+        | GeoscapeTypes.GeoscapeAddress
       return value?.addressDetails?.formattedAddress || value?.addressId
     }
     case 'civicaStreetName': {
+      const value = unknown as CivicaTypes.CivicaStreetName
       return value?.formattedStreet
     }
     case 'civicaNameRecord': {
+      const value = unknown as CivicaTypes.CivicaNameRecord
       return (
         [value?.title, value?.givenName1, value?.familyName]
           .filter((t) => t)
@@ -226,10 +250,11 @@ export function getElementSubmissionValue({
       )
     }
     case 'abn': {
+      const value = unknown as MiscTypes.ABNRecord
       return value ? getABNNumberFromABNRecord(value) : undefined
     }
     default: {
-      return value
+      return unknown
     }
   }
 }
