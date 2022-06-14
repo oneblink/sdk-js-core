@@ -212,7 +212,6 @@ const generateFormElementsConditionallyShownWithParent = ({
                   ),
                 )
             }
-            break
           }
 
           formElementsConditionallyShown[element.name] =
