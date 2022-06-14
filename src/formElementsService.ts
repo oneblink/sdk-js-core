@@ -1,4 +1,5 @@
 import { FormTypes } from '@oneblink/types'
+import { typeCastService } from '.'
 
 /**
  * Iterate over all form elements, also iterating over nested form element (e.g.
@@ -54,14 +55,10 @@ function forEachFormElementWithOptions(
   ) => void,
 ): void {
   findFormElement(elements, (formElement, parentElements) => {
-    if (
-      formElement.type === 'select' ||
-      formElement.type === 'autocomplete' ||
-      formElement.type === 'checkboxes' ||
-      formElement.type === 'radio' ||
-      formElement.type === 'compliance'
-    ) {
-      forEach(formElement, parentElements)
+    const optionsFormElement =
+      typeCastService.formElements.toOptionsElement(formElement)
+    if (optionsFormElement) {
+      forEach(optionsFormElement, parentElements)
     }
     return false
   })

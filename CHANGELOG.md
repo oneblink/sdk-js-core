@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - type checks to submission data
+- `freshdeskDependentField` form element
 
 ## [0.4.0] - 2022-04-19
 
