@@ -1,7 +1,7 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import evaluateConditionalOptionsPredicate from './evaluateConditionalOptionsPredicate'
 import { FormElementsCtrl } from '../types'
-
+import { typeCastService } from '..'
 import conditionallyShowElement from './conditionallyShowElement'
 
 const handleAttributePredicate = (
@@ -69,13 +69,9 @@ const conditionallyShowOptionByPredicate = (
     }
   }
 
-  if (
-    predicateElement.type !== 'compliance' &&
-    predicateElement.type !== 'select' &&
-    predicateElement.type !== 'autocomplete' &&
-    predicateElement.type !== 'checkboxes' &&
-    predicateElement.type !== 'radio'
-  ) {
+  const optionsPredicateElement =
+    typeCastService.formElements.toOptionsElement(predicateElement)
+  if (!optionsPredicateElement) {
     return false
   }
 
@@ -83,17 +79,19 @@ const conditionallyShowOptionByPredicate = (
   // we will show the element.
   // Unless the predicate element has dynamic options and
   // options have not been fetched yet.
-  if (!Array.isArray(predicateElement.options)) {
-    return predicateElement.optionsType !== 'DYNAMIC'
+  if (!Array.isArray(optionsPredicateElement.options)) {
+    return optionsPredicateElement.optionsType !== 'DYNAMIC'
   }
 
   const everyOptionIsShowing = predicate.optionIds.every((id) => {
-    const predicateOption = predicateElement.options?.find((o) => o.id === id)
+    const predicateOption = optionsPredicateElement.options?.find(
+      (o) => o.id === id,
+    )
     if (!predicateOption) return false
 
     return conditionallyShowOption(
       { model: formElementsCtrl.model, flattenedElements: [] },
-      predicateElement,
+      optionsPredicateElement,
       predicateOption,
       elementsEvaluated,
     )
@@ -107,7 +105,7 @@ const conditionallyShowOptionByPredicate = (
   return handleAttributePredicate(
     predicate,
     formElementsCtrl.model,
-    predicateElement,
+    optionsPredicateElement,
   )
 }
 

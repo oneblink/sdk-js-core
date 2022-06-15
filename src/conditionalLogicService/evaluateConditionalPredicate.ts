@@ -1,4 +1,5 @@
 import { FormTypes, ConditionTypes } from '@oneblink/types'
+import { typeCastService } from '..'
 import { formElements } from '../typeCastService'
 import { FormElementsCtrl } from '../types'
 import evaluateConditionalOptionsPredicate from './evaluateConditionalOptionsPredicate'
@@ -103,13 +104,9 @@ export default function evaluateConditionalPredicate({
     }
     case 'OPTIONS':
     default: {
-      if (
-        predicateElement.type !== 'select' &&
-        predicateElement.type !== 'autocomplete' &&
-        predicateElement.type !== 'radio' &&
-        predicateElement.type !== 'checkboxes' &&
-        predicateElement.type !== 'compliance'
-      ) {
+      const optionsPredicateElement =
+        typeCastService.formElements.toOptionsElement(predicateElement)
+      if (!optionsPredicateElement) {
         return undefined
       }
 
@@ -117,15 +114,15 @@ export default function evaluateConditionalPredicate({
       // we will show the element.
       // Unless the predicate element has dynamic options and
       // options have not been fetched yet.
-      if (!Array.isArray(predicateElement.options)) {
-        return predicateElement.optionsType !== 'DYNAMIC'
+      if (!Array.isArray(optionsPredicateElement.options)) {
+        return optionsPredicateElement.optionsType !== 'DYNAMIC'
           ? predicateElement
           : undefined
       } else {
         return evaluateConditionalOptionsPredicate({
           predicate,
           predicateValue,
-          predicateElement,
+          predicateElement: optionsPredicateElement,
         })
           ? predicateElement
           : undefined

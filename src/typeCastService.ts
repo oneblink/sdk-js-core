@@ -4,6 +4,7 @@ const toOptionsElement = (
   e: FormTypes.FormElement,
 ): FormTypes.FormElementWithOptions | undefined => {
   switch (e.type) {
+    case 'freshdeskDependentField':
     case 'select':
     case 'compliance':
     case 'radio':
@@ -49,6 +50,7 @@ const toLookupElement = (
   e: FormTypes.FormElement,
 ): FormTypes.LookupFormElement | undefined => {
   switch (e.type) {
+    case 'freshdeskDependentField':
     case 'boolean':
     case 'checkboxes':
     case 'date':

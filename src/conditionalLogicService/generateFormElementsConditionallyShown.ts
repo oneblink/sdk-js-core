@@ -3,6 +3,7 @@ import { FormElementsCtrl } from '../types'
 import { flattenFormElements } from '../formElementsService'
 import conditionallyShowElement from './conditionallyShowElement'
 import conditionallyShowOption from './conditionallyShowOption'
+import { typeCastService } from '..'
 
 export type FormElementsConditionallyShown = Record<
   string,
@@ -194,28 +195,22 @@ const generateFormElementsConditionallyShownWithParent = ({
           }
 
           if (!formElementConditionallyShown.isHidden) {
-            switch (element.type) {
-              case 'compliance':
-              case 'autocomplete':
-              case 'radio':
-              case 'checkboxes':
-              case 'select': {
-                if (
-                  element.conditionallyShowOptions &&
-                  Array.isArray(element.options)
-                ) {
-                  formElementConditionallyShown.options =
-                    element.options.filter((option) =>
-                      handleConditionallyShowOption(
-                        formElementsCtrl,
-                        element,
-                        option,
-                        errorCallback,
-                      ),
-                    )
-                }
-                break
-              }
+            const optionsElement =
+              typeCastService.formElements.toOptionsElement(element)
+            if (
+              optionsElement &&
+              optionsElement.conditionallyShowOptions &&
+              Array.isArray(optionsElement.options)
+            ) {
+              formElementConditionallyShown.options =
+                optionsElement.options.filter((option) =>
+                  handleConditionallyShowOption(
+                    formElementsCtrl,
+                    optionsElement,
+                    option,
+                    errorCallback,
+                  ),
+                )
             }
           }
 
