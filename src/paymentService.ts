@@ -25,7 +25,7 @@ export function checkForPaymentEvent(
   submission: SubmissionTypes.S3SubmissionData['submission'],
 ):
   | {
-      paymentSubmissionEvent: SubmissionEventTypes.PaymentSubmissionEvent
+      paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
       amount: number
     }
   | undefined {
