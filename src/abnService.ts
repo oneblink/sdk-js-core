@@ -88,7 +88,9 @@ export const getABNNumberFromABNRecord = (
 ): string | undefined => {
   if (!abnRecord.ABN) return
   if (Array.isArray(abnRecord.ABN)) {
-    const relevantABN = abnRecord.ABN.find((abn) => abn.isCurrentIndicator)
+    const relevantABN = abnRecord.ABN.find(
+      (abn) => abn.isCurrentIndicator === 'Y',
+    )
     return relevantABN?.identifierValue
   }
   return abnRecord.ABN.identifierValue
