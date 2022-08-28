@@ -1,13 +1,13 @@
 {
   "name": "@oneblink/sdk-core",
   "description": "OneBlink SDK for JavaScript (works in Browsers and NodeJS)",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
   "bugs": {
     "url": "https://github.com/oneblink/sdk-core-js/issues"
   },
   "devDependencies": {
-    "@oneblink/release-cli": "^1.0.0",
+    "@oneblink/release-cli": "^1.2.0",
     "@oneblink/types": "github:oneblink/types",
     "@types/jest": "^27.4.1",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
