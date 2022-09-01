@@ -34,6 +34,10 @@ export function parseUserProfile(
     providerUserId: jwtPayload.sub,
     userId: jwtPayload.sub,
     email: typeof jwtPayload.email === 'string' ? jwtPayload.email : undefined,
+    emailVerified:
+      typeof jwtPayload.email_verified === 'boolean'
+        ? jwtPayload.email_verified
+        : undefined,
     firstName:
       typeof jwtPayload.given_name === 'string'
         ? jwtPayload.given_name
@@ -65,6 +69,14 @@ export function parseUserProfile(
           ? jwtPayload['custom:supervisor_user_id']
           : undefined,
     },
+    phoneNumber:
+      typeof jwtPayload['custom:phone_number'] === 'string'
+        ? jwtPayload['custom:phone_number']
+        : undefined,
+    phoneNumberVerified:
+      typeof jwtPayload['custom:phone_number_verified'] === 'boolean'
+        ? jwtPayload['custom:phone_number_verified']
+        : undefined,
   }
 
   if (
