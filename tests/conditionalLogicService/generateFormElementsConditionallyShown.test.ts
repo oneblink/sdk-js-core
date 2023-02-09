@@ -79,7 +79,8 @@ describe('generateFormElementsConditionallyShown', () => {
     })
     expect(
       result.dependant?.type === 'formElement' &&
-        result.dependant?.options?.length === 2,
+        result.dependant?.options?.length === 2 &&
+        result.dependant?.dependencyIsLoading === undefined,
     ).toBe(true)
   })
 })
