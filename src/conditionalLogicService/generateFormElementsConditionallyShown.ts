@@ -2,7 +2,9 @@ import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { FormElementsCtrl } from '../types'
 import { flattenFormElements } from '../formElementsService'
 import conditionallyShowElement from './conditionallyShowElement'
-import conditionallyShowOption from './conditionallyShowOption'
+import conditionallyShowOption, {
+  ShouldShowOption,
+} from './conditionallyShowOption'
 import { typeCastService } from '..'
 
 export type FormElementsConditionallyShown = Record<
@@ -16,6 +18,7 @@ export type FormElementConditionallyShown =
       type: 'formElement'
       isHidden: boolean
       options?: import('@oneblink/types').FormTypes.ChoiceElementOption[]
+      dependencyIsLoading?: boolean
     }
   | {
       type: 'formElements'
@@ -48,12 +51,12 @@ const handleConditionallyShowOption = (
   element: FormTypes.FormElementWithOptions,
   option: FormTypes.ChoiceElementOption,
   errorCallback: ErrorCallback | undefined,
-) => {
+): ShouldShowOption => {
   try {
     return conditionallyShowOption(formElementsCtrl, element, option, [])
   } catch (error) {
     errorCallback && errorCallback(error as Error)
-    return false
+    return 'HIDE'
   }
 }
 
@@ -202,15 +205,31 @@ const generateFormElementsConditionallyShownWithParent = ({
               optionsElement.conditionallyShowOptions &&
               Array.isArray(optionsElement.options)
             ) {
-              formElementConditionallyShown.options =
-                optionsElement.options.filter((option) =>
-                  handleConditionallyShowOption(
-                    formElementsCtrl,
-                    optionsElement,
-                    option,
-                    errorCallback,
-                  ),
+              const newOptions = []
+              for (const option of optionsElement.options) {
+                const optionPredicatesResult = handleConditionallyShowOption(
+                  formElementsCtrl,
+                  optionsElement,
+                  option,
+                  errorCallback,
                 )
+                switch (optionPredicatesResult) {
+                  case 'SHOW': {
+                    newOptions.push(option)
+                    break
+                  }
+                  case 'LOADING_STATIC_DEPENDENCY': {
+                    newOptions.push(option)
+                    formElementConditionallyShown.dependencyIsLoading = true
+                    break
+                  }
+                  case 'LOADING_DYNAMIC_DEPENDENCY': {
+                    formElementConditionallyShown.dependencyIsLoading = true
+                    break
+                  }
+                }
+              }
+              formElementConditionallyShown.options = newOptions
             }
           }
 

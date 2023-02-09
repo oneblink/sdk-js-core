@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `generateFormElementsConditionallyShown` - Dependant option set elements will now return a `dependencyIsLoading?` property
+
 ## [0.4.4] - 2022-09-13
 
 ### Changed
