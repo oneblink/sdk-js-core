@@ -4,6 +4,12 @@ import { FormElementsCtrl } from '../types'
 import { typeCastService } from '..'
 import conditionallyShowElement from './conditionallyShowElement'
 
+export type ShouldShowOption =
+  | 'SHOW'
+  | 'HIDE'
+  | 'LOADING_DYNAMIC_DEPENDENCY'
+  | 'LOADING_STATIC_DEPENDENCY'
+
 const handleAttributePredicate = (
   predicate: FormTypes.ChoiceElementOptionAttribute,
   model: SubmissionTypes.S3SubmissionData['submission'],
@@ -35,7 +41,7 @@ const conditionallyShowOptionByPredicate = (
   formElementsCtrl: FormElementsCtrl,
   predicate: FormTypes.ChoiceElementOptionAttribute,
   elementsEvaluated: string[],
-): boolean => {
+): ShouldShowOption => {
   // Validate the predicate data, if it is invalid,
   // we will always show the field
   if (
@@ -44,9 +50,8 @@ const conditionallyShowOptionByPredicate = (
     !predicate.optionIds ||
     !predicate.optionIds.length
   ) {
-    return true
+    return 'SHOW'
   }
-
   const predicateElement = formElementsCtrl.flattenedElements.find(
     (element) => {
       return element.id === predicate.elementId
@@ -65,29 +70,35 @@ const conditionallyShowOptionByPredicate = (
         elementsEvaluated,
       )
     } else {
-      return false
+      return 'HIDE'
     }
   }
 
   const optionsPredicateElement =
     typeCastService.formElements.toOptionsElement(predicateElement)
   if (!optionsPredicateElement) {
-    return false
+    return 'HIDE'
   }
-
   // If the predicate element does not have any options to evaluate,
   // we will show the element.
   // Unless the predicate element has dynamic options and
   // options have not been fetched yet.
-  if (!Array.isArray(optionsPredicateElement.options)) {
-    return optionsPredicateElement.optionsType !== 'DYNAMIC'
+  const isLoadingPredicateElementsOptions = !Array.isArray(
+    optionsPredicateElement.options,
+  )
+  if (isLoadingPredicateElementsOptions) {
+    if (optionsPredicateElement.optionsType === 'DYNAMIC') {
+      return 'LOADING_DYNAMIC_DEPENDENCY'
+    } else {
+      return 'LOADING_STATIC_DEPENDENCY'
+    }
   }
 
   const everyOptionIsShowing = predicate.optionIds.every((id) => {
     const predicateOption = optionsPredicateElement.options?.find(
       (o) => o.id === id,
     )
-    if (!predicateOption) return false
+    if (!predicateOption) return 'HIDE'
 
     return conditionallyShowOption(
       { model: formElementsCtrl.model, flattenedElements: [] },
@@ -98,15 +109,16 @@ const conditionallyShowOptionByPredicate = (
   })
 
   if (!everyOptionIsShowing) {
-    return false
+    return 'HIDE'
   }
 
   // Check to see if the model has one of the valid values to show the element
-  return handleAttributePredicate(
+  const shouldShow = handleAttributePredicate(
     predicate,
     formElementsCtrl.model,
     optionsPredicateElement,
   )
+  return shouldShow ? 'SHOW' : 'HIDE'
 }
 
 const isAttributeFilterValid = (
@@ -167,7 +179,7 @@ export default function conditionallyShowOption(
   elementToEvaluate: FormTypes.FormElementWithOptions,
   optionToEvaluate: FormTypes.ChoiceElementOption,
   optionsEvaluated: string[],
-): boolean {
+): ShouldShowOption {
   // If the element does not have the `conditionallyShow` flag set,
   // we can always show the element.
 
@@ -178,7 +190,7 @@ export default function conditionallyShowOption(
     !Array.isArray(optionToEvaluate.attributes) ||
     !optionToEvaluate.attributes.length
   ) {
-    return true
+    return 'SHOW'
   }
 
   // Check to see if this element has already been used to evaluate
@@ -190,7 +202,6 @@ export default function conditionallyShowOption(
   } else {
     optionsEvaluated.push(optionToEvaluate.id)
   }
-
   const validPredicates = (optionToEvaluate.attributes || []).filter(
     (predicate) => {
       return isAttributeFilterValid(
@@ -200,13 +211,35 @@ export default function conditionallyShowOption(
       )
     },
   )
+  if (!validPredicates.length) return 'SHOW'
 
-  if (!validPredicates.length) return true
-  return validPredicates.some((predicate) =>
-    conditionallyShowOptionByPredicate(
+  let isLoadingDynamicDEPENDENCY = false
+  let isLoadingStaticDEPENDENCY = false
+  for (const predicate of validPredicates) {
+    const predicateResult = conditionallyShowOptionByPredicate(
       formElementsCtrl,
       predicate,
       optionsEvaluated,
-    ),
-  )
+    )
+    switch (predicateResult) {
+      case 'SHOW': {
+        return 'SHOW'
+      }
+      case 'LOADING_DYNAMIC_DEPENDENCY': {
+        isLoadingDynamicDEPENDENCY = true
+        break
+      }
+      case 'LOADING_STATIC_DEPENDENCY': {
+        isLoadingStaticDEPENDENCY = true
+        break
+      }
+    }
+  }
+  if (isLoadingDynamicDEPENDENCY) {
+    return 'LOADING_DYNAMIC_DEPENDENCY'
+  } else if (isLoadingStaticDEPENDENCY) {
+    return 'LOADING_STATIC_DEPENDENCY'
+  } else {
+    return 'HIDE'
+  }
 }
