@@ -67,7 +67,7 @@ export const displayBusinessNameFromABNRecord = (
   abnRecord: ABNRecord,
 ): string => {
   const businessName = getBusinessNameFromABNRecord(abnRecord)
-  return businessName || 'Unknown Business Name'
+  return businessName || 'ABN Details Suppressed'
 }
 
 /**

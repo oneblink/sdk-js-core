@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- message returned from ABN service when business name isn't found
+
 ## [0.4.5] - 2023-02-10
 
 ### Added
