@@ -212,10 +212,49 @@ function flattenFormElements(
   )
 }
 
+/**
+ * The regex used for matching `{ELEMENT:<elementName>}` tags in OneBlink
+ * Calculation and Info (HTML) elements.
+ */
+const WYSIWYGRegex = /({ELEMENT:)([^}]+)(})/g
+
+/**
+ * Takes a string and calls a provided handler function for each found instance
+ * of `{ELEMENT:<elementName>}` in the string. Used to replace values in
+ * OneBlink calculation and info (HTML) elements.
+ *
+ * #### Example
+ *
+ * ```js
+ * formElementsService.matchElementsTagRegex(myString, (elementName) => {
+ *   const v = submission[elementName]
+ *   myString = myString.replace(`{ELEMENT:${elementName}}`, v)
+ * })
+ * ```
+ *
+ * @param data
+ * @param handler
+ * @returns
+ */
+const matchElementsTagRegex = (
+  data: string,
+  matchHandler: (elementName: string) => void,
+) => {
+  let matches
+  while ((matches = WYSIWYGRegex.exec(data)) !== null) {
+    if (matches?.length < 3) continue
+
+    const elementName = matches[2]
+    matchHandler(elementName)
+  }
+}
+
 export {
   forEachFormElement,
   forEachFormElementWithOptions,
   findFormElement,
   parseFormElementOptionsSet,
   flattenFormElements,
+  WYSIWYGRegex,
+  matchElementsTagRegex,
 }

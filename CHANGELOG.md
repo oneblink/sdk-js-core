@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `WYSIWYGRegex` to `formElementsService`
+- `matchElementsTagRegex` to `formElementsService`
+- `getSubmissionValueAsString` to `submissionService`
+
 ### Changed
 
 - message returned from ABN service when business name isn't found

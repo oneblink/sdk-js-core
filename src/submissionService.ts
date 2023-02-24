@@ -9,7 +9,7 @@ export * from './replaceCustomValues'
  * #### Example
  *
  * ```js
- * const value = formElementsService.getRootElementById(
+ * const value = submissionService.getRootElementById(
  *   formElementId,
  *   form.elements,
  *   submission,
@@ -38,6 +38,50 @@ export function getRootElementValueById(
       }
     } else if (formElement.id === formElementId) {
       return submission[formElement.name]
+    }
+  }
+}
+
+/**
+ * Takes an element name and a submission object, and returns the provided
+ * element's value as a string. Used for replaceable values in OneBlink
+ * Calculation and Info (HTML) elements.
+ *
+ * #### Example
+ *
+ * ```js
+ * const nameElementValue = submissionService.getSubmissionValueAsString(
+ *   'Name_Element',
+ *   submission,
+ * )
+ * ```
+ *
+ * @param elementName
+ * @param submission
+ * @returns
+ */
+export function getSubmissionValueAsString(
+  elementName: string,
+  submission: SubmissionTypes.S3SubmissionData['submission'],
+): string {
+  const v = submission[elementName]
+  switch (typeof v) {
+    case 'function':
+    case 'undefined':
+    case 'symbol': {
+      return ''
+    }
+    case 'object': {
+      // Account for null
+      return v?.toString() || ''
+    }
+    case 'number':
+    case 'boolean':
+    case 'bigint': {
+      return v.toString()
+    }
+    default: {
+      return v as string
     }
   }
 }
