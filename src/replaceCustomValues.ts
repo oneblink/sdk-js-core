@@ -6,7 +6,11 @@ import {
   PointTypes,
   SubmissionTypes,
 } from '@oneblink/types'
-import { findFormElement } from './formElementsService'
+import {
+  findFormElement,
+  matchElementsTagRegex,
+  WYSIWYGRegex,
+} from './formElementsService'
 import { getABNNumberFromABNRecord } from './abnService'
 
 export type CustomValuesOptions = {
@@ -259,17 +263,55 @@ export function getElementSubmissionValue({
   }
 }
 
-function replaceElementValues(
+/**
+ * Takes a string and replaces the {ELEMENT:<elementName>} tags.
+ *
+ * #### Example
+ *
+ * ```js
+ * const result = submissionService.replaceElementValues(
+ *   'https://example.com/path?search{ELEMENT:search}',
+ *   {
+ *     formatDate: (value) => new Date(value).toDateString(),
+ *     formatTime: (value) => new Date(value).toTimeString(),
+ *     formatNumber: (value) => Number(value).toString(),
+ *     formatCurrency: (value) => Number(value).toFixed(2),
+ *     submission: {
+ *       search: 'Entered By User',
+ *     },
+ *     elements: [
+ *       {
+ *         id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
+ *         name: 'search',
+ *         type: 'text',
+ *         label: 'Search',
+ *         readOnly: false,
+ *         required: false,
+ *         conditionallyShow: false,
+ *         requiresAllConditionallyShowPredicates: false,
+ *         isElementLookup: false,
+ *         isDataLookup: false,
+ *       },
+ *     ],
+ *   },
+ * )
+ * ```
+ *
+ * @param text
+ * @param options
+ * @returns
+ */
+export function replaceElementValues(
   text: string,
   {
-    form,
+    formElements,
     submission,
     formatDate,
     formatTime,
     formatNumber,
     formatCurrency,
   }: {
-    form: FormTypes.Form
+    formElements: FormTypes.FormElement[]
     submission: SubmissionTypes.S3SubmissionData['submission']
     formatDate: (value: string) => string
     formatTime: (value: string) => string
@@ -277,20 +319,15 @@ function replaceElementValues(
     formatCurrency: (value: number) => string
   },
 ): string {
-  const matches = text.match(/({ELEMENT:)([^}]+)(})/g)
+  const matches = text.match(WYSIWYGRegex)
   if (!matches) {
     return text
   }
 
-  return matches.reduce((newString, match) => {
-    const propertyName = match.substring(
-      match.indexOf(':') + 1,
-      match.lastIndexOf('}'),
-    )
-
+  matchElementsTagRegex(text, ({ elementName, elementMatch }) => {
     const value = getElementSubmissionValue({
-      propertyName,
-      formElements: form.elements,
+      propertyName: elementName,
+      formElements,
       submission,
       formatDate,
       formatTime,
@@ -298,11 +335,12 @@ function replaceElementValues(
       formatCurrency,
     })
 
-    return newString.replace(
-      match,
+    text = text.replace(
+      elementMatch,
       value === undefined ? '' : (value as string),
     )
-  }, text)
+  })
+  return text
 }
 
 /**
@@ -375,7 +413,7 @@ export function replaceCustomValues(
   },
 ): string {
   const string = replaceElementValues(text, {
-    form,
+    formElements: form.elements,
     submission,
     formatDate,
     formatTime,

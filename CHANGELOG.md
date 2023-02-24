@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `WYSIWYGRegex` to `formElementsService`
 - `matchElementsTagRegex` to `formElementsService`
-- `getSubmissionValueAsString` to `submissionService`
+- `replaceElementValues` to `submissionService`
 
 ### Changed
 
