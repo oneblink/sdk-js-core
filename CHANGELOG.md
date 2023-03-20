@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- unit tests for allowing an element to be used twice in a conditional predicate
+
 ## [0.4.6] - 2023-03-03
 
 ### Added
