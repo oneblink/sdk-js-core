@@ -156,6 +156,100 @@ describe('evaluateConditionalPredicates', () => {
     })
     expect(result).toBe(false)
   })
+
+  test('should allow the same element to be used twice in conditional logic with AND logic', () => {
+    const result = evaluateConditionalPredicates({
+      isConditional: true,
+      requiresAllConditionalPredicates: true,
+      conditionalPredicates: [
+        {
+          type: 'OPTIONS',
+          elementId: '3534abe4-b0b5-4ffa-a216-49c223ab6f95',
+          optionIds: ['9ce633dd-22d6-4e0e-a9e0-1aa62d435e72'],
+        },
+        {
+          type: 'OPTIONS',
+          elementId: '3534abe4-b0b5-4ffa-a216-49c223ab6f95',
+          optionIds: ['5850b32c-3833-4498-a072-47fcc8122242'],
+        },
+      ],
+      formElements: generateFormElements(),
+      submission: {
+        checkboxes: ['a', 'b'],
+      },
+    })
+    expect(result).toBe(true)
+  })
+
+  test('should not meet conditions for the same element being used twice in conditional logic with AND logic', () => {
+    const result = evaluateConditionalPredicates({
+      isConditional: true,
+      requiresAllConditionalPredicates: true,
+      conditionalPredicates: [
+        {
+          type: 'OPTIONS',
+          elementId: '3534abe4-b0b5-4ffa-a216-49c223ab6f95',
+          optionIds: ['9ce633dd-22d6-4e0e-a9e0-1aa62d435e72'],
+        },
+        {
+          type: 'OPTIONS',
+          elementId: '3534abe4-b0b5-4ffa-a216-49c223ab6f95',
+          optionIds: ['5850b32c-3833-4498-a072-47fcc8122242'],
+        },
+      ],
+      formElements: generateFormElements(),
+      submission: {
+        checkboxes: ['a'],
+      },
+    })
+    expect(result).toBe(false)
+  })
+
+  test('should allow the same element to be used twice in conditional logic with OR logic', () => {
+    const resultA = evaluateConditionalPredicates({
+      isConditional: true,
+      requiresAllConditionalPredicates: false,
+      conditionalPredicates: [
+        {
+          type: 'OPTIONS',
+          elementId: '3534abe4-b0b5-4ffa-a216-49c223ab6f95',
+          optionIds: ['9ce633dd-22d6-4e0e-a9e0-1aa62d435e72'],
+        },
+        {
+          type: 'OPTIONS',
+          elementId: '3534abe4-b0b5-4ffa-a216-49c223ab6f95',
+          optionIds: ['5850b32c-3833-4498-a072-47fcc8122242'],
+        },
+      ],
+      formElements: generateFormElements(),
+      submission: {
+        checkboxes: ['a'],
+      },
+    })
+    expect(resultA).toBe(true)
+
+    const resultB = evaluateConditionalPredicates({
+      isConditional: true,
+      requiresAllConditionalPredicates: false,
+      conditionalPredicates: [
+        {
+          type: 'OPTIONS',
+          elementId: '3534abe4-b0b5-4ffa-a216-49c223ab6f95',
+          optionIds: ['9ce633dd-22d6-4e0e-a9e0-1aa62d435e72'],
+        },
+        {
+          type: 'OPTIONS',
+          elementId: '3534abe4-b0b5-4ffa-a216-49c223ab6f95',
+          optionIds: ['5850b32c-3833-4498-a072-47fcc8122242'],
+        },
+      ],
+      formElements: generateFormElements(),
+      submission: {
+        checkboxes: ['b'],
+      },
+    })
+    expect(resultB).toBe(true)
+  })
 })
 
 describe('generateFormElementsConditionallyShown', () => {
