@@ -95,8 +95,7 @@ export default function conditionallyShowElement(
     elementsEvaluated.push({
       id: elementToEvaluate.id,
       label:
-        elementToEvaluate.type === 'form' ||
-        elementToEvaluate.type === 'infoPage'
+        'name' in elementToEvaluate
           ? elementToEvaluate.name
           : elementToEvaluate.label,
     })

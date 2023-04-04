@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - unit tests for allowing an element to be used twice in a conditional predicate
+- support for NodeJS 18
+
+### Removed
+
+- **[BREAKING]** support for NodeJS 12
 
 ## [0.4.6] - 2023-03-03
 
