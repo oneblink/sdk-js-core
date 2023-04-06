@@ -95,9 +95,9 @@ export default function conditionallyShowElement(
     elementsEvaluated.push({
       id: elementToEvaluate.id,
       label:
-        'name' in elementToEvaluate
-          ? elementToEvaluate.name
-          : elementToEvaluate.label,
+        'label' in elementToEvaluate
+          ? elementToEvaluate.label
+          : elementToEvaluate.name,
     })
   }
 
