@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - unit tests for allowing an element to be used twice in a conditional predicate
 - support for NodeJS 18
+- `@microsoft/eslint-plugin-sdl` eslint plugin
 
 ### Removed
 
