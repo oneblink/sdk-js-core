@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `@microsoft/eslint-plugin-sdl` eslint plugin
+
 ## [1.0.0] - 2023-04-14
 
 ### Added
