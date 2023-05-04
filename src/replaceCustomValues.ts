@@ -18,6 +18,7 @@ export type CustomValuesOptions = {
   externalId?: string
   submissionId: string
   submissionTimestamp: string
+  formatDateTime: (value: string) => string
   formatDate: (value: string) => string
   formatTime: (value: string) => string
   formatNumber: (value: number) => string
@@ -44,17 +45,11 @@ const CUSTOM_VALUES = [
   },
   {
     string: '{DATE}',
-    value: ({
-      submissionTimestamp,
-      formatDate,
-      formatTime,
-    }: CustomValuesOptions) => {
+    value: ({ submissionTimestamp, formatDateTime }: CustomValuesOptions) => {
       if (!submissionTimestamp) {
         return ''
       }
-      return `${formatDate(submissionTimestamp)} ${formatTime(
-        submissionTimestamp,
-      )}`
+      return formatDateTime(submissionTimestamp)
     },
   },
   {
@@ -83,7 +78,6 @@ const CUSTOM_VALUES = [
  * #### Example
  *
  * ```typescript
- *
  * const result = submissionService.getElementSubmissionValue({
  *   propertyName: 'search',
  *   submission: {
@@ -104,17 +98,10 @@ const CUSTOM_VALUES = [
  *     },
  *   ],
  *   formatDate: (value) => new Date(value).toDateString(),
+ *   formatDateTime: (value) => new Date(value).toString(),
  *   formatTime: (value) => new Date(value).toTimeString(),
  *   formatNumber: (value) => Number(value).toString(),
  *   formatCurrency: (value) => Number(value).toFixed(2),
- * }: {
- *   propertyName: string
- *   formElements: FormTypes.FormElement[]
- *   submission: SubmissionTypes.S3SubmissionData['submission']
- *   formatDate: (value: string) => string
- *   formatTime: (value: string) => string
- *   formatNumber: (value: number) => string
- *   formatCurrency: (value: number) => string
  * })
  * ```
  *
@@ -126,6 +113,7 @@ export function getElementSubmissionValue({
   submission,
   formElements,
   formatDate,
+  formatDateTime,
   formatTime,
   formatNumber,
   formatCurrency,
@@ -134,6 +122,7 @@ export function getElementSubmissionValue({
   formElements: FormTypes.FormElement[]
   submission: SubmissionTypes.S3SubmissionData['submission']
   formatDate: (value: string) => string
+  formatDateTime: (value: string) => string
   formatTime: (value: string) => string
   formatNumber: (value: number) => string
   formatCurrency: (value: number) => string
@@ -154,7 +143,7 @@ export function getElementSubmissionValue({
   switch (formElement?.type) {
     case 'datetime': {
       const value = unknown as string
-      return `${formatDate(value)} ${formatTime(value)}`
+      return formatDateTime(value)
     }
     case 'date': {
       const value = unknown as string
@@ -273,6 +262,7 @@ export function getElementSubmissionValue({
  *   'https://example.com/path?search{ELEMENT:search}',
  *   {
  *     formatDate: (value) => new Date(value).toDateString(),
+ *     formatDateTime: (value) => new Date(value).toString(),
  *     formatTime: (value) => new Date(value).toTimeString(),
  *     formatNumber: (value) => Number(value).toString(),
  *     formatCurrency: (value) => Number(value).toFixed(2),
@@ -307,6 +297,7 @@ export function replaceElementValues(
     formElements,
     submission,
     formatDate,
+    formatDateTime,
     formatTime,
     formatNumber,
     formatCurrency,
@@ -314,6 +305,7 @@ export function replaceElementValues(
     formElements: FormTypes.FormElement[]
     submission: SubmissionTypes.S3SubmissionData['submission']
     formatDate: (value: string) => string
+    formatDateTime: (value: string) => string
     formatTime: (value: string) => string
     formatNumber: (value: number) => string
     formatCurrency: (value: number) => string
@@ -330,6 +322,7 @@ export function replaceElementValues(
       formElements,
       submission,
       formatDate,
+      formatDateTime,
       formatTime,
       formatNumber,
       formatCurrency,
@@ -355,6 +348,7 @@ export function replaceElementValues(
  *     submissionId: 'abc-123',
  *     submissionTimestamp: '2021-07-02T02:19:13.670Z',
  *     formatDate: (value) => new Date(value).toDateString(),
+ *     formatDateTime: (value) => new Date(value).toString(),
  *     formatTime: (value) => new Date(value).toTimeString(),
  *     submission: {
  *       search: 'Entered By User',
@@ -404,6 +398,7 @@ export function replaceCustomValues(
     submissionId,
     submissionTimestamp,
     formatDate,
+    formatDateTime,
     formatTime,
     formatNumber,
     formatCurrency,
@@ -416,6 +411,7 @@ export function replaceCustomValues(
     formElements: form.elements,
     submission,
     formatDate,
+    formatDateTime,
     formatTime,
     formatNumber,
     formatCurrency,
@@ -429,6 +425,7 @@ export function replaceCustomValues(
         externalId,
         submissionId,
         formatDate,
+        formatDateTime,
         formatTime,
         formatNumber,
         formatCurrency,
