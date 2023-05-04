@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- **[BREAKING]** `submissionService.replaceElementValues()` to `submissionService.replaceSubmissionValues()`
+- **[BREAKING]** `submissionService.replaceCustomValues()` to `submissionService.replaceSubmissionResultValues()`
+
 ### Added
 
 - **[BREAKING]** required `formatDateTime()` option to `submissionService.getElementSubmissionValue()`, `submissionService.replaceCustomValues()` and `submissionService.replaceElementValues()`

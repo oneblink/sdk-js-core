@@ -13,39 +13,46 @@ import {
 } from './formElementsService'
 import { getABNNumberFromABNRecord } from './abnService'
 
-export type CustomValuesOptions = {
-  form: FormTypes.Form
-  externalId?: string
-  submissionId: string
-  submissionTimestamp: string
+export type ReplaceSubmissionFormatters = {
   formatDateTime: (value: string) => string
   formatDate: (value: string) => string
   formatTime: (value: string) => string
   formatNumber: (value: number) => string
   formatCurrency: (value: number) => string
-  previousApprovalId?: string
+}
+
+export type ReplaceSubmissionResultOptions = ReplaceSubmissionFormatters & {
+  form: FormTypes.Form
+  submissionId: string
+  submissionTimestamp: string
+  externalId: string | undefined
+  previousApprovalId: string | undefined
+  submission: SubmissionTypes.S3SubmissionData['submission']
 }
 
 const CUSTOM_VALUES = [
   {
     string: '{INFO_PAGE_ID}',
-    value: ({ form }: CustomValuesOptions) => form.id.toString(),
+    value: ({ form }: ReplaceSubmissionResultOptions) => form.id.toString(),
   },
   {
     string: '{INFO_PAGE_NAME}',
-    value: ({ form }: CustomValuesOptions) => form.name,
+    value: ({ form }: ReplaceSubmissionResultOptions) => form.name,
   },
   {
     string: '{FORM_ID}',
-    value: ({ form }: CustomValuesOptions) => form.id.toString(),
+    value: ({ form }: ReplaceSubmissionResultOptions) => form.id.toString(),
   },
   {
     string: '{FORM_NAME}',
-    value: ({ form }: CustomValuesOptions) => form.name,
+    value: ({ form }: ReplaceSubmissionResultOptions) => form.name,
   },
   {
     string: '{DATE}',
-    value: ({ submissionTimestamp, formatDateTime }: CustomValuesOptions) => {
+    value: ({
+      submissionTimestamp,
+      formatDateTime,
+    }: ReplaceSubmissionResultOptions) => {
       if (!submissionTimestamp) {
         return ''
       }
@@ -54,20 +61,21 @@ const CUSTOM_VALUES = [
   },
   {
     string: '{TIMESTAMP}',
-    value: ({ submissionTimestamp }: CustomValuesOptions) =>
+    value: ({ submissionTimestamp }: ReplaceSubmissionResultOptions) =>
       submissionTimestamp || '',
   },
   {
     string: '{SUBMISSION_ID}',
-    value: ({ submissionId }: CustomValuesOptions) => submissionId || '',
+    value: ({ submissionId }: ReplaceSubmissionResultOptions) =>
+      submissionId || '',
   },
   {
     string: '{EXTERNAL_ID}',
-    value: ({ externalId }: CustomValuesOptions) => externalId || '',
+    value: ({ externalId }: ReplaceSubmissionResultOptions) => externalId || '',
   },
   {
     string: '{PREVIOUS_APPROVAL_ID}',
-    value: ({ previousApprovalId }: CustomValuesOptions) =>
+    value: ({ previousApprovalId }: ReplaceSubmissionResultOptions) =>
       previousApprovalId || '',
   },
 ]
@@ -253,12 +261,15 @@ export function getElementSubmissionValue({
 }
 
 /**
- * Takes a string and replaces the {ELEMENT:<elementName>} tags.
+ * Replace the `{ELEMENT:<elementName>}` values in text while a form is being
+ * filled out. The replacements are suppose to be user friendly and for display
+ * purposes, e.g. dates should be displayed in the user's desired format and
+ * timezone.
  *
  * #### Example
  *
  * ```js
- * const result = submissionService.replaceElementValues(
+ * const result = submissionService.replaceSubmissionValues(
  *   'https://example.com/path?search{ELEMENT:search}',
  *   {
  *     formatDate: (value) => new Date(value).toDateString(),
@@ -291,25 +302,12 @@ export function getElementSubmissionValue({
  * @param options
  * @returns
  */
-export function replaceElementValues(
+export function replaceSubmissionValues(
   text: string,
-  {
-    formElements,
-    submission,
-    formatDate,
-    formatDateTime,
-    formatTime,
-    formatNumber,
-    formatCurrency,
-  }: {
+  options: {
     formElements: FormTypes.FormElement[]
     submission: SubmissionTypes.S3SubmissionData['submission']
-    formatDate: (value: string) => string
-    formatDateTime: (value: string) => string
-    formatTime: (value: string) => string
-    formatNumber: (value: number) => string
-    formatCurrency: (value: number) => string
-  },
+  } & ReplaceSubmissionFormatters,
 ): string {
   const matches = text.match(WYSIWYGRegex)
   if (!matches) {
@@ -319,13 +317,7 @@ export function replaceElementValues(
   matchElementsTagRegex(text, ({ elementName, elementMatch }) => {
     const value = getElementSubmissionValue({
       propertyName: elementName,
-      formElements,
-      submission,
-      formatDate,
-      formatDateTime,
-      formatTime,
-      formatNumber,
-      formatCurrency,
+      ...options,
     })
 
     text = text.replace(
@@ -337,12 +329,15 @@ export function replaceElementValues(
 }
 
 /**
- * Function to replace a custom values in text
+ * Replace the `{ELEMENT:<elementName>}` values in text after a successful form
+ * submission as well as other replaceable parameters e.g. `submissionId`. The
+ * replacements are suppose to be user friendly and for display purposes, e.g.
+ * dates should be displayed in the user's desired format and timezone.
  *
  * #### Example
  *
  * ```js
- * const result = submissionService.replaceCustomValues(
+ * const result = submissionService.replaceSubmissionResultValues(
  *   'https://example.com/path?submissionId={SUBMISSION_ID}&externalId={EXTERNAL_ID}&search{ELEMENT:search}',
  *   {
  *     submissionId: 'abc-123',
@@ -389,7 +384,7 @@ export function replaceElementValues(
  * @param options
  * @returns
  */
-export function replaceCustomValues(
+export function replaceSubmissionResultValues(
   text: string,
   {
     form,
@@ -403,11 +398,9 @@ export function replaceCustomValues(
     formatNumber,
     formatCurrency,
     previousApprovalId,
-  }: CustomValuesOptions & {
-    submission: SubmissionTypes.S3SubmissionData['submission']
-  },
+  }: ReplaceSubmissionResultOptions,
 ): string {
-  const string = replaceElementValues(text, {
+  const string = replaceSubmissionValues(text, {
     formElements: form.elements,
     submission,
     formatDate,
@@ -430,6 +423,7 @@ export function replaceCustomValues(
         formatNumber,
         formatCurrency,
         previousApprovalId,
+        submission,
       }),
     )
   }, string)

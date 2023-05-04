@@ -1,7 +1,7 @@
 import { FormTypes } from '@oneblink/types'
-import { replaceCustomValues } from '../src/submissionService'
+import { replaceSubmissionResultValues } from '../src/submissionService'
 
-describe('replaceCustomValues()', () => {
+describe('replaceSubmissionResultValues()', () => {
   const form: FormTypes.Form = {
     id: 1,
     name: 'string',
@@ -71,6 +71,8 @@ describe('replaceCustomValues()', () => {
   const baseOptions = {
     form,
     submissionId: 'submissionId',
+    externalId: undefined,
+    previousApprovalId: undefined,
     submissionTimestamp: new Date().toISOString(),
     formatDate: () => '',
     formatDateTime: () => '',
@@ -82,7 +84,7 @@ describe('replaceCustomValues()', () => {
     test('should replace all instances of {ELEMENT} with correct property value', () => {
       const url = 'https://some-url.com?name={ELEMENT:name}&home={ELEMENT:home}'
 
-      const result = replaceCustomValues(url, {
+      const result = replaceSubmissionResultValues(url, {
         ...baseOptions,
         submission: {
           name: 'blinkybill',
@@ -99,7 +101,7 @@ describe('replaceCustomValues()', () => {
       const url =
         'https://some-url.com?name={ELEMENT:name}&koala={ELEMENT:name}'
 
-      const result = replaceCustomValues(url, {
+      const result = replaceSubmissionResultValues(url, {
         ...baseOptions,
         submission: {
           name: 'blinkybill',
@@ -115,7 +117,7 @@ describe('replaceCustomValues()', () => {
     test('should replace only one(1) instance of {ELEMENT} with correct property value', () => {
       const url = 'https://some-url.com?name={ELEMENT:name}'
 
-      const result = replaceCustomValues(url, {
+      const result = replaceSubmissionResultValues(url, {
         ...baseOptions,
         submission: {
           name: 'blinkybill',
@@ -134,7 +136,7 @@ describe('replaceCustomValues()', () => {
     test('Replaces element tokens with submission data values', async () => {
       const text = 'abc {ELEMENT:ELEMENT_1} def {ELEMENT:ELEMENT_2}'
       const expected = 'abc zyx def wvu'
-      const result = replaceCustomValues(text, {
+      const result = replaceSubmissionResultValues(text, {
         ...baseOptions,
         submission,
       })
@@ -143,7 +145,7 @@ describe('replaceCustomValues()', () => {
 
     test('Original string is returned if no tokens present', async () => {
       const text = 'abc def {ELEMENT:}'
-      const result = replaceCustomValues(text, {
+      const result = replaceSubmissionResultValues(text, {
         ...baseOptions,
         submission,
       })
