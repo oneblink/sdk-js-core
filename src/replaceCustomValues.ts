@@ -262,7 +262,7 @@ export function getElementSubmissionValue({
  * #### Example
  *
  * ```js
- * const result = submissionService.replaceElementValues(
+ * const result = submissionService.replaceInjectablesWithElementValues(
  *   'https://example.com/path?search{ELEMENT:search}',
  *   {
  *     formatDate: (value) => new Date(value).toDateString(),
@@ -330,7 +330,7 @@ export function replaceInjectablesWithElementValues(
  * #### Example
  *
  * ```js
- * const result = submissionService.replaceSubmissionResultValues(
+ * const result = submissionService.replaceInjectablesWithSubmissionValues(
  *   'https://example.com/path?submissionId={SUBMISSION_ID}&externalId={EXTERNAL_ID}&search{ELEMENT:search}',
  *   {
  *     submissionId: 'abc-123',
