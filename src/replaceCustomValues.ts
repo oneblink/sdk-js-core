@@ -13,7 +13,7 @@ import {
 } from './formElementsService'
 import { getABNNumberFromABNRecord } from './abnService'
 
-export type ReplaceSubmissionFormatters = {
+export type ReplaceInjectablesFormatters = {
   formatDateTime: (value: string) => string
   formatDate: (value: string) => string
   formatTime: (value: string) => string
@@ -21,7 +21,7 @@ export type ReplaceSubmissionFormatters = {
   formatCurrency: (value: number) => string
 }
 
-export type ReplaceSubmissionResultOptions = ReplaceSubmissionFormatters & {
+export type ReplaceInjectablesOptions = ReplaceInjectablesFormatters & {
   form: FormTypes.Form
   submissionId: string
   submissionTimestamp: string
@@ -33,26 +33,26 @@ export type ReplaceSubmissionResultOptions = ReplaceSubmissionFormatters & {
 const CUSTOM_VALUES = [
   {
     string: '{INFO_PAGE_ID}',
-    value: ({ form }: ReplaceSubmissionResultOptions) => form.id.toString(),
+    value: ({ form }: ReplaceInjectablesOptions) => form.id.toString(),
   },
   {
     string: '{INFO_PAGE_NAME}',
-    value: ({ form }: ReplaceSubmissionResultOptions) => form.name,
+    value: ({ form }: ReplaceInjectablesOptions) => form.name,
   },
   {
     string: '{FORM_ID}',
-    value: ({ form }: ReplaceSubmissionResultOptions) => form.id.toString(),
+    value: ({ form }: ReplaceInjectablesOptions) => form.id.toString(),
   },
   {
     string: '{FORM_NAME}',
-    value: ({ form }: ReplaceSubmissionResultOptions) => form.name,
+    value: ({ form }: ReplaceInjectablesOptions) => form.name,
   },
   {
     string: '{DATE}',
     value: ({
       submissionTimestamp,
       formatDateTime,
-    }: ReplaceSubmissionResultOptions) => {
+    }: ReplaceInjectablesOptions) => {
       if (!submissionTimestamp) {
         return ''
       }
@@ -61,21 +61,20 @@ const CUSTOM_VALUES = [
   },
   {
     string: '{TIMESTAMP}',
-    value: ({ submissionTimestamp }: ReplaceSubmissionResultOptions) =>
+    value: ({ submissionTimestamp }: ReplaceInjectablesOptions) =>
       submissionTimestamp || '',
   },
   {
     string: '{SUBMISSION_ID}',
-    value: ({ submissionId }: ReplaceSubmissionResultOptions) =>
-      submissionId || '',
+    value: ({ submissionId }: ReplaceInjectablesOptions) => submissionId || '',
   },
   {
     string: '{EXTERNAL_ID}',
-    value: ({ externalId }: ReplaceSubmissionResultOptions) => externalId || '',
+    value: ({ externalId }: ReplaceInjectablesOptions) => externalId || '',
   },
   {
     string: '{PREVIOUS_APPROVAL_ID}',
-    value: ({ previousApprovalId }: ReplaceSubmissionResultOptions) =>
+    value: ({ previousApprovalId }: ReplaceInjectablesOptions) =>
       previousApprovalId || '',
   },
 ]
@@ -129,12 +128,7 @@ export function getElementSubmissionValue({
   propertyName: string
   formElements: FormTypes.FormElement[]
   submission: SubmissionTypes.S3SubmissionData['submission']
-  formatDate: (value: string) => string
-  formatDateTime: (value: string) => string
-  formatTime: (value: string) => string
-  formatNumber: (value: number) => string
-  formatCurrency: (value: number) => string
-}): unknown {
+} & ReplaceInjectablesFormatters): unknown {
   const formElement = findFormElement(
     formElements,
     (element) =>
@@ -306,7 +300,7 @@ export function replaceInjectablesWithElementValues(
   options: {
     formElements: FormTypes.FormElement[]
     submission: SubmissionTypes.S3SubmissionData['submission']
-  } & ReplaceSubmissionFormatters,
+  } & ReplaceInjectablesFormatters,
 ): string {
   const matches = text.match(WYSIWYGRegex)
   if (!matches) {
@@ -397,7 +391,7 @@ export function replaceInjectablesWithSubmissionValues(
     formatNumber,
     formatCurrency,
     previousApprovalId,
-  }: ReplaceSubmissionResultOptions,
+  }: ReplaceInjectablesOptions,
 ): string {
   const string = replaceInjectablesWithElementValues(text, {
     formElements: form.elements,
