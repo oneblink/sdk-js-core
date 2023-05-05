@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- **[BREAKING]** `submissionService.replaceElementValues()` to `submissionService.replaceSubmissionValues()`
-- **[BREAKING]** `submissionService.replaceCustomValues()` to `submissionService.replaceSubmissionResultValues()`
+- **[BREAKING]** `submissionService.replaceElementValues()` to `submissionService.replaceInjectablesWithElementValues()`
+- **[BREAKING]** `submissionService.replaceCustomValues()` to `submissionService.replaceInjectablesWithSubmissionValues()`
 
 ### Added
 

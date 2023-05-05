@@ -1,7 +1,7 @@
 import { FormTypes } from '@oneblink/types'
-import { replaceSubmissionResultValues } from '../src/submissionService'
+import { replaceInjectablesWithSubmissionValues } from '../src/submissionService'
 
-describe('replaceSubmissionResultValues()', () => {
+describe('replaceInjectablesWithSubmissionValues()', () => {
   const form: FormTypes.Form = {
     id: 1,
     name: 'string',
@@ -84,7 +84,7 @@ describe('replaceSubmissionResultValues()', () => {
     test('should replace all instances of {ELEMENT} with correct property value', () => {
       const url = 'https://some-url.com?name={ELEMENT:name}&home={ELEMENT:home}'
 
-      const result = replaceSubmissionResultValues(url, {
+      const result = replaceInjectablesWithSubmissionValues(url, {
         ...baseOptions,
         submission: {
           name: 'blinkybill',
@@ -101,7 +101,7 @@ describe('replaceSubmissionResultValues()', () => {
       const url =
         'https://some-url.com?name={ELEMENT:name}&koala={ELEMENT:name}'
 
-      const result = replaceSubmissionResultValues(url, {
+      const result = replaceInjectablesWithSubmissionValues(url, {
         ...baseOptions,
         submission: {
           name: 'blinkybill',
@@ -117,7 +117,7 @@ describe('replaceSubmissionResultValues()', () => {
     test('should replace only one(1) instance of {ELEMENT} with correct property value', () => {
       const url = 'https://some-url.com?name={ELEMENT:name}'
 
-      const result = replaceSubmissionResultValues(url, {
+      const result = replaceInjectablesWithSubmissionValues(url, {
         ...baseOptions,
         submission: {
           name: 'blinkybill',
@@ -136,7 +136,7 @@ describe('replaceSubmissionResultValues()', () => {
     test('Replaces element tokens with submission data values', async () => {
       const text = 'abc {ELEMENT:ELEMENT_1} def {ELEMENT:ELEMENT_2}'
       const expected = 'abc zyx def wvu'
-      const result = replaceSubmissionResultValues(text, {
+      const result = replaceInjectablesWithSubmissionValues(text, {
         ...baseOptions,
         submission,
       })
@@ -145,7 +145,7 @@ describe('replaceSubmissionResultValues()', () => {
 
     test('Original string is returned if no tokens present', async () => {
       const text = 'abc def {ELEMENT:}'
-      const result = replaceSubmissionResultValues(text, {
+      const result = replaceInjectablesWithSubmissionValues(text, {
         ...baseOptions,
         submission,
       })
