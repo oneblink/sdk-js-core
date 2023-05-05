@@ -263,13 +263,12 @@ export function getElementSubmissionValue({
 /**
  * Replace the `{ELEMENT:<elementName>}` values in text while a form is being
  * filled out. The replacements are suppose to be user friendly and for display
- * purposes, e.g. dates should be displayed in the user's desired format and
- * timezone.
+ * purposes, e.g. dates should be displayed in the user's desired format and timezone.
  *
  * #### Example
  *
  * ```js
- * const result = submissionService.replaceSubmissionValues(
+ * const result = submissionService.replaceElementValues(
  *   'https://example.com/path?search{ELEMENT:search}',
  *   {
  *     formatDate: (value) => new Date(value).toDateString(),
@@ -302,7 +301,7 @@ export function getElementSubmissionValue({
  * @param options
  * @returns
  */
-export function replaceSubmissionValues(
+export function replaceInjectablesWithElementValues(
   text: string,
   options: {
     formElements: FormTypes.FormElement[]
@@ -384,7 +383,7 @@ export function replaceSubmissionValues(
  * @param options
  * @returns
  */
-export function replaceSubmissionResultValues(
+export function replaceInjectablesWithSubmissionValues(
   text: string,
   {
     form,
@@ -400,7 +399,7 @@ export function replaceSubmissionResultValues(
     previousApprovalId,
   }: ReplaceSubmissionResultOptions,
 ): string {
-  const string = replaceSubmissionValues(text, {
+  const string = replaceInjectablesWithElementValues(text, {
     formElements: form.elements,
     submission,
     formatDate,
