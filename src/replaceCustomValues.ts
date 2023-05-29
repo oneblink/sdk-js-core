@@ -404,7 +404,7 @@ export function replaceInjectablesWithSubmissionValues(
   })
   return CUSTOM_VALUES.reduce((newString, customValue) => {
     return newString.replace(
-      customValue.string,
+      new RegExp(customValue.string, 'g'),
       customValue.value({
         form,
         submissionTimestamp,
