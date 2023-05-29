@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Submission value (Non Element) injectable replacement was only replacing first instance in a string
+
 ## [2.0.0] - 2023-05-08
 
 ### Changed
