@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Submission value (Non Element) injectable replacement was only replacing first instance in a string
 
+### Added
+
+- Also inject user email with `replaceInjectablesWithElementValues`
+
 ## [2.0.0] - 2023-05-08
 
 ### Changed
