@@ -310,16 +310,15 @@ export function replaceInjectablesWithElementValues(
     userProfile: MiscTypes.UserProfile | undefined
   } & ReplaceInjectablesFormatters,
 ): string {
-  const userProfile = options.userProfile
-  if (userProfile) {
-    const keys: (keyof MiscTypes.UserProfile)[] = ['email']
-    keys.forEach((key) => {
-      const value = userProfile[key]
-      if (value !== undefined && value !== null) {
-        text = text.replace(new RegExp(`{USER:${key}}`, 'g'), value.toString())
-      }
-    })
-  }
+  const keys: Array<keyof MiscTypes.UserProfile> = ['email']
+  // User based values should be replaced with an empty string if
+  // there is no user profile or if the property does not have a value
+  keys.forEach((key) => {
+    text = text.replaceAll(
+      `{USER:${key}}`,
+      options.userProfile?.[key]?.toString() || '',
+    )
+  })
 
   const matchesElement = text.match(ElementWYSIWYGRegex)
   if (!matchesElement) {
@@ -425,8 +424,8 @@ export function replaceInjectablesWithSubmissionValues(
     userProfile,
   })
   return CUSTOM_VALUES.reduce((newString, customValue) => {
-    return newString.replace(
-      new RegExp(customValue.string, 'g'),
+    return newString.replaceAll(
+      customValue.string,
       customValue.value({
         form,
         submissionTimestamp,
