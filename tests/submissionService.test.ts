@@ -190,8 +190,7 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
   })
 
   test('should replace instance of {USER:email} and {ELEMENT} together', () => {
-    const emailRecipient =
-      '{USER:email};{ELEMENT:userEmail} and {USER:username}'
+    const emailRecipient = '{USER:email};{ELEMENT:userEmail};{USER:email}'
 
     const result = replaceInjectablesWithSubmissionValues(emailRecipient, {
       ...baseOptions,
@@ -203,7 +202,7 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
     })
 
     expect(result).toEqual(
-      'person@email.com;autre_person@email.com and person1',
+      'person@email.com;autre_person@email.com;person@email.com',
     )
   })
 })

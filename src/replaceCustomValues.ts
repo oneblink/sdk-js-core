@@ -312,17 +312,7 @@ export function replaceInjectablesWithElementValues(
 ): string {
   const userProfile = options.userProfile
   if (userProfile) {
-    const keys: (keyof MiscTypes.UserProfile)[] = [
-      'userId',
-      'email',
-      'username',
-      'firstName',
-      'lastName',
-      'fullName',
-      'picture',
-      'role',
-      'phoneNumber',
-    ]
+    const keys: (keyof MiscTypes.UserProfile)[] = ['email']
     keys.forEach((key) => {
       const value = userProfile[key]
       if (value !== undefined && value !== null) {
