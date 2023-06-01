@@ -9,9 +9,7 @@ import {
 import {
   findFormElement,
   matchElementsTagRegex,
-  matchUserTagRegex,
   ElementWYSIWYGRegex,
-  UserWYSIWYGRegex,
 } from './formElementsService'
 import { getABNNumberFromABNRecord } from './abnService'
 
@@ -260,7 +258,8 @@ export function getElementSubmissionValue({
 /**
  * Replace the `{ELEMENT:<elementName>}` values in text while a form is being
  * filled out. The replacements are suppose to be user friendly and for display
- * purposes, e.g. dates should be displayed in the user's desired format and timezone.
+ * purposes, e.g. dates should be displayed in the user's desired format and
+ * timezone.
  *
  * #### Example
  *
@@ -290,6 +289,11 @@ export function getElementSubmissionValue({
  *         isDataLookup: false,
  *       },
  *     ],
+ *     userProfile: {
+ *       userId: 'abc123',
+ *       username: 'john-user',
+ *       email: 'john.user@domain.com',
+ *     },
  *   },
  * )
  * ```
@@ -306,34 +310,33 @@ export function replaceInjectablesWithElementValues(
     userProfile: MiscTypes.UserProfile | undefined
   } & ReplaceInjectablesFormatters,
 ): string {
+  const keys: Array<keyof MiscTypes.UserProfile> = ['email']
+  // User based values should be replaced with an empty string if
+  // there is no user profile or if the property does not have a value
+  keys.forEach((key) => {
+    text = text.replaceAll(
+      `{USER:${key}}`,
+      options.userProfile?.[key]?.toString() || '',
+    )
+  })
+
   const matchesElement = text.match(ElementWYSIWYGRegex)
-  const matchesUser = text.match(UserWYSIWYGRegex)
-  if (!matchesElement && !matchesUser) {
+  if (!matchesElement) {
     return text
   }
 
-  if (matchesElement) {
-    matchElementsTagRegex(text, ({ elementName, elementMatch }) => {
-      const value = getElementSubmissionValue({
-        propertyName: elementName,
-        ...options,
-      })
-
-      text = text.replace(
-        elementMatch,
-        value === undefined ? '' : (value as string),
-      )
+  matchElementsTagRegex(text, ({ elementName, elementMatch }) => {
+    const value = getElementSubmissionValue({
+      propertyName: elementName,
+      ...options,
     })
-  }
 
-  if (matchesUser) {
-    matchUserTagRegex(text, (userMatch) => {
-      const { userProfile } = options
-      if (userProfile?.email) {
-        text = text.replace(userMatch, userProfile.email)
-      }
-    })
-  }
+    text = text.replace(
+      elementMatch,
+      value === undefined ? '' : (value as string),
+    )
+  })
+
   return text
 }
 
@@ -421,8 +424,8 @@ export function replaceInjectablesWithSubmissionValues(
     userProfile,
   })
   return CUSTOM_VALUES.reduce((newString, customValue) => {
-    return newString.replace(
-      new RegExp(customValue.string, 'g'),
+    return newString.replaceAll(
+      customValue.string,
       customValue.value({
         form,
         submissionTimestamp,
