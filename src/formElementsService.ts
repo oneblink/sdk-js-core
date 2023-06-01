@@ -181,7 +181,8 @@ function parseFormElementOptionsSet(
 }
 
 /**
- * Takes the nested definition structure and returns all form elements as 1d array.
+ * Takes the nested definition structure and returns all form elements as 1d
+ * array.
  *
  * #### Example
  *
@@ -212,7 +213,10 @@ function flattenFormElements(
   )
 }
 
-/** The regex used for matching `{ELEMENT:<elementName>}` tags in the OneBlink platform. */
+/**
+ * The regex used for matching `{ELEMENT:<elementName>}` tags in the OneBlink
+ * platform.
+ */
 const ElementWYSIWYGRegex = /({ELEMENT:)([^}]+)(})/g
 
 /**
@@ -252,42 +256,6 @@ const matchElementsTagRegex = (
   }
 }
 
-/** The regex used for matching the `{USER:email}` tag in the OneBlink platform. */
-const UserWYSIWYGRegex = /{USER:email}/g
-
-/**
- * Takes a string and calls a provided handler function for each found instance
- * of `{ELEMENT:<elementName>}` in the string. Used to replace values in
- * OneBlink calculation and info (HTML) elements.
- *
- * #### Example
- *
- * ```js
- * formElementsService.matchElementsTagRegex(
- *   myString,
- *   ({ elementName, elementMatch }) => {
- *     const v = submission[elementName]
- *     myString = myString.replace(elementMatch, v)
- *   },
- * )
- * ```
- *
- * @param data
- * @param handler
- * @returns
- */
-const matchUserTagRegex = (
-  data: string,
-  matchHandler: (userMatch: string) => void,
-) => {
-  let matches
-  while ((matches = UserWYSIWYGRegex.exec(data)) !== null) {
-    if (matches?.length < 1) continue
-
-    matchHandler(matches[0])
-  }
-}
-
 export {
   forEachFormElement,
   forEachFormElementWithOptions,
@@ -295,7 +263,5 @@ export {
   parseFormElementOptionsSet,
   flattenFormElements,
   ElementWYSIWYGRegex,
-  UserWYSIWYGRegex,
   matchElementsTagRegex,
-  matchUserTagRegex,
 }

@@ -9,9 +9,7 @@ import {
 import {
   findFormElement,
   matchElementsTagRegex,
-  matchUserTagRegex,
   ElementWYSIWYGRegex,
-  UserWYSIWYGRegex,
 } from './formElementsService'
 import { getABNNumberFromABNRecord } from './abnService'
 
@@ -260,7 +258,8 @@ export function getElementSubmissionValue({
 /**
  * Replace the `{ELEMENT:<elementName>}` values in text while a form is being
  * filled out. The replacements are suppose to be user friendly and for display
- * purposes, e.g. dates should be displayed in the user's desired format and timezone.
+ * purposes, e.g. dates should be displayed in the user's desired format and
+ * timezone.
  *
  * #### Example
  *
@@ -290,6 +289,11 @@ export function getElementSubmissionValue({
  *         isDataLookup: false,
  *       },
  *     ],
+ *     userProfile: {
+ *       userId: 'abc123',
+ *       username: 'john-user',
+ *       email: 'john.user@domain.com',
+ *     },
  *   },
  * )
  * ```
@@ -306,34 +310,44 @@ export function replaceInjectablesWithElementValues(
     userProfile: MiscTypes.UserProfile | undefined
   } & ReplaceInjectablesFormatters,
 ): string {
-  const matchesElement = text.match(ElementWYSIWYGRegex)
-  const matchesUser = text.match(UserWYSIWYGRegex)
-  if (!matchesElement && !matchesUser) {
-    return text
-  }
-
-  if (matchesElement) {
-    matchElementsTagRegex(text, ({ elementName, elementMatch }) => {
-      const value = getElementSubmissionValue({
-        propertyName: elementName,
-        ...options,
-      })
-
-      text = text.replace(
-        elementMatch,
-        value === undefined ? '' : (value as string),
-      )
-    })
-  }
-
-  if (matchesUser) {
-    matchUserTagRegex(text, (userMatch) => {
-      const { userProfile } = options
-      if (userProfile?.email) {
-        text = text.replace(userMatch, userProfile.email)
+  const userProfile = options.userProfile
+  if (userProfile) {
+    const keys: (keyof MiscTypes.UserProfile)[] = [
+      'userId',
+      'email',
+      'username',
+      'firstName',
+      'lastName',
+      'fullName',
+      'picture',
+      'role',
+      'phoneNumber',
+    ]
+    keys.forEach((key) => {
+      const value = userProfile[key]
+      if (value !== undefined && value !== null) {
+        text = text.replace(new RegExp(`{USER:${key}}`, 'g'), value.toString())
       }
     })
   }
+
+  const matchesElement = text.match(ElementWYSIWYGRegex)
+  if (!matchesElement) {
+    return text
+  }
+
+  matchElementsTagRegex(text, ({ elementName, elementMatch }) => {
+    const value = getElementSubmissionValue({
+      propertyName: elementName,
+      ...options,
+    })
+
+    text = text.replace(
+      elementMatch,
+      value === undefined ? '' : (value as string),
+    )
+  })
+
   return text
 }
 
