@@ -9,7 +9,9 @@ import {
 import {
   findFormElement,
   matchElementsTagRegex,
-  WYSIWYGRegex,
+  matchUserTagRegex,
+  ElementWYSIWYGRegex,
+  UserWYSIWYGRegex,
 } from './formElementsService'
 import { getABNNumberFromABNRecord } from './abnService'
 
@@ -28,6 +30,7 @@ export type ReplaceInjectablesOptions = ReplaceInjectablesFormatters & {
   externalId: string | undefined
   previousApprovalId: string | undefined
   submission: SubmissionTypes.S3SubmissionData['submission']
+  userProfile: MiscTypes.UserProfile | undefined
 }
 
 const CUSTOM_VALUES = [
@@ -300,24 +303,37 @@ export function replaceInjectablesWithElementValues(
   options: {
     formElements: FormTypes.FormElement[]
     submission: SubmissionTypes.S3SubmissionData['submission']
+    userProfile: MiscTypes.UserProfile | undefined
   } & ReplaceInjectablesFormatters,
 ): string {
-  const matches = text.match(WYSIWYGRegex)
-  if (!matches) {
+  const matchesElement = text.match(ElementWYSIWYGRegex)
+  const matchesUser = text.match(UserWYSIWYGRegex)
+  if (!matchesElement && !matchesUser) {
     return text
   }
 
-  matchElementsTagRegex(text, ({ elementName, elementMatch }) => {
-    const value = getElementSubmissionValue({
-      propertyName: elementName,
-      ...options,
-    })
+  if (matchesElement) {
+    matchElementsTagRegex(text, ({ elementName, elementMatch }) => {
+      const value = getElementSubmissionValue({
+        propertyName: elementName,
+        ...options,
+      })
 
-    text = text.replace(
-      elementMatch,
-      value === undefined ? '' : (value as string),
-    )
-  })
+      text = text.replace(
+        elementMatch,
+        value === undefined ? '' : (value as string),
+      )
+    })
+  }
+
+  if (matchesUser) {
+    matchUserTagRegex(text, (userMatch) => {
+      const { userProfile } = options
+      if (userProfile?.email) {
+        text = text.replace(userMatch, userProfile.email)
+      }
+    })
+  }
   return text
 }
 
@@ -391,6 +407,7 @@ export function replaceInjectablesWithSubmissionValues(
     formatNumber,
     formatCurrency,
     previousApprovalId,
+    userProfile,
   }: ReplaceInjectablesOptions,
 ): string {
   const string = replaceInjectablesWithElementValues(text, {
@@ -401,6 +418,7 @@ export function replaceInjectablesWithSubmissionValues(
     formatTime,
     formatNumber,
     formatCurrency,
+    userProfile,
   })
   return CUSTOM_VALUES.reduce((newString, customValue) => {
     return newString.replace(
@@ -417,6 +435,7 @@ export function replaceInjectablesWithSubmissionValues(
         formatCurrency,
         previousApprovalId,
         submission,
+        userProfile,
       }),
     )
   }, string)

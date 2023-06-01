@@ -79,6 +79,11 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
     formatTime: () => '',
     formatCurrency: () => '',
     formatNumber: () => '',
+    userProfile: {
+      userId: '1',
+      username: 'person1',
+      email: 'person@email.com',
+    },
   }
   describe('Form redirect URL', () => {
     test('should replace all instances of {ELEMENT} with correct property value', () => {
@@ -151,5 +156,51 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
       })
       expect(result).toEqual(text)
     })
+  })
+
+  describe('email recipient', () => {
+    test('should replace instance of {USER:email} with email from user profile', () => {
+      const emailRecipient = '{USER:email}'
+
+      const result = replaceInjectablesWithSubmissionValues(emailRecipient, {
+        ...baseOptions,
+        submission: {
+          name: 'blinkybill',
+          home: 'gosford',
+        },
+      })
+
+      expect(result).toEqual('person@email.com')
+    })
+
+    test('should replace instance of {ELEMENT} with email from submission', () => {
+      const emailRecipient = '{ELEMENT:userEmail}'
+
+      const result = replaceInjectablesWithSubmissionValues(emailRecipient, {
+        ...baseOptions,
+        submission: {
+          name: 'blinkybill',
+          home: 'gosford',
+          userEmail: 'autre_person@email.com',
+        },
+      })
+
+      expect(result).toEqual('autre_person@email.com')
+    })
+  })
+
+  test('should replace instance of {USER:email} and {ELEMENT} together', () => {
+    const emailRecipient = '{USER:email};{ELEMENT:userEmail}'
+
+    const result = replaceInjectablesWithSubmissionValues(emailRecipient, {
+      ...baseOptions,
+      submission: {
+        name: 'blinkybill',
+        home: 'gosford',
+        userEmail: 'autre_person@email.com',
+      },
+    })
+
+    expect(result).toEqual('person@email.com;autre_person@email.com')
   })
 })
