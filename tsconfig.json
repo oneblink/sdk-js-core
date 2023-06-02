@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2021",
+    "target": "ES2019",
     "module": "commonjs",
     "moduleResolution": "Node",
     "lib": ["ES2021"],
