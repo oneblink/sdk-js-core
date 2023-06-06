@@ -256,6 +256,29 @@ const matchElementsTagRegex = (
   }
 }
 
+const infoPageElements: FormTypes.FormElementType[] = [
+  'heading',
+  'html',
+  'image',
+  'section',
+  'page',
+  'infoPage',
+  'form',
+]
+/**
+ * Determine a form is considered an info page. This means the form does not
+ * allow any user input.
+ *
+ * @param form
+ * @returns
+ */
+function determineIsInfoPage(form: FormTypes.Form): boolean {
+  const foundInputElement = findFormElement(form.elements, (e) => {
+    return !infoPageElements.includes(e.type)
+  })
+  return !foundInputElement
+}
+
 export {
   forEachFormElement,
   forEachFormElementWithOptions,
@@ -264,4 +287,5 @@ export {
   flattenFormElements,
   ElementWYSIWYGRegex,
   matchElementsTagRegex,
+  determineIsInfoPage,
 }
