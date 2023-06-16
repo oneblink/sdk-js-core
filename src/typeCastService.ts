@@ -204,7 +204,8 @@ const toPaymentSubmissionEvent = (
   switch (e.type) {
     case 'BPOINT':
     case 'CP_PAY':
-    case 'WESTPAC_QUICK_WEB': {
+    case 'WESTPAC_QUICK_WEB':
+    case 'GOV_PAY': {
       return e
     }
     default: {
