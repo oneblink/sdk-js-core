@@ -184,6 +184,25 @@ const toStorageElement = (
   }
 }
 
+const toAutoLookupElement = (e: FormTypes.FormElement) => {
+  switch (e.type) {
+    case 'radio':
+    case 'boolean':
+    case 'files':
+    case 'location':
+    case 'geoscapeAddress':
+    case 'pointAddress':
+    case 'compliance':
+    case 'civicaStreetName':
+    case 'autocomplete': {
+      return e
+    }
+    default: {
+      return
+    }
+  }
+}
+
 const formElements = {
   toOptionsElement,
   toFormElementWithForm,
@@ -196,6 +215,7 @@ const formElements = {
   toPageElement,
   toRepeatableSetElement,
   toStorageElement,
+  toAutoLookupElement,
 }
 
 const toPaymentSubmissionEvent = (
