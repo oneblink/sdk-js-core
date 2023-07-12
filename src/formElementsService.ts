@@ -119,34 +119,29 @@ function findFormElement(
 }
 
 /**
- * Parse unknown data as valid options for a forms element. This will always
- * return an Array of valid options.
+ * Parse unknown data as valid dynamic options for a forms element. This will
+ * always return an Array of valid dynamic options.
  *
  * #### Example
  *
  * ```js
- * const options = formElementsService.parseFormElementOptionsSet(data)
+ * const options = formElementsService.parseDynamicFormElementOptions(data)
  * // "options" are valid for a form element
  * ```
  *
  * @param data
  * @returns
  */
-function parseFormElementOptionsSet(
+function parseDynamicFormElementOptions(
   data: unknown,
-): FormTypes.ChoiceElementOption[] {
+): FormTypes.DynamicChoiceElementOption[] {
   if (!Array.isArray(data)) {
     return []
   }
-  return data.reduce(
-    (
-      options: FormTypes.ChoiceElementOption[],
-      record: unknown,
-      index: number,
-    ) => {
+  return data.reduce<FormTypes.DynamicChoiceElementOption[]>(
+    (options, record, index) => {
       if (typeof record === 'string') {
         options.push({
-          id: index.toString(),
           value: record,
           label: record,
         })
@@ -156,8 +151,6 @@ function parseFormElementOptionsSet(
           typeof option.value === 'string' && option.value
             ? option.value
             : index.toString()
-        const id =
-          typeof option.id === 'string' && option.id ? option.id : value
         const label =
           typeof option.label === 'string' && option.label
             ? option.label
@@ -166,12 +159,39 @@ function parseFormElementOptionsSet(
           typeof option.colour === 'string' && option.colour
             ? option.colour
             : undefined
+        const displayAlways =
+          typeof option.displayAlways === 'boolean'
+            ? option.displayAlways
+            : undefined
+        const attributes = Array.isArray(option.attributes)
+          ? option.attributes.reduce<
+              FormTypes.DynamicChoiceElementOptionAttribute[]
+            >((memo, attribute: unknown) => {
+              if (
+                typeof attribute === 'object' &&
+                attribute &&
+                'value' in attribute &&
+                typeof attribute.value === 'string' &&
+                'label' in attribute &&
+                typeof attribute.label === 'string'
+              ) {
+                memo.push({
+                  value: attribute.value,
+                  label: attribute.label,
+                })
+              }
+              return memo
+            }, [])
+          : undefined
         options.push({
-          ...option,
-          id,
           value,
           label,
           colour,
+          attributes,
+          displayAlways,
+          options: Array.isArray(option.options)
+            ? parseDynamicFormElementOptions(option.options)
+            : undefined,
         })
       }
       return options
@@ -283,7 +303,7 @@ export {
   forEachFormElement,
   forEachFormElementWithOptions,
   findFormElement,
-  parseFormElementOptionsSet,
+  parseDynamicFormElementOptions,
   flattenFormElements,
   ElementWYSIWYGRegex,
   matchElementsTagRegex,
