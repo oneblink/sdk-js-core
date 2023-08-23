@@ -306,6 +306,7 @@ function determineIsInfoPage(form: FormTypes.Form): boolean {
  * @returns
  */
 const fixElementName = (elementName: string) => {
+  // removes invalid characters/spaces and replaces with '' or _
   return elementName
     .replace(/[^-\w\s]/g, '')
     .replace(/\s/g, '_')
