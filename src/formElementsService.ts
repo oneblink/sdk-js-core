@@ -299,6 +299,19 @@ function determineIsInfoPage(form: FormTypes.Form): boolean {
   return !foundInputElement
 }
 
+/**
+ * Remove invalid characters from a form element name.
+ *
+ * @param elementName
+ * @returns
+ */
+const fixElementName = (elementName: string) => {
+  return elementName
+    .replace(/[^-\w\s]/g, '')
+    .replace(/\s/g, '_')
+    .trim()
+}
+
 export {
   forEachFormElement,
   forEachFormElementWithOptions,
@@ -308,4 +321,5 @@ export {
   ElementWYSIWYGRegex,
   matchElementsTagRegex,
   determineIsInfoPage,
+  fixElementName
 }
