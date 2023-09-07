@@ -30,10 +30,10 @@ This code base is written in [TypeScript](https://www.typescriptlang.org/) so it
 
 ## Release Process
 
-1. Checkout `main`
+1. Checkout `master`
 
    ```
-   git checkout main
+   git checkout master
    ```
 
 1. Get the latest code
