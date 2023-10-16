@@ -3,6 +3,7 @@ import { typeCastService } from '..'
 import { formElements } from '../typeCastService'
 import { FormElementsCtrl } from '../types'
 import evaluateConditionalOptionsPredicate from './evaluateConditionalOptionsPredicate'
+import { flattenFormElements } from '../formElementsService'
 
 const fnMap = {
   '>': (lhs: number, rhs: number) => lhs > rhs,
@@ -101,6 +102,41 @@ export default function evaluateConditionalPredicate({
       return value >= predicate.min && value <= predicate.max
         ? predicateElement
         : undefined
+    }
+    case 'REPEATABLESET': {
+      const {
+        formElementWithName: repeatableSetElement,
+        value: repeatableSetValue,
+      } = getElementAndValue(formElementsCtrl, predicate.elementId)
+
+      if (!repeatableSetElement) {
+        return
+      }
+
+      if (
+        repeatableSetElement.type !== 'repeatableSet' ||
+        !Array.isArray(repeatableSetValue)
+      ) {
+        return
+      }
+
+      for (const entry of repeatableSetValue) {
+        const result = evaluateConditionalPredicate({
+          predicate: predicate.repeatableSetPredicate,
+          formElementsCtrl: {
+            model: entry,
+            flattenedElements: flattenFormElements(
+              repeatableSetElement.elements,
+            ),
+            parentFormElementsCtrl: formElementsCtrl,
+          },
+        })
+
+        if (result) {
+          return result
+        }
+      }
+      return
     }
     case 'OPTIONS':
     default: {

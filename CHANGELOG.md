@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - CI job for building docs
+- `REPEATABLESET` predicate type to `conditionalLogicService.evaluateConditionalPredicate`
 
 ## [4.1.0] - 2023-08-29
 
