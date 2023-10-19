@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@microsoft/eslint-plugin-sdl": "^0.2.0",
-    "@oneblink/release-cli": "^2.0.3",
+    "@oneblink/release-cli": "^2.1.0",
     "@oneblink/types": "github:oneblink/types",
     "@types/jest": "^29.5.0",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
