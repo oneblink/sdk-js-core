@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `{TASK_NAME}`, `{TASK_GROUP_NAME}` and `{TASK_GROUP_INSTANCE_LABEL}` to replaceable parameters
+
 ## [4.2.0] - 2023-10-23
 
 ### Added

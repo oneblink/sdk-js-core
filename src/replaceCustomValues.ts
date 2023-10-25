@@ -4,6 +4,7 @@ import {
   GeoscapeTypes,
   MiscTypes,
   PointTypes,
+  ScheduledTasksTypes,
   SubmissionTypes,
 } from '@oneblink/types'
 import {
@@ -21,14 +22,20 @@ export type ReplaceInjectablesFormatters = {
   formatCurrency: (value: number) => string
 }
 
-export type ReplaceInjectablesOptions = ReplaceInjectablesFormatters & {
+export type ReplaceInjectablesBaseOptions = ReplaceInjectablesFormatters & {
+  submission: SubmissionTypes.S3SubmissionData['submission']
+  userProfile: MiscTypes.UserProfile | undefined
+  task: ScheduledTasksTypes.Task | undefined
+  taskGroup: ScheduledTasksTypes.TaskGroup | undefined
+  taskGroupInstance: ScheduledTasksTypes.TaskGroupInstance | undefined
+}
+
+export type ReplaceInjectablesOptions = ReplaceInjectablesBaseOptions & {
   form: FormTypes.Form
   submissionId: string
   submissionTimestamp: string
   externalId: string | undefined
   previousApprovalId: string | undefined
-  submission: SubmissionTypes.S3SubmissionData['submission']
-  userProfile: MiscTypes.UserProfile | undefined
 }
 
 const CUSTOM_VALUES = [
@@ -77,6 +84,19 @@ const CUSTOM_VALUES = [
     string: '{PREVIOUS_APPROVAL_ID}',
     value: ({ previousApprovalId }: ReplaceInjectablesOptions) =>
       previousApprovalId || '',
+  },
+  {
+    string: '{TASK_NAME}',
+    value: ({ task }: ReplaceInjectablesOptions) => task?.name || '',
+  },
+  {
+    string: '{TASK_GROUP_NAME}',
+    value: ({ taskGroup }: ReplaceInjectablesOptions) => taskGroup?.name || '',
+  },
+  {
+    string: '{TASK_GROUP_INSTANCE_LABEL}',
+    value: ({ taskGroupInstance }: ReplaceInjectablesOptions) =>
+      taskGroupInstance?.label || '',
   },
 ]
 
@@ -306,9 +326,7 @@ export function replaceInjectablesWithElementValues(
   text: string,
   options: {
     formElements: FormTypes.FormElement[]
-    submission: SubmissionTypes.S3SubmissionData['submission']
-    userProfile: MiscTypes.UserProfile | undefined
-  } & ReplaceInjectablesFormatters,
+  } & ReplaceInjectablesBaseOptions,
 ): string {
   const keys: Array<keyof MiscTypes.UserProfile> = ['email']
   // User based values should be replaced with an empty string if
@@ -411,6 +429,9 @@ export function replaceInjectablesWithSubmissionValues(
     formatCurrency,
     previousApprovalId,
     userProfile,
+    task,
+    taskGroup,
+    taskGroupInstance,
   }: ReplaceInjectablesOptions,
 ): string {
   const string = replaceInjectablesWithElementValues(text, {
@@ -422,6 +443,9 @@ export function replaceInjectablesWithSubmissionValues(
     formatNumber,
     formatCurrency,
     userProfile,
+    task,
+    taskGroup,
+    taskGroupInstance,
   })
   return CUSTOM_VALUES.reduce((newString, customValue) => {
     return newString.replaceAll(
@@ -439,6 +463,9 @@ export function replaceInjectablesWithSubmissionValues(
         previousApprovalId,
         submission,
         userProfile,
+        task,
+        taskGroup,
+        taskGroupInstance,
       }),
     )
   }, string)
