@@ -1,7 +1,41 @@
-import { FormTypes } from '@oneblink/types'
-import { replaceInjectablesWithSubmissionValues } from '../src/submissionService'
+import { FormTypes, ScheduledTasksTypes } from '@oneblink/types'
+import {
+  replaceInjectablesWithElementValues,
+  replaceInjectablesWithSubmissionValues,
+} from '../src/submissionService'
 
 describe('replaceInjectablesWithSubmissionValues()', () => {
+  const task: ScheduledTasksTypes.Task = {
+    id: 1,
+    name: 'Replace the food',
+    formsAppEnvironmentId: 1,
+    organisationId: 'string',
+    schedule: {
+      startDate: new Date().toISOString(),
+      endDate: new Date().toISOString(),
+      recurrence: {
+        interval: 'DAY',
+      },
+    },
+    actionIds: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+  const taskGroup: ScheduledTasksTypes.TaskGroup = {
+    id: 1,
+    name: 'Cage',
+    taskIds: [task.id],
+    formsAppEnvironmentId: task.formsAppEnvironmentId,
+    organisationId: task.organisationId,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+  const taskGroupInstance: ScheduledTasksTypes.TaskGroupInstance = {
+    taskGroupId: taskGroup.id,
+    taskGroupInstanceId: 'taskGroupInstanceId',
+    label: 'Snake Cage',
+    createdAt: new Date().toISOString(),
+  }
   const form: FormTypes.Form = {
     id: 1,
     name: 'string',
@@ -84,6 +118,9 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
       username: 'person1',
       email: 'person@email.com',
     },
+    task,
+    taskGroup,
+    taskGroupInstance,
   }
   describe('Form redirect URL', () => {
     test('should replace all instances of {ELEMENT} with correct property value', () => {
@@ -204,5 +241,31 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
     expect(result).toEqual(
       'person@email.com;autre_person@email.com;person@email.com',
     )
+  })
+
+  describe('task based props', () => {
+    const text =
+      'Task: {TASK_NAME} | Task Group: {TASK_GROUP_NAME} | Task Group Instance: {TASK_GROUP_INSTANCE_LABEL}'
+    const expected =
+      'Task: Replace the food | Task Group: Cage | Task Group Instance: Snake Cage'
+
+    test('should be replaced for element values', () => {
+      const result = replaceInjectablesWithElementValues(text, {
+        ...baseOptions,
+        formElements: baseOptions.form.elements,
+        submission: {},
+      })
+
+      expect(result).toEqual(expected)
+    })
+
+    test('should replace task based props', () => {
+      const result = replaceInjectablesWithSubmissionValues(text, {
+        ...baseOptions,
+        submission: {},
+      })
+
+      expect(result).toEqual(expected)
+    })
   })
 })

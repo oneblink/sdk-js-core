@@ -38,7 +38,7 @@ export type ReplaceInjectablesOptions = ReplaceInjectablesBaseOptions & {
   previousApprovalId: string | undefined
 }
 
-const CUSTOM_VALUES = [
+const SUBMISSION_VALUES = [
   {
     string: '{INFO_PAGE_ID}',
     value: ({ form }: ReplaceInjectablesOptions) => form.id.toString(),
@@ -85,18 +85,27 @@ const CUSTOM_VALUES = [
     value: ({ previousApprovalId }: ReplaceInjectablesOptions) =>
       previousApprovalId || '',
   },
+]
+
+const ELEMENT_VALUES: Array<{
+  string: string
+  value: (options: ReplaceInjectablesBaseOptions) => string
+}> = [
+  {
+    string: '{USER:email}',
+    value: ({ userProfile }) => userProfile?.email || '',
+  },
   {
     string: '{TASK_NAME}',
-    value: ({ task }: ReplaceInjectablesOptions) => task?.name || '',
+    value: ({ task }) => task?.name || '',
   },
   {
     string: '{TASK_GROUP_NAME}',
-    value: ({ taskGroup }: ReplaceInjectablesOptions) => taskGroup?.name || '',
+    value: ({ taskGroup }) => taskGroup?.name || '',
   },
   {
     string: '{TASK_GROUP_INSTANCE_LABEL}',
-    value: ({ taskGroupInstance }: ReplaceInjectablesOptions) =>
-      taskGroupInstance?.label || '',
+    value: ({ taskGroupInstance }) => taskGroupInstance?.label || '',
   },
 ]
 
@@ -328,15 +337,9 @@ export function replaceInjectablesWithElementValues(
     formElements: FormTypes.FormElement[]
   } & ReplaceInjectablesBaseOptions,
 ): string {
-  const keys: Array<keyof MiscTypes.UserProfile> = ['email']
-  // User based values should be replaced with an empty string if
-  // there is no user profile or if the property does not have a value
-  keys.forEach((key) => {
-    text = text.replaceAll(
-      `{USER:${key}}`,
-      options.userProfile?.[key]?.toString() || '',
-    )
-  })
+  text = ELEMENT_VALUES.reduce((newString, customValue) => {
+    return newString.replaceAll(customValue.string, customValue.value(options))
+  }, text)
 
   const matchesElement = text.match(ElementWYSIWYGRegex)
   if (!matchesElement) {
@@ -416,57 +419,13 @@ export function replaceInjectablesWithElementValues(
  */
 export function replaceInjectablesWithSubmissionValues(
   text: string,
-  {
-    form,
-    submission,
-    externalId,
-    submissionId,
-    submissionTimestamp,
-    formatDate,
-    formatDateTime,
-    formatTime,
-    formatNumber,
-    formatCurrency,
-    previousApprovalId,
-    userProfile,
-    task,
-    taskGroup,
-    taskGroupInstance,
-  }: ReplaceInjectablesOptions,
+  options: ReplaceInjectablesOptions,
 ): string {
   const string = replaceInjectablesWithElementValues(text, {
-    formElements: form.elements,
-    submission,
-    formatDate,
-    formatDateTime,
-    formatTime,
-    formatNumber,
-    formatCurrency,
-    userProfile,
-    task,
-    taskGroup,
-    taskGroupInstance,
+    formElements: options.form.elements,
+    ...options,
   })
-  return CUSTOM_VALUES.reduce((newString, customValue) => {
-    return newString.replaceAll(
-      customValue.string,
-      customValue.value({
-        form,
-        submissionTimestamp,
-        externalId,
-        submissionId,
-        formatDate,
-        formatDateTime,
-        formatTime,
-        formatNumber,
-        formatCurrency,
-        previousApprovalId,
-        submission,
-        userProfile,
-        task,
-        taskGroup,
-        taskGroupInstance,
-      }),
-    )
+  return SUBMISSION_VALUES.reduce((newString, customValue) => {
+    return newString.replaceAll(customValue.string, customValue.value(options))
   }, string)
 }
