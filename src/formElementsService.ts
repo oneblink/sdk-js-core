@@ -1,5 +1,10 @@
 import { FormTypes } from '@oneblink/types'
 import { typeCastService } from '.'
+import {
+  Form,
+  FormElement,
+  HtmlElement,
+} from '@oneblink/types/typescript/forms'
 
 /**
  * Iterate over all form elements, also iterating over nested form element (e.g.
@@ -314,6 +319,112 @@ const fixElementName = (elementName: string) => {
     .trim()
 }
 
+/**
+ * Injects the elements of any elements with type `FORM` or `INFOPAGE` into the
+ * form
+ *
+ * @param form The form to inject elements into
+ * @param forms The forms that will be used to inject elements from if
+ *   referenced
+ * @param injectAuthenticatedForms Indicates whether forms requiring
+ *   authentication should be injected, defaults to true
+ * @returns
+ */
+function injectFormElementsIntoForm(
+  form: Form,
+  forms: Form[],
+  injectAuthenticatedForms = true,
+): FormElement[] {
+  const elementsWithInjectedForms = injectFormElements(
+    form.elements,
+    forms,
+    [form.id],
+    injectAuthenticatedForms,
+  )
+  form.elements = elementsWithInjectedForms
+  return form.elements
+}
+
+function injectFormElements(
+  elements: FormElement[],
+  forms: Form[],
+  parentIds: number[],
+  injectAuthenticatedForms: boolean,
+): FormElement[] {
+  return elements.reduce<FormElement[]>((newElements, element) => {
+    if (
+      (element.type === 'page' ||
+        element.type === 'repeatableSet' ||
+        element.type === 'section') &&
+      Array.isArray(element.elements)
+    ) {
+      const childElements = injectFormElements(
+        element.elements,
+        forms,
+        parentIds,
+        injectAuthenticatedForms,
+      )
+      element.elements = childElements
+    }
+
+    if (element.type === 'form' || element.type === 'infoPage') {
+      const formToInject = forms.find((form) => element.formId === form.id)
+
+      if (!formToInject) {
+        const newElement: HtmlElement = {
+          ...element,
+          type: 'html',
+          name: 'Form_not_found',
+          label: 'Form not found.',
+          defaultValue:
+            'Unable to display the embedded form for this element, as the form was not found. Please contact your Administrator.',
+        }
+        newElements.push(newElement)
+        return newElements
+      }
+
+      if (formToInject.isAuthenticated && !injectAuthenticatedForms) {
+        console.log(
+          `No form elements injected for element id: ${element.id}, as request was unauthenticated and target form (form id: ${formToInject.id}) requires authentication.`,
+        )
+
+        const newElement: HtmlElement = {
+          ...element,
+          type: 'html',
+          name: 'Form_requires_authenticated',
+          label: 'Form Requires Authentication.',
+          defaultValue:
+            'Unable to display the embedded form for this element, as the form requires authentication. Please login and refresh to view this embedded form.',
+        }
+        newElements.push(newElement)
+        return newElements
+      }
+
+      const injectingParentForm =
+        parentIds && parentIds.find((id) => element.formId === id)
+
+      if (injectingParentForm) {
+        console.log(
+          `Infinite loop was detected while attempting to inject form id: ${injectingParentForm}. Ignoring elements...`,
+        )
+        return newElements
+      }
+
+      element.elements = injectFormElements(
+        formToInject.elements,
+        forms,
+        [...parentIds, formToInject.id],
+        injectAuthenticatedForms,
+      )
+      newElements.push(element)
+    } else {
+      newElements.push(element)
+    }
+
+    return newElements
+  }, [])
+}
+
 export {
   forEachFormElement,
   forEachFormElementWithOptions,
@@ -323,5 +434,6 @@ export {
   ElementWYSIWYGRegex,
   matchElementsTagRegex,
   determineIsInfoPage,
-  fixElementName
+  fixElementName,
+  injectFormElementsIntoForm,
 }
