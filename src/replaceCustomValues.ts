@@ -96,6 +96,10 @@ const ELEMENT_VALUES: Array<{
     value: ({ userProfile }) => userProfile?.email || '',
   },
   {
+    string: '{USER:username}',
+    value: ({ userProfile }) => userProfile?.username || '',
+  },
+  {
     string: '{TASK_NAME}',
     value: ({ task }) => task?.name || '',
   },
