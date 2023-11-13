@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - `formElementsService.injectFormElementsIntoForm()`
+- username to `replaceInjectablesWithElementValues`
 
 ## [5.0.0] - 2023-11-01
 

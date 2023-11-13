@@ -268,4 +268,20 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
       expect(result).toEqual(expected)
     })
   })
+
+  describe('logged in user', () => {
+    test('should replace instance of {USER:username} with username from user profile', () => {
+      const username = '{USER:username}'
+
+      const result = replaceInjectablesWithSubmissionValues(username, {
+        ...baseOptions,
+        submission: {
+          name: 'blinkybill',
+          home: 'gosford',
+        },
+      })
+
+      expect(result).toEqual('person1')
+    })
+  })
 })
