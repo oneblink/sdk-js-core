@@ -83,4 +83,99 @@ describe('generateFormElementsConditionallyShown', () => {
         result.dependant?.dependencyIsLoading === undefined,
     ).toBe(true)
   })
+
+  test('element is shown when predicate element is in a repeatable set and the predicate element is also conditional based on another element in the same repeatable set', () => {
+    const result = generateFormElementsConditionallyShown({
+      formElements: [
+        {
+          id: '4f4a7b58-2010-44c2-bb76-58da221c64af',
+          name: 'rs',
+          label: 'repeatable set',
+          type: 'repeatableSet',
+          conditionallyShow: false,
+          minSetEntries: 1,
+          elements: [
+            {
+              id: 'e1806f93-10b4-488d-917a-7b4773b46dec',
+              name: 'switch_one',
+              label: 'Switch One (turn on to show switch 2)',
+              type: 'boolean',
+              required: false,
+              conditionallyShow: false,
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+              defaultValue: true,
+            },
+            {
+              id: '279f670c-0880-49e0-811a-c88cc68fc5e1',
+              name: 'switch_two',
+              label: 'Switch 2 (turn on to show message two)',
+              type: 'boolean',
+              required: false,
+              conditionallyShow: true,
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+              defaultValue: true,
+              requiresAllConditionallyShowPredicates: false,
+              conditionallyShowPredicates: [
+                {
+                  elementId: 'e1806f93-10b4-488d-917a-7b4773b46dec',
+                  type: 'VALUE',
+                  hasValue: true,
+                },
+              ],
+            },
+          ],
+          readOnly: false,
+        },
+        {
+          id: 'cf677846-6ca4-4e87-ac06-1d0ec0324c56',
+          name: 'Switch_2_message',
+          label: 'Switch Two Message',
+          type: 'heading',
+          headingType: 2,
+          conditionallyShow: true,
+          requiresAllConditionallyShowPredicates: false,
+          conditionallyShowPredicates: [
+            {
+              elementId: '4f4a7b58-2010-44c2-bb76-58da221c64af',
+              type: 'REPEATABLESET',
+              repeatableSetPredicate: {
+                elementId: '279f670c-0880-49e0-811a-c88cc68fc5e1',
+                type: 'VALUE',
+                hasValue: true,
+              },
+            },
+          ],
+        },
+      ],
+      submission: {
+        rs: [{ switch_one: true, switch_two: true }],
+      },
+    })
+    expect(result).toEqual({
+      rs: {
+        type: 'repeatableSet',
+        isHidden: false,
+        entries: {
+          '0': {
+            switch_one: {
+              isHidden: false,
+              type: 'formElement',
+            },
+            switch_two: {
+              isHidden: false,
+              type: 'formElement',
+            },
+          },
+        },
+      },
+      Switch_2_message: {
+        type: 'formElement',
+        isHidden: false,
+      },
+    })
+  })
 })
