@@ -24,11 +24,11 @@ const getParentFormElements = (
   return []
 }
 
-const conditionallyShowByPredicate = (
+export function conditionallyShowByPredicate(
   formElementsCtrl: FormElementsCtrl,
   predicate: ConditionTypes.ConditionalPredicate,
   elementsEvaluated: Array<{ id: string; label: string }>,
-): FormTypes.FormElement | boolean => {
+): boolean {
   const predicateElement = evaluateConditionalPredicate({
     predicate,
     formElementsCtrl,

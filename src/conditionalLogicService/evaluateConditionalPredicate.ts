@@ -1,9 +1,8 @@
 import { FormTypes, ConditionTypes } from '@oneblink/types'
-import { typeCastService } from '..'
-import { formElements } from '../typeCastService'
 import { FormElementsCtrl } from '../types'
+import { typeCastService, formElementsService } from '..'
 import evaluateConditionalOptionsPredicate from './evaluateConditionalOptionsPredicate'
-import { flattenFormElements } from '../formElementsService'
+import { conditionallyShowByPredicate } from './conditionallyShowElement'
 
 const fnMap = {
   '>': (lhs: number, rhs: number) => lhs > rhs,
@@ -22,7 +21,8 @@ function getElementAndValue(
     (formElement) => formElement.id === elementId,
   )
   if (formElement) {
-    const formElementWithName = formElements.toNamedElement(formElement)
+    const formElementWithName =
+      typeCastService.formElements.toNamedElement(formElement)
     if (formElementWithName) {
       return {
         formElementWithName,
@@ -121,19 +121,20 @@ export default function evaluateConditionalPredicate({
       }
 
       for (const entry of repeatableSetValue) {
-        const result = evaluateConditionalPredicate({
-          predicate: predicate.repeatableSetPredicate,
-          formElementsCtrl: {
+        const result = conditionallyShowByPredicate(
+          {
             model: entry,
-            flattenedElements: flattenFormElements(
+            flattenedElements: formElementsService.flattenFormElements(
               repeatableSetElement.elements,
             ),
             parentFormElementsCtrl: formElementsCtrl,
           },
-        })
+          predicate.repeatableSetPredicate,
+          [],
+        )
 
         if (result) {
-          return result
+          return predicateElement
         }
       }
       return
