@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `apiNSWLiquorLicense` form element to `typeCastService` and `submissionService`
+
 ### Fixed
 
 - repeatable set conditional logic not evaluating predicate elements correctly

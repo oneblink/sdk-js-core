@@ -1,4 +1,5 @@
 import {
+  APINSWTypes,
   CivicaTypes,
   FormTypes,
   GeoscapeTypes,
@@ -281,6 +282,10 @@ export function getElementSubmissionValue({
     case 'abn': {
       const value = unknown as MiscTypes.ABNRecord
       return value ? getABNNumberFromABNRecord(value) : undefined
+    }
+    case 'apiNSWLiquorLicense': {
+      const value = unknown as APINSWTypes.LiquorLicenseDetails | undefined
+      return value?.licenceDetail?.licenceNumber
     }
     default: {
       return unknown
