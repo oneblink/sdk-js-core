@@ -283,8 +283,8 @@ export function getElementSubmissionValue({
       const value = unknown as MiscTypes.ABNRecord
       return value ? getABNNumberFromABNRecord(value) : undefined
     }
-    case 'apiNSWLiquorLicense': {
-      const value = unknown as APINSWTypes.LiquorLicenseDetails | undefined
+    case 'apiNSWLiquorLicence': {
+      const value = unknown as APINSWTypes.LiquorLicenceDetails | undefined
       return value?.licenceDetail?.licenceNumber
     }
     default: {

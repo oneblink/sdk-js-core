@@ -73,7 +73,7 @@ const toLookupElement = (
     case 'bsb':
     case 'autocomplete':
     case 'abn':
-    case 'apiNSWLiquorLicense': {
+    case 'apiNSWLiquorLicence': {
       return e
     }
     default: {
@@ -196,7 +196,7 @@ const toAutoLookupElement = (e: FormTypes.FormElement) => {
     case 'compliance':
     case 'civicaStreetName':
     case 'autocomplete':
-    case 'apiNSWLiquorLicense': {
+    case 'apiNSWLiquorLicence': {
       return e
     }
     default: {
