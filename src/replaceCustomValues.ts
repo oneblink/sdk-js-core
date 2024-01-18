@@ -285,7 +285,7 @@ export function getElementSubmissionValue({
     }
     case 'apiNSWLiquorLicence': {
       const value = unknown as APINSWTypes.LiquorLicenceDetails | undefined
-      return value?.licenceDetail?.licenceNumber
+      return `${value?.licenceDetail?.licenceNumber} | ${value?.licenceDetail?.licenceName}`.trim()
     }
     default: {
       return unknown
