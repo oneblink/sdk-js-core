@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-Westpac Quickstream payment event to typeCastService
+- Westpac Quickstream payment event to typeCastService
 
 ## [5.2.0] - 2024-01-18
 
