@@ -289,6 +289,7 @@ const infoPageElements: FormTypes.FormElementType[] = [
   'page',
   'infoPage',
   'form',
+  'arcGISWebMap'
 ]
 /**
  * Determine a form is considered an info page. This means the form does not
