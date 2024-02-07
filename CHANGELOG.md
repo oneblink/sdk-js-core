@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `arcGISWebMap` form element to `submissionService`
+
 ## [5.3.1] - 2024-02-07
 
 ## [5.3.0] - 2024-01-30
