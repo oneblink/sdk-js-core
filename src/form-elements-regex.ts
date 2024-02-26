@@ -29,32 +29,54 @@ export const NestedElementRegex = /({ELEMENT:)([^}]+)(})/g
  * )
  * ```
  *
- * @param data
+ * Or
+ *
+ * ```js
+ * formElementsService.matchElementsTagRegex(
+ *   {
+ *     text: myString,
+ *     excludeNestedElements: true,
+ *   },
+ *   ({ elementName, elementMatch }) => {
+ *     const v = submission[elementName]
+ *     myString = myString.replace(elementMatch, v)
+ *   },
+ * )
+ * ```
+ *
+ * @param options
  * @param handler
  * @returns
  */
 export function matchElementsTagRegex(
-  data: string,
+  options:
+    | string
+    | {
+        text: string
+        /**
+         * Determine if only root level elements should be matched.
+         *
+         * `false` will match `"{ELEMENT:Parent_Name}"` and
+         * `"{ELEMENT:Children|Name}"`.
+         *
+         * `true` will match `"{ELEMENT:Parent_Name}"` but will NOT replace
+         * `{ELEMENT:Children|Name}`.
+         */
+        excludeNestedElements: boolean
+      },
   matchHandler: (options: {
     elementName: string
     elementMatch: string
   }) => void,
-  /**
-   * Determine if only root level elements should be matched.
-   *
-   * `false` will match `"{ELEMENT:Parent_Name}"` and
-   * `"{ELEMENT:Children|Name}"`.
-   *
-   * `true` will match `"{ELEMENT:Parent_Name}"` but will NOT replace
-   * `{ELEMENT:Children|Name}`.
-   */
-  rootFormElementsOnly: boolean,
 ) {
+  const text = typeof options === 'string' ? options : options.text
+  const excludeNestedElements =
+    typeof options !== 'string' && !!options.excludeNestedElements
   let matches
   while (
     (matches = (
-      rootFormElementsOnly ? RootElementRegex : NestedElementRegex
-    ).exec(data)) !== null
+      excludeNestedElements ? RootElementRegex : NestedElementRegex
+    ).exec(text)) !== null
   ) {
     if (matches?.length < 3) continue
 

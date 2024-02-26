@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- **[BREAKING]** required `rootFormElementsOnly` option to `submissionService.replaceInjectablesWithElementValues()` and `submissionService.replaceInjectablesWithSubmissionValues()`
+- `excludeNestedElements` option to `submissionService.replaceInjectablesWithElementValues()`, `submissionService.replaceInjectablesWithSubmissionValues()` and `formElementsService.matchElementsTagRegex()`
 
 ### Removed
 

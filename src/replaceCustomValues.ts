@@ -39,7 +39,7 @@ export type ReplaceInjectablesBaseOptions = ReplaceInjectablesFormatters & {
    * `true` will replace `"{ELEMENT:Parent_Name}"` but will NOT replace
    * `{ELEMENT:Children|Name}`.
    */
-  rootFormElementsOnly: boolean
+  excludeNestedElements?: boolean
 }
 
 export type ReplaceInjectablesOptions = ReplaceInjectablesBaseOptions & {
@@ -353,9 +353,7 @@ export function getElementSubmissionValue({
  */
 export function replaceInjectablesWithElementValues(
   text: string,
-  {
-    ...options
-  }: {
+  options: {
     formElements: FormTypes.FormElement[]
   } & ReplaceInjectablesBaseOptions,
 ): string {
@@ -364,14 +362,17 @@ export function replaceInjectablesWithElementValues(
   }, text)
 
   const matchesElement = text.match(
-    options.rootFormElementsOnly ? RootElementRegex : NestedElementRegex,
+    options.excludeNestedElements ? RootElementRegex : NestedElementRegex,
   )
   if (!matchesElement) {
     return text
   }
 
   matchElementsTagRegex(
-    text,
+    {
+      text,
+      excludeNestedElements: !!options.excludeNestedElements,
+    },
     ({ elementName, elementMatch }) => {
       const value = getElementSubmissionValue({
         propertyName: elementName,
@@ -383,7 +384,6 @@ export function replaceInjectablesWithElementValues(
         value === undefined ? '' : (value as string),
       )
     },
-    options.rootFormElementsOnly,
   )
 
   return text
