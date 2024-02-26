@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- **[BREAKING]** required `rootFormElementsOnly` option to `submissionService.replaceInjectablesWithElementValues()` and `submissionService.replaceInjectablesWithSubmissionValues()`
+
+### Removed
+
+- **[BREAKING]** `formElementsService.ElementWYSIWYGRegex`
+
 ## [5.4.0] - 2024-02-18
 
 ### Added

@@ -5,6 +5,7 @@ import {
   FormElement,
   HtmlElement,
 } from '@oneblink/types/typescript/forms'
+export { matchElementsTagRegex } from './form-elements-regex'
 
 /**
  * Iterate over all form elements, also iterating over nested form element (e.g.
@@ -238,49 +239,6 @@ function flattenFormElements(
   )
 }
 
-/**
- * The regex used for matching `{ELEMENT:<elementName>}` tags in the OneBlink
- * platform.
- */
-const ElementWYSIWYGRegex = /({ELEMENT:)([^}]+)(})/g
-
-/**
- * Takes a string and calls a provided handler function for each found instance
- * of `{ELEMENT:<elementName>}` in the string. Used to replace values in
- * OneBlink calculation and info (HTML) elements.
- *
- * #### Example
- *
- * ```js
- * formElementsService.matchElementsTagRegex(
- *   myString,
- *   ({ elementName, elementMatch }) => {
- *     const v = submission[elementName]
- *     myString = myString.replace(elementMatch, v)
- *   },
- * )
- * ```
- *
- * @param data
- * @param handler
- * @returns
- */
-const matchElementsTagRegex = (
-  data: string,
-  matchHandler: (options: {
-    elementName: string
-    elementMatch: string
-  }) => void,
-) => {
-  let matches
-  while ((matches = ElementWYSIWYGRegex.exec(data)) !== null) {
-    if (matches?.length < 3) continue
-
-    const elementName = matches[2]
-    matchHandler({ elementName, elementMatch: matches[0] })
-  }
-}
-
 const infoPageElements: FormTypes.FormElementType[] = [
   'heading',
   'html',
@@ -289,7 +247,7 @@ const infoPageElements: FormTypes.FormElementType[] = [
   'page',
   'infoPage',
   'form',
-  'arcGISWebMap'
+  'arcGISWebMap',
 ]
 /**
  * Determine a form is considered an info page. This means the form does not
@@ -432,8 +390,6 @@ export {
   findFormElement,
   parseDynamicFormElementOptions,
   flattenFormElements,
-  ElementWYSIWYGRegex,
-  matchElementsTagRegex,
   determineIsInfoPage,
   fixElementName,
   injectFormElementsIntoForm,
