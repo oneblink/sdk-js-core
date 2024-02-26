@@ -50,7 +50,10 @@ export type ReplaceInjectablesOptions = ReplaceInjectablesBaseOptions & {
   previousApprovalId: string | undefined
 }
 
-const SUBMISSION_VALUES = [
+const SUBMISSION_VALUES: Array<{
+  string: string
+  value: (options: ReplaceInjectablesOptions) => string | undefined
+}> = [
   {
     string: '{INFO_PAGE_ID}',
     value: ({ form }: ReplaceInjectablesOptions) => form.id.toString(),
@@ -74,7 +77,7 @@ const SUBMISSION_VALUES = [
       formatDateTime,
     }: ReplaceInjectablesOptions) => {
       if (!submissionTimestamp) {
-        return ''
+        return undefined
       }
       return formatDateTime(submissionTimestamp)
     },
@@ -82,46 +85,46 @@ const SUBMISSION_VALUES = [
   {
     string: '{TIMESTAMP}',
     value: ({ submissionTimestamp }: ReplaceInjectablesOptions) =>
-      submissionTimestamp || '',
+      submissionTimestamp,
   },
   {
     string: '{SUBMISSION_ID}',
-    value: ({ submissionId }: ReplaceInjectablesOptions) => submissionId || '',
+    value: ({ submissionId }: ReplaceInjectablesOptions) => submissionId,
   },
   {
     string: '{EXTERNAL_ID}',
-    value: ({ externalId }: ReplaceInjectablesOptions) => externalId || '',
+    value: ({ externalId }: ReplaceInjectablesOptions) => externalId,
   },
   {
     string: '{PREVIOUS_APPROVAL_ID}',
     value: ({ previousApprovalId }: ReplaceInjectablesOptions) =>
-      previousApprovalId || '',
+      previousApprovalId,
   },
 ]
 
 const ELEMENT_VALUES: Array<{
   string: string
-  value: (options: ReplaceInjectablesBaseOptions) => string
+  value: (options: ReplaceInjectablesBaseOptions) => string | undefined
 }> = [
   {
     string: '{USER:email}',
-    value: ({ userProfile }) => userProfile?.email || '',
+    value: ({ userProfile }) => userProfile?.email,
   },
   {
     string: '{USER:username}',
-    value: ({ userProfile }) => userProfile?.username || '',
+    value: ({ userProfile }) => userProfile?.username,
   },
   {
     string: '{TASK_NAME}',
-    value: ({ task }) => task?.name || '',
+    value: ({ task }) => task?.name,
   },
   {
     string: '{TASK_GROUP_NAME}',
-    value: ({ taskGroup }) => taskGroup?.name || '',
+    value: ({ taskGroup }) => taskGroup?.name,
   },
   {
     string: '{TASK_GROUP_INSTANCE_LABEL}',
-    value: ({ taskGroupInstance }) => taskGroupInstance?.label || '',
+    value: ({ taskGroupInstance }) => taskGroupInstance?.label,
   },
 ]
 
@@ -251,7 +254,7 @@ export function getElementSubmissionValue({
       } else {
         const value = unknown as string
         const option = formElement.options?.find((opt) => opt.value === value)
-        return option?.label || ''
+        return option?.label
       }
     }
     case 'boolean': {
@@ -313,38 +316,39 @@ export function getElementSubmissionValue({
  * #### Example
  *
  * ```js
- * const result = submissionService.replaceInjectablesWithElementValues(
- *   'https://example.com/path?search{ELEMENT:search}',
- *   {
- *     formatDate: (value) => new Date(value).toDateString(),
- *     formatDateTime: (value) => new Date(value).toString(),
- *     formatTime: (value) => new Date(value).toTimeString(),
- *     formatNumber: (value) => Number(value).toString(),
- *     formatCurrency: (value) => Number(value).toFixed(2),
- *     submission: {
- *       search: 'Entered By User',
- *     },
- *     elements: [
- *       {
- *         id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
- *         name: 'search',
- *         type: 'text',
- *         label: 'Search',
- *         readOnly: false,
- *         required: false,
- *         conditionallyShow: false,
- *         requiresAllConditionallyShowPredicates: false,
- *         isElementLookup: false,
- *         isDataLookup: false,
+ * const { text: url } =
+ *   submissionService.replaceInjectablesWithElementValues(
+ *     'https://example.com/path?search{ELEMENT:search}',
+ *     {
+ *       formatDate: (value) => new Date(value).toDateString(),
+ *       formatDateTime: (value) => new Date(value).toString(),
+ *       formatTime: (value) => new Date(value).toTimeString(),
+ *       formatNumber: (value) => Number(value).toString(),
+ *       formatCurrency: (value) => Number(value).toFixed(2),
+ *       submission: {
+ *         search: 'Entered By User',
  *       },
- *     ],
- *     userProfile: {
- *       userId: 'abc123',
- *       username: 'john-user',
- *       email: 'john.user@domain.com',
+ *       elements: [
+ *         {
+ *           id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
+ *           name: 'search',
+ *           type: 'text',
+ *           label: 'Search',
+ *           readOnly: false,
+ *           required: false,
+ *           conditionallyShow: false,
+ *           requiresAllConditionallyShowPredicates: false,
+ *           isElementLookup: false,
+ *           isDataLookup: false,
+ *         },
+ *       ],
+ *       userProfile: {
+ *         userId: 'abc123',
+ *         username: 'john-user',
+ *         email: 'john.user@domain.com',
+ *       },
  *     },
- *   },
- * )
+ *   )
  * ```
  *
  * @param text
@@ -356,37 +360,61 @@ export function replaceInjectablesWithElementValues(
   options: {
     formElements: FormTypes.FormElement[]
   } & ReplaceInjectablesBaseOptions,
-): string {
+): {
+  /**
+   * The text passed in with all injectables replaced with their corresponding
+   * values or empty strings.
+   */
+  text: string
+  /**
+   * Determine if replaceable strings could all be replaced. The `text` property
+   * returned will replace all injectable with empty strings if the value cannot
+   * be found. Use this boolean to either use the replaced string with missing
+   * data or implement some other logic to handle missing injectables.
+   */
+  hadAllInjectablesReplaced: boolean
+} {
+  let hadAllInjectablesReplaced = true
   text = ELEMENT_VALUES.reduce((newString, customValue) => {
-    return newString.replaceAll(customValue.string, customValue.value(options))
+    if (!newString.includes(customValue.string)) {
+      return newString
+    }
+    const replacedValue = customValue.value(options)
+    if (!replacedValue) {
+      hadAllInjectablesReplaced = false
+    }
+    return newString.replaceAll(customValue.string, replacedValue || '')
   }, text)
 
   const matchesElement = text.match(
     options.excludeNestedElements ? RootElementRegex : NestedElementRegex,
   )
-  if (!matchesElement) {
-    return text
+  if (matchesElement) {
+    matchElementsTagRegex(
+      {
+        text,
+        excludeNestedElements: !!options.excludeNestedElements,
+      },
+      ({ elementName, elementMatch }) => {
+        const value = getElementSubmissionValue({
+          propertyName: elementName,
+          ...options,
+        })
+
+        const hasNoValue = value === undefined
+        if (hasNoValue) {
+          hadAllInjectablesReplaced = false
+        }
+
+        text = text.replace(elementMatch, hasNoValue ? '' : (value as string))
+      },
+    )
   }
 
-  matchElementsTagRegex(
-    {
-      text,
-      excludeNestedElements: !!options.excludeNestedElements,
-    },
-    ({ elementName, elementMatch }) => {
-      const value = getElementSubmissionValue({
-        propertyName: elementName,
-        ...options,
-      })
-
-      text = text.replace(
-        elementMatch,
-        value === undefined ? '' : (value as string),
-      )
-    },
-  )
-
-  return text
+  return {
+    text,
+    hadAllInjectablesReplaced,
+  }
 }
 
 /**
@@ -448,12 +476,38 @@ export function replaceInjectablesWithElementValues(
 export function replaceInjectablesWithSubmissionValues(
   text: string,
   options: ReplaceInjectablesOptions,
-): string {
-  const string = replaceInjectablesWithElementValues(text, {
+): {
+  /**
+   * The text passed in with all injectables replaced with their corresponding
+   * values or empty strings.
+   */
+  text: string
+  /**
+   * Determine if replaceable strings could all be replaced. The `text` property
+   * returned will replace all injectable with empty strings if the value cannot
+   * be found. Use this boolean to either use the replaced string with missing
+   * data or implement some other logic to handle missing injectables.
+   */
+  hadAllInjectablesReplaced: boolean
+} {
+  const result = replaceInjectablesWithElementValues(text, {
     formElements: options.form.elements,
     ...options,
   })
-  return SUBMISSION_VALUES.reduce((newString, customValue) => {
-    return newString.replaceAll(customValue.string, customValue.value(options))
-  }, string)
+  let hadAllInjectablesReplaced = result.hadAllInjectablesReplaced
+  const replacedText = SUBMISSION_VALUES.reduce((newString, customValue) => {
+    if (!newString.includes(customValue.string)) {
+      return newString
+    }
+    const replacedValue = customValue.value(options)
+    if (!replacedValue) {
+      hadAllInjectablesReplaced = false
+    }
+    return newString.replaceAll(customValue.string, replacedValue || '')
+  }, result.text)
+
+  return {
+    text: replacedText,
+    hadAllInjectablesReplaced,
+  }
 }
