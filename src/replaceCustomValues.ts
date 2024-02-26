@@ -8,12 +8,13 @@ import {
   ScheduledTasksTypes,
   SubmissionTypes,
 } from '@oneblink/types'
-import {
-  findFormElement,
-  matchElementsTagRegex,
-  ElementWYSIWYGRegex,
-} from './formElementsService'
+import { findFormElement } from './formElementsService'
 import { getABNNumberFromABNRecord } from './abnService'
+import {
+  RootElementRegex,
+  NestedElementRegex,
+  matchElementsTagRegex,
+} from './form-elements-regex'
 
 export type ReplaceInjectablesFormatters = {
   formatDateTime: (value: string) => string
@@ -29,6 +30,16 @@ export type ReplaceInjectablesBaseOptions = ReplaceInjectablesFormatters & {
   task: ScheduledTasksTypes.Task | undefined
   taskGroup: ScheduledTasksTypes.TaskGroup | undefined
   taskGroupInstance: ScheduledTasksTypes.TaskGroupInstance | undefined
+  /**
+   * Determine if only root level elements should be replaced.
+   *
+   * `false` will replace `"{ELEMENT:Parent_Name}"` and
+   * `"{ELEMENT:Children|Name}"`.
+   *
+   * `true` will replace `"{ELEMENT:Parent_Name}"` but will NOT replace
+   * `{ELEMENT:Children|Name}`.
+   */
+  excludeNestedElements?: boolean
 }
 
 export type ReplaceInjectablesOptions = ReplaceInjectablesBaseOptions & {
@@ -350,22 +361,30 @@ export function replaceInjectablesWithElementValues(
     return newString.replaceAll(customValue.string, customValue.value(options))
   }, text)
 
-  const matchesElement = text.match(ElementWYSIWYGRegex)
+  const matchesElement = text.match(
+    options.excludeNestedElements ? RootElementRegex : NestedElementRegex,
+  )
   if (!matchesElement) {
     return text
   }
 
-  matchElementsTagRegex(text, ({ elementName, elementMatch }) => {
-    const value = getElementSubmissionValue({
-      propertyName: elementName,
-      ...options,
-    })
+  matchElementsTagRegex(
+    {
+      text,
+      excludeNestedElements: !!options.excludeNestedElements,
+    },
+    ({ elementName, elementMatch }) => {
+      const value = getElementSubmissionValue({
+        propertyName: elementName,
+        ...options,
+      })
 
-    text = text.replace(
-      elementMatch,
-      value === undefined ? '' : (value as string),
-    )
-  })
+      text = text.replace(
+        elementMatch,
+        value === undefined ? '' : (value as string),
+      )
+    },
+  )
 
   return text
 }

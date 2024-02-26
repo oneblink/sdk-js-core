@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `excludeNestedElements` option to `submissionService.replaceInjectablesWithElementValues()`, `submissionService.replaceInjectablesWithSubmissionValues()` and `formElementsService.matchElementsTagRegex()`
+
+### Removed
+
+- **[BREAKING]** `formElementsService.ElementWYSIWYGRegex`
+
 ## [5.4.0] - 2024-02-18
 
 ### Added
