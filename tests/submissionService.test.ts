@@ -6,7 +6,8 @@ import {
 
 describe('replaceInjectablesWithSubmissionValues()', () => {
   const task: ScheduledTasksTypes.Task = {
-    id: 1,
+    versionId: 1,
+    taskId: '1',
     name: 'Replace the food',
     formsAppEnvironmentId: 1,
     organisationId: 'string',
@@ -19,19 +20,19 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
     },
     actionIds: [],
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
   }
   const taskGroup: ScheduledTasksTypes.TaskGroup = {
-    id: 1,
+    versionId: 1,
+    taskGroupId: '1',
     name: 'Cage',
-    taskIds: [task.id],
+    taskIds: [task.taskId],
     formsAppEnvironmentId: task.formsAppEnvironmentId,
     organisationId: task.organisationId,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
   }
   const taskGroupInstance: ScheduledTasksTypes.TaskGroupInstance = {
-    taskGroupId: taskGroup.id,
+    versionId: 1,
+    taskGroupId: taskGroup.taskGroupId,
     taskGroupInstanceId: 'taskGroupInstanceId',
     label: 'Snake Cage',
     createdAt: new Date().toISOString(),
@@ -134,9 +135,10 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         },
       })
 
-      expect(result).toEqual(
-        'https://some-url.com?name=blinkybill&home=gosford',
-      )
+      expect(result).toEqual({
+        text: 'https://some-url.com?name=blinkybill&home=gosford',
+        hadAllInjectablesReplaced: true,
+      })
     })
 
     test('should replace all INDENTICAL instances of {ELEMENT} with correct property value', () => {
@@ -151,9 +153,10 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         },
       })
 
-      expect(result).toEqual(
-        'https://some-url.com?name=blinkybill&koala=blinkybill',
-      )
+      expect(result).toEqual({
+        text: 'https://some-url.com?name=blinkybill&koala=blinkybill',
+        hadAllInjectablesReplaced: true,
+      })
     })
 
     test('should replace only one(1) instance of {ELEMENT} with correct property value', () => {
@@ -165,7 +168,10 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
           name: 'blinkybill',
         },
       })
-      expect(result).toEqual('https://some-url.com?name=blinkybill')
+      expect(result).toEqual({
+        text: 'https://some-url.com?name=blinkybill',
+        hadAllInjectablesReplaced: true,
+      })
     })
   })
 
@@ -182,7 +188,10 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         ...baseOptions,
         submission,
       })
-      expect(result).toEqual(expected)
+      expect(result).toEqual({
+        text: expected,
+        hadAllInjectablesReplaced: true,
+      })
     })
 
     test('Original string is returned if no tokens present', async () => {
@@ -191,7 +200,10 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         ...baseOptions,
         submission,
       })
-      expect(result).toEqual(text)
+      expect(result).toEqual({
+        text,
+        hadAllInjectablesReplaced: true,
+      })
     })
   })
 
@@ -207,7 +219,10 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         },
       })
 
-      expect(result).toEqual('person@email.com')
+      expect(result).toEqual({
+        text: 'person@email.com',
+        hadAllInjectablesReplaced: true,
+      })
     })
 
     test('should replace instance of {ELEMENT} with email from submission', () => {
@@ -222,7 +237,10 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         },
       })
 
-      expect(result).toEqual('autre_person@email.com')
+      expect(result).toEqual({
+        text: 'autre_person@email.com',
+        hadAllInjectablesReplaced: true,
+      })
     })
   })
 
@@ -238,9 +256,46 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
       },
     })
 
-    expect(result).toEqual(
-      'person@email.com;autre_person@email.com;person@email.com',
-    )
+    expect(result).toEqual({
+      text: 'person@email.com;autre_person@email.com;person@email.com',
+      hadAllInjectablesReplaced: true,
+    })
+  })
+
+  test('should replace with empty strings when {USER:email} and {ELEMENT} are used together without {ELEMENT} value', () => {
+    const emailRecipient = '{USER:email};{ELEMENT:userEmail};{USER:email}'
+
+    const result = replaceInjectablesWithSubmissionValues(emailRecipient, {
+      ...baseOptions,
+      submission: {
+        name: 'blinkybill',
+        home: 'gosford',
+      },
+    })
+
+    expect(result).toEqual({
+      text: 'person@email.com;;person@email.com',
+      hadAllInjectablesReplaced: false,
+    })
+  })
+
+  test('should replace with empty strings when {USER:email} and {ELEMENT} are used together without {USER:email} value', () => {
+    const emailRecipient = '{USER:email};{ELEMENT:userEmail};{USER:email}'
+
+    const result = replaceInjectablesWithSubmissionValues(emailRecipient, {
+      ...baseOptions,
+      submission: {
+        name: 'blinkybill',
+        home: 'gosford',
+        userEmail: 'autre_person@email.com',
+      },
+      userProfile: undefined,
+    })
+
+    expect(result).toEqual({
+      text: ';autre_person@email.com;',
+      hadAllInjectablesReplaced: false,
+    })
   })
 
   describe('task based props', () => {
@@ -256,7 +311,10 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         submission: {},
       })
 
-      expect(result).toEqual(expected)
+      expect(result).toEqual({
+        text: expected,
+        hadAllInjectablesReplaced: true,
+      })
     })
 
     test('should replace task based props', () => {
@@ -265,7 +323,10 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         submission: {},
       })
 
-      expect(result).toEqual(expected)
+      expect(result).toEqual({
+        text: expected,
+        hadAllInjectablesReplaced: true,
+      })
     })
   })
 
@@ -281,7 +342,10 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         },
       })
 
-      expect(result).toEqual('person1')
+      expect(result).toEqual({
+        text: 'person1',
+        hadAllInjectablesReplaced: true,
+      })
     })
   })
 })
