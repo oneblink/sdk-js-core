@@ -165,6 +165,7 @@ const ELEMENT_VALUES: Array<{
  * @returns
  */
 export function getElementSubmissionValue({
+  elementId,
   propertyName,
   submission,
   formElements,
@@ -174,20 +175,69 @@ export function getElementSubmissionValue({
   formatNumber,
   formatCurrency,
 }: {
-  propertyName: string
+  elementId?: string
+  propertyName?: string
   formElements: FormTypes.FormElement[]
   submission: SubmissionTypes.S3SubmissionData['submission']
 } & ReplaceInjectablesFormatters): unknown {
-  const formElement = findFormElement(
-    formElements,
-    (element) =>
-      element.type !== 'page' &&
-      element.type !== 'section' &&
-      element.name === propertyName,
-  )
+  if (elementId === undefined && propertyName === undefined) {
+    return undefined
+  }
 
-  const unknown = submission[propertyName]
-  if (unknown === undefined || unknown === null) {
+  // make sure submission is an object
+  if (Object(submission) !== submission) {
+    return undefined
+  }
+
+  let unknown: unknown = undefined
+  let formElement: FormTypes.FormElement | undefined = undefined
+
+  if (elementId) {
+    for (const element of formElements) {
+      if (elementId === element.id) {
+        if ('name' in element) {
+          unknown = submission[element.name]
+          formElement = element
+          break
+        }
+      }
+      if ('elements' in element) {
+        const newSubmissionData =
+          'name' in element ? submission[element.name] : submission
+
+        if (Array.isArray(newSubmissionData) || !element.elements) {
+          continue
+        }
+
+        const result = getElementSubmissionValue({
+          elementId,
+          formElements: element.elements,
+          //@ts-expect-error let the recursion take care of it
+          submission: newSubmissionData,
+          formatDate,
+          formatDateTime,
+          formatTime,
+          formatNumber,
+          formatCurrency,
+        })
+        if (result) {
+          unknown = result
+          formElement = element
+        }
+      }
+    }
+  } else if (propertyName) {
+    formElement = findFormElement(
+      formElements,
+      (element) =>
+        element.type !== 'page' &&
+        element.type !== 'section' &&
+        element.name === propertyName,
+    ) as FormTypes.FormElementWithName
+    unknown = submission[propertyName]
+  }
+
+  if (unknown === undefined || unknown === null || formElement === undefined) {
     return undefined
   }
 
@@ -215,6 +265,10 @@ export function getElementSubmissionValue({
       const value = unknown as string[]
       const selectedOptionLabels: string[] = value.reduce(
         (labels: string[], selectedOption: string) => {
+          //TS making me do this again
+          if (formElement?.type !== 'checkboxes') {
+            return labels
+          }
           const foundOption = formElement.options?.find(
             (o) => o.value === selectedOption,
           )
@@ -242,6 +296,10 @@ export function getElementSubmissionValue({
         const value = unknown as string[]
         const selectedOptionLabels: string[] = value.reduce(
           (labels: string[], selectedOption: string) => {
+            //TS making me do this again
+            if (formElement?.type !== 'select') {
+              return labels
+            }
             const foundOption = formElement.options?.find(
               (o) => o.value === selectedOption,
             )
