@@ -436,7 +436,7 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
       expect(result).toBe('Ringo')
     })
 
-    it('should user elementId before propertyName', () => {
+    it('should use elementId before propertyName', () => {
       const result = getElementSubmissionValue({
         elementId: 'd4135b47-9004-4d75-aeb3-d2f6232da112',
         propertyName: 'name',

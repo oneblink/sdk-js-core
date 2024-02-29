@@ -237,7 +237,7 @@ export function getElementSubmissionValue({
     unknown = submission[propertyName]
   }
 
-  if (unknown === undefined || unknown === null || formElement === undefined) {
+  if (unknown === undefined || unknown === null) {
     return undefined
   }
 
