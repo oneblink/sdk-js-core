@@ -2,6 +2,7 @@ import { FormTypes, ScheduledTasksTypes } from '@oneblink/types'
 import {
   replaceInjectablesWithElementValues,
   replaceInjectablesWithSubmissionValues,
+  getElementSubmissionValue,
 } from '../src/submissionService'
 
 describe('replaceInjectablesWithSubmissionValues()', () => {
@@ -346,6 +347,128 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         text: 'person1',
         hadAllInjectablesReplaced: true,
       })
+    })
+  })
+
+  describe('getElementSubmissionValue', () => {
+    const formElements: FormTypes.FormElement[] = [
+      {
+        id: 'fbad2d53-ddf3-419d-8ff7-e9ef21167222',
+        name: 'home',
+        type: 'text',
+        label: 'Home',
+        readOnly: false,
+        required: false,
+        conditionallyShow: false,
+        requiresAllConditionallyShowPredicates: false,
+        isElementLookup: false,
+        isDataLookup: false,
+      },
+      {
+        id: 'fbad2d53-ddf3-419d-8ff7-e9ef21167223',
+        name: 'submarine',
+        type: 'form',
+        formId: 2,
+        conditionallyShow: false,
+        elements: [
+          {
+            id: 'd4135b47-9004-4d75-aeb3-d2f6232da112',
+            name: 'name',
+            type: 'text',
+            label: 'Name',
+            readOnly: false,
+            required: false,
+            conditionallyShow: false,
+            requiresAllConditionallyShowPredicates: false,
+            isElementLookup: false,
+            isDataLookup: false,
+          },
+        ],
+      },
+      {
+        id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
+        name: 'name',
+        type: 'text',
+        label: 'Name',
+        readOnly: false,
+        required: false,
+        conditionallyShow: false,
+        requiresAllConditionallyShowPredicates: false,
+        isElementLookup: false,
+        isDataLookup: false,
+      },
+    ]
+
+    const submission = {
+      submarine: {
+        name: 'Ringo',
+      },
+      name: 'George',
+    }
+
+    it('should accept property name', () => {
+      const result = getElementSubmissionValue({
+        propertyName: 'name',
+        submission,
+        formElements,
+        formatDate: () => '',
+        formatTime: () => '',
+        formatDateTime: () => '',
+        formatNumber: () => '',
+        formatCurrency: () => '',
+      })
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          element: expect.objectContaining({
+            id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
+          }),
+          value: 'George',
+        }),
+      )
+    })
+
+    it('should accept elementId', () => {
+      const elementId = 'd4135b47-9004-4d75-aeb3-d2f6232da112'
+      const result = getElementSubmissionValue({
+        elementId,
+        submission,
+        formElements,
+        formatDate: () => '',
+        formatTime: () => '',
+        formatDateTime: () => '',
+        formatNumber: () => '',
+        formatCurrency: () => '',
+      })
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          element: expect.objectContaining({ id: elementId }),
+          value: 'Ringo',
+        }),
+      )
+    })
+
+    it('should use elementId before propertyName', () => {
+      const elementId = 'd4135b47-9004-4d75-aeb3-d2f6232da112'
+      const result = getElementSubmissionValue({
+        elementId,
+        propertyName: 'name',
+        submission,
+        formElements,
+        formatDate: () => '',
+        formatTime: () => '',
+        formatDateTime: () => '',
+        formatNumber: () => '',
+        formatCurrency: () => '',
+      })
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          element: expect.objectContaining({ id: elementId }),
+          value: 'Ringo',
+        }),
+      )
     })
   })
 })
