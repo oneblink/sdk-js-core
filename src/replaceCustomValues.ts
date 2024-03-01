@@ -128,7 +128,8 @@ const ELEMENT_VALUES: Array<{
 ]
 
 /**
- * Function to get the display value of a property in submission
+ * Function to get the display value of a property in submission, if elementId
+ * is provided propertyName will be ignored
  *
  * #### Example
  *
@@ -193,7 +194,8 @@ export function getElementSubmissionValue({
     return undefined
   }
 
-  let unknown: unknown = undefined
+  // initialise if propertyName provided and not elementId
+  let unknown: unknown = elementId ? undefined : submission[propertyName ?? '']
   let formElement: FormTypes.FormElement | undefined = undefined
 
   const matchFn = (element: FormTypes.FormElement) => {
@@ -203,38 +205,36 @@ export function getElementSubmissionValue({
     return 'name' in element && element.name === propertyName
   }
 
-  if (elementId) {
-    for (const element of formElements) {
-      if (matchFn(element)) {
-        if ('name' in element) {
-          unknown = submission[element.name]
-          formElement = element
-          break
-        }
+  for (const element of formElements) {
+    if (matchFn(element)) {
+      if ('name' in element) {
+        unknown = submission[element.name]
+        formElement = element
+        break
       }
-      if ('elements' in element) {
-        const newSubmissionData =
-          'name' in element ? submission[element.name] : submission
+    }
+    if ('elements' in element) {
+      const newSubmissionData =
+        'name' in element ? submission[element.name] : submission
 
-        if (Array.isArray(newSubmissionData) || !element.elements) {
-          continue
-        }
+      if (Array.isArray(newSubmissionData) || !element.elements) {
+        continue
+      }
 
-        const result = getElementSubmissionValue({
-          elementId,
-          formElements: element.elements,
-          submission:
-            newSubmissionData as SubmissionTypes.S3SubmissionData['submission'],
-          formatDate,
-          formatDateTime,
-          formatTime,
-          formatNumber,
-          formatCurrency,
-        })
-        if (result) {
-          unknown = result.value
-          formElement = result.element
-        }
+      const result = getElementSubmissionValue({
+        elementId,
+        formElements: element.elements,
+        submission:
+          newSubmissionData as SubmissionTypes.S3SubmissionData['submission'],
+        formatDate,
+        formatDateTime,
+        formatTime,
+        formatNumber,
+        formatCurrency,
+      })
+      if (result) {
+        unknown = result.value
+        formElement = result.element
       }
     }
   }
@@ -265,15 +265,10 @@ export function getElementSubmissionValue({
 
     case 'checkboxes': {
       const value = unknown as string[]
+      const options = formElement.options
       const selectedOptionLabels: string[] = value.reduce(
         (labels: string[], selectedOption: string) => {
-          //TS making me do this again
-          if (formElement?.type !== 'checkboxes') {
-            return labels
-          }
-          const foundOption = formElement.options?.find(
-            (o) => o.value === selectedOption,
-          )
+          const foundOption = options?.find((o) => o.value === selectedOption)
           if (foundOption) labels.push(foundOption.label)
           return labels
         },
@@ -302,15 +297,10 @@ export function getElementSubmissionValue({
     case 'select': {
       if (formElement.multi) {
         const value = unknown as string[]
+        const options = formElement.options
         const selectedOptionLabels: string[] = value.reduce(
           (labels: string[], selectedOption: string) => {
-            //TS making me do this again
-            if (formElement?.type !== 'select') {
-              return labels
-            }
-            const foundOption = formElement.options?.find(
-              (o) => o.value === selectedOption,
-            )
+            const foundOption = options?.find((o) => o.value === selectedOption)
             if (foundOption) labels.push(foundOption.label)
             return labels
           },
