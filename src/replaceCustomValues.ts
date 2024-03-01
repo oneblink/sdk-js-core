@@ -8,7 +8,6 @@ import {
   ScheduledTasksTypes,
   SubmissionTypes,
 } from '@oneblink/types'
-import { findFormElement } from './formElementsService'
 import { getABNNumberFromABNRecord } from './abnService'
 import {
   RootElementRegex,
@@ -179,7 +178,12 @@ export function getElementSubmissionValue({
   propertyName?: string
   formElements: FormTypes.FormElement[]
   submission: SubmissionTypes.S3SubmissionData['submission']
-} & ReplaceInjectablesFormatters): unknown {
+} & ReplaceInjectablesFormatters):
+  | {
+      element: FormTypes.FormElement | undefined
+      value: unknown
+    }
+  | undefined {
   if (elementId === undefined && propertyName === undefined) {
     return undefined
   }
@@ -192,9 +196,16 @@ export function getElementSubmissionValue({
   let unknown: unknown = undefined
   let formElement: FormTypes.FormElement | undefined = undefined
 
+  const matchFn = (element: FormTypes.FormElement) => {
+    if (elementId) {
+      return elementId === element.id
+    }
+    return 'name' in element && element.name === propertyName
+  }
+
   if (elementId) {
     for (const element of formElements) {
-      if (elementId === element.id) {
+      if (matchFn(element)) {
         if ('name' in element) {
           unknown = submission[element.name]
           formElement = element
@@ -212,8 +223,8 @@ export function getElementSubmissionValue({
         const result = getElementSubmissionValue({
           elementId,
           formElements: element.elements,
-          //@ts-expect-error let the recursion take care of it
-          submission: newSubmissionData,
+          submission:
+            newSubmissionData as SubmissionTypes.S3SubmissionData['submission'],
           formatDate,
           formatDateTime,
           formatTime,
@@ -221,20 +232,11 @@ export function getElementSubmissionValue({
           formatCurrency,
         })
         if (result) {
-          unknown = result
-          formElement = element
+          unknown = result.value
+          formElement = result.element
         }
       }
     }
-  } else if (propertyName) {
-    formElement = findFormElement(
-      formElements,
-      (element) =>
-        element.type !== 'page' &&
-        element.type !== 'section' &&
-        element.name === propertyName,
-    ) as FormTypes.FormElementWithName
-    unknown = submission[propertyName]
   }
 
   if (unknown === undefined || unknown === null) {
@@ -244,21 +246,21 @@ export function getElementSubmissionValue({
   switch (formElement?.type) {
     case 'datetime': {
       const value = unknown as string
-      return formatDateTime(value)
+      return { element: formElement, value: formatDateTime(value) }
     }
     case 'date': {
       const value = unknown as string
-      return formatDate(value)
+      return { element: formElement, value: formatDate(value) }
     }
     case 'time': {
       const value = unknown as string
-      return formatTime(value)
+      return { element: formElement, value: formatTime(value) }
     }
     case 'radio':
     case 'autocomplete': {
       const value = unknown as string
       const option = formElement.options?.find((opt) => opt.value === value)
-      return option?.label || value
+      return { element: formElement, value: option?.label || value }
     }
 
     case 'checkboxes': {
@@ -277,7 +279,10 @@ export function getElementSubmissionValue({
         },
         [],
       )
-      return selectedOptionLabels.length ? selectedOptionLabels : undefined
+      return {
+        element: formElement,
+        value: selectedOptionLabels.length ? selectedOptionLabels : undefined,
+      }
     }
     case 'compliance': {
       const value = unknown as {
@@ -287,8 +292,11 @@ export function getElementSubmissionValue({
         (option: FormTypes.ChoiceElementOption) => option.value === value.value,
       )
       return {
-        ...value,
-        value: option?.label || value.value,
+        element: formElement,
+        value: {
+          ...value,
+          value: option?.label || value.value,
+        },
       }
     }
     case 'select': {
@@ -308,16 +316,19 @@ export function getElementSubmissionValue({
           },
           [],
         )
-        return selectedOptionLabels.length ? selectedOptionLabels : undefined
+        return {
+          element: formElement,
+          value: selectedOptionLabels.length ? selectedOptionLabels : undefined,
+        }
       } else {
         const value = unknown as string
         const option = formElement.options?.find((opt) => opt.value === value)
-        return option?.label
+        return { element: formElement, value: option?.label }
       }
     }
     case 'boolean': {
       const value = unknown as boolean
-      return value ? 'Yes' : 'No'
+      return { element: formElement, value: value ? 'Yes' : 'No' }
     }
     case 'calculation': {
       const value = unknown as number
@@ -328,7 +339,7 @@ export function getElementSubmissionValue({
         } else {
           text = formatNumber(value)
         }
-        return text
+        return { element: formElement, value: text }
       }
       return undefined
     }
@@ -337,30 +348,42 @@ export function getElementSubmissionValue({
       const value = unknown as
         | PointTypes.PointAddress
         | GeoscapeTypes.GeoscapeAddress
-      return value?.addressDetails?.formattedAddress || value?.addressId
+      return {
+        element: formElement,
+        value: value?.addressDetails?.formattedAddress || value?.addressId,
+      }
     }
     case 'civicaStreetName': {
       const value = unknown as CivicaTypes.CivicaStreetName
-      return value?.formattedStreet
+      return { element: formElement, value: value?.formattedStreet }
     }
     case 'civicaNameRecord': {
       const value = unknown as CivicaTypes.CivicaNameRecord
-      return (
-        [value?.title, value?.givenName1, value?.familyName]
-          .filter((t) => t)
-          .join(' ') || value?.emailAddress
-      )
+      return {
+        element: formElement,
+        value:
+          [value?.title, value?.givenName1, value?.familyName]
+            .filter((t) => t)
+            .join(' ') || value?.emailAddress,
+      }
     }
     case 'abn': {
       const value = unknown as MiscTypes.ABNRecord
-      return value ? getABNNumberFromABNRecord(value) : undefined
+      return {
+        element: formElement,
+        value: value ? getABNNumberFromABNRecord(value) : undefined,
+      }
     }
     case 'apiNSWLiquorLicence': {
       const value = unknown as APINSWTypes.LiquorLicenceDetails | undefined
-      return `${value?.licenceDetail?.licenceNumber} | ${value?.licenceDetail?.licenceName}`.trim()
+      return {
+        element: formElement,
+        value:
+          `${value?.licenceDetail?.licenceNumber} | ${value?.licenceDetail?.licenceName}`.trim(),
+      }
     }
     default: {
-      return unknown
+      return { element: formElement, value: unknown }
     }
   }
 }
@@ -454,17 +477,20 @@ export function replaceInjectablesWithElementValues(
         excludeNestedElements: !!options.excludeNestedElements,
       },
       ({ elementName, elementMatch }) => {
-        const value = getElementSubmissionValue({
+        const result = getElementSubmissionValue({
           propertyName: elementName,
           ...options,
         })
 
-        const hasNoValue = value === undefined
+        const hasNoValue = result === undefined || result.value === undefined
         if (hasNoValue) {
           hadAllInjectablesReplaced = false
         }
 
-        text = text.replace(elementMatch, hasNoValue ? '' : (value as string))
+        text = text.replace(
+          elementMatch,
+          hasNoValue ? '' : (result.value as string),
+        )
       },
     )
   }

@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - **[BREAKING]** `submissionService.replaceInjectablesWithElementValues()` and `submissionService.replaceInjectablesWithSubmissionValues()` return value to be an object with a `hadAllInjectablesReplaced` property
-- allow `submissionService.getElementSubmissionValue` to accept an optional `elementId` property
+- **[BREAKING]** allow `submissionService.getElementSubmissionValue` to accept an optional `elementId` property and return element and value
 
 ### Removed
 

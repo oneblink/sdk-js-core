@@ -418,12 +418,20 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         formatCurrency: () => '',
       })
 
-      expect(result).toBe('George')
+      expect(result).toEqual(
+        expect.objectContaining({
+          element: expect.objectContaining({
+            id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
+          }),
+          value: 'George',
+        }),
+      )
     })
 
     it('should accept elementId', () => {
+      const elementId = 'd4135b47-9004-4d75-aeb3-d2f6232da112'
       const result = getElementSubmissionValue({
-        elementId: 'd4135b47-9004-4d75-aeb3-d2f6232da112',
+        elementId,
         submission,
         formElements,
         formatDate: () => '',
@@ -433,12 +441,18 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         formatCurrency: () => '',
       })
 
-      expect(result).toBe('Ringo')
+      expect(result).toEqual(
+        expect.objectContaining({
+          element: expect.objectContaining({ id: elementId }),
+          value: 'Ringo',
+        }),
+      )
     })
 
     it('should use elementId before propertyName', () => {
+      const elementId = 'd4135b47-9004-4d75-aeb3-d2f6232da112'
       const result = getElementSubmissionValue({
-        elementId: 'd4135b47-9004-4d75-aeb3-d2f6232da112',
+        elementId,
         propertyName: 'name',
         submission,
         formElements,
@@ -449,7 +463,12 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         formatCurrency: () => '',
       })
 
-      expect(result).toBe('Ringo')
+      expect(result).toEqual(
+        expect.objectContaining({
+          element: expect.objectContaining({ id: elementId }),
+          value: 'Ringo',
+        }),
+      )
     })
   })
 })
