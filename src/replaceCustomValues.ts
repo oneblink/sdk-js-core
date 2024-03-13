@@ -234,8 +234,9 @@ export function getElementSubmissionValue({
         formatCurrency,
       })
       if (result) {
-        unknown = result.value
-        formElement = result.element
+        return result.value !== undefined || result.value !== null
+          ? result
+          : undefined
       }
     }
   }

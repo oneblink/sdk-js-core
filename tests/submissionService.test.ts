@@ -371,6 +371,18 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
             isDataLookup: false,
           },
           {
+            id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
+            name: 'name',
+            type: 'text',
+            label: 'Name',
+            readOnly: false,
+            required: false,
+            conditionallyShow: false,
+            requiresAllConditionallyShowPredicates: false,
+            isElementLookup: false,
+            isDataLookup: false,
+          },
+          {
             id: 'fbad2d53-ddf3-419d-8ff7-e9ef21167223',
             name: 'submarine',
             type: 'form',
@@ -411,18 +423,6 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
                 ],
               },
             ],
-          },
-          {
-            id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
-            name: 'name',
-            type: 'text',
-            label: 'Name',
-            readOnly: false,
-            required: false,
-            conditionallyShow: false,
-            requiresAllConditionallyShowPredicates: false,
-            isElementLookup: false,
-            isDataLookup: false,
           },
         ],
       },
@@ -505,7 +505,7 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         propertyName: 'date',
         submission: { submarine: { date: '2024-03-13' } },
         formElements,
-        formatDate: (v) => new Date(v).toDateString(),
+        formatDate: (v) => `date is ${v}`,
         formatTime: () => '',
         formatDateTime: () => '',
         formatNumber: () => '',
@@ -517,9 +517,45 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
           element: expect.objectContaining({
             id: 'd4135b47-9004-4d75-aeb3-d2f6232da112',
           }),
-          value: 'Wed Mar 13 2024',
+          value: 'date is 2024-03-13',
         }),
       )
+    })
+
+    it('should work with propertyName not in definition', () => {
+      const result = getElementSubmissionValue({
+        propertyName: 'text',
+        submission: { text: 'hello' },
+        formElements: [],
+        formatDate: () => '',
+        formatTime: () => '',
+        formatDateTime: () => '',
+        formatNumber: () => '',
+        formatCurrency: () => '',
+      })
+      expect(result?.value).toEqual('hello')
+    })
+
+    it('should work with nested propertyName not in definition', () => {
+      const result = getElementSubmissionValue({
+        propertyName: 'text',
+        submission: { text: 'hello' },
+        formElements: [
+          {
+            id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
+            type: 'page',
+            label: 'Page 1',
+            conditionallyShow: false,
+            elements: [],
+          },
+        ],
+        formatDate: () => '',
+        formatTime: () => '',
+        formatDateTime: () => '',
+        formatNumber: () => '',
+        formatCurrency: () => '',
+      })
+      expect(result).toEqual({ value: 'hello' })
     })
   })
 })
