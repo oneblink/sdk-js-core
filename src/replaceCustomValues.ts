@@ -265,6 +265,11 @@ function getElementSubmissionValueByName({
 }):
   | { formElement: FormTypes.FormElement | undefined; unknownValue: unknown }
   | undefined {
+  const unknownValue = submission[propertyName]
+  if (unknownValue === undefined || unknownValue === null) {
+    return undefined
+  }
+
   const formElement = findFormElement(
     formElements,
     (element) =>
@@ -272,11 +277,6 @@ function getElementSubmissionValueByName({
       element.type !== 'section' &&
       element.name === propertyName,
   )
-
-  const unknownValue = submission[propertyName]
-  if (unknownValue === undefined || unknownValue === null) {
-    return undefined
-  }
 
   return { formElement, unknownValue }
 }
@@ -289,9 +289,7 @@ function getElementSubmissionValueById({
   elementId: string
   formElements: FormTypes.FormElement[]
   submission: SubmissionTypes.S3SubmissionData['submission']
-}):
-  | { formElement: FormTypes.FormElement | undefined; unknownValue: unknown }
-  | undefined {
+}): { formElement: FormTypes.FormElement; unknownValue: unknown } | undefined {
   // make sure submission is an object
   if (Object(submission) !== submission) {
     return undefined
@@ -299,7 +297,6 @@ function getElementSubmissionValueById({
 
   const flattenedElements = flattenFormElements(formElements)
 
-  // initialise if propertyName provided and not elementId
   let unknown: unknown = undefined
   let formElement: FormTypes.FormElement | undefined = undefined
 
@@ -328,7 +325,7 @@ function getElementSubmissionValueById({
     }
   }
 
-  if (unknown === undefined || unknown === null) {
+  if (unknown === undefined || unknown === null || formElement === undefined) {
     return undefined
   }
 
