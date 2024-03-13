@@ -14,7 +14,7 @@ import {
   NestedElementRegex,
   matchElementsTagRegex,
 } from './form-elements-regex'
-import { findFormElement } from './formElementsService'
+import { findFormElement, flattenFormElements } from './formElementsService'
 
 export type ReplaceInjectablesFormatters = {
   formatDateTime: (value: string) => string
@@ -297,35 +297,33 @@ function getElementSubmissionValueById({
     return undefined
   }
 
+  const flattenedElements = flattenFormElements(formElements)
+
   // initialise if propertyName provided and not elementId
   let unknown: unknown = undefined
   let formElement: FormTypes.FormElement | undefined = undefined
 
-  for (const element of formElements) {
+  for (const element of flattenedElements) {
     if (elementId === element.id) {
       if ('name' in element) {
         unknown = submission[element.name]
         formElement = element
-        break
       }
+      break
     }
-    if ('elements' in element) {
-      const newSubmissionData =
-        'name' in element ? submission[element.name] : submission
-
-      if (Array.isArray(newSubmissionData) || !element.elements) {
-        continue
-      }
+    if (element.type === 'form') {
+      const newSubmissionData = submission[element.name]
 
       const result = getElementSubmissionValueById({
         elementId,
-        formElements: element.elements,
+        formElements: element.elements ?? [],
         submission:
           newSubmissionData as SubmissionTypes.S3SubmissionData['submission'],
       })
       if (result) {
         unknown = result.unknownValue
         formElement = result.formElement
+        break
       }
     }
   }
