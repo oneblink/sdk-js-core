@@ -223,6 +223,7 @@ export function getElementSubmissionValue({
 
       const result = getElementSubmissionValue({
         elementId,
+        propertyName,
         formElements: element.elements,
         submission:
           newSubmissionData as SubmissionTypes.S3SubmissionData['submission'],
