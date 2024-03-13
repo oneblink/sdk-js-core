@@ -223,6 +223,7 @@ export function getElementSubmissionValue({
 
       const result = getElementSubmissionValue({
         elementId,
+        propertyName,
         formElements: element.elements,
         submission:
           newSubmissionData as SubmissionTypes.S3SubmissionData['submission'],
@@ -233,8 +234,9 @@ export function getElementSubmissionValue({
         formatCurrency,
       })
       if (result) {
-        unknown = result.value
-        formElement = result.element
+        return result.value !== undefined || result.value !== null
+          ? result
+          : undefined
       }
     }
   }

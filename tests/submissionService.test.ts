@@ -353,26 +353,25 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
   describe('getElementSubmissionValue', () => {
     const formElements: FormTypes.FormElement[] = [
       {
-        id: 'fbad2d53-ddf3-419d-8ff7-e9ef21167222',
-        name: 'home',
-        type: 'text',
-        label: 'Home',
-        readOnly: false,
-        required: false,
-        conditionallyShow: false,
-        requiresAllConditionallyShowPredicates: false,
-        isElementLookup: false,
-        isDataLookup: false,
-      },
-      {
-        id: 'fbad2d53-ddf3-419d-8ff7-e9ef21167223',
-        name: 'submarine',
-        type: 'form',
-        formId: 2,
+        id: 'fbad2d53-ddf3-419d-8ff7-e9ef21167224',
+        type: 'page',
+        label: 'Page 1',
         conditionallyShow: false,
         elements: [
           {
-            id: 'd4135b47-9004-4d75-aeb3-d2f6232da112',
+            id: 'fbad2d53-ddf3-419d-8ff7-e9ef21167222',
+            name: 'home',
+            type: 'text',
+            label: 'Home',
+            readOnly: false,
+            required: false,
+            conditionallyShow: false,
+            requiresAllConditionallyShowPredicates: false,
+            isElementLookup: false,
+            isDataLookup: false,
+          },
+          {
+            id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
             name: 'name',
             type: 'text',
             label: 'Name',
@@ -383,19 +382,49 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
             isElementLookup: false,
             isDataLookup: false,
           },
+          {
+            id: 'fbad2d53-ddf3-419d-8ff7-e9ef21167223',
+            name: 'submarine',
+            type: 'form',
+            formId: 2,
+            conditionallyShow: false,
+            elements: [
+              {
+                id: 'd4135b47-9004-4d75-aeb3-d2f6232da112',
+                name: 'name',
+                type: 'text',
+                label: 'Name',
+                readOnly: false,
+                required: false,
+                conditionallyShow: false,
+                requiresAllConditionallyShowPredicates: false,
+                isElementLookup: false,
+                isDataLookup: false,
+              },
+              {
+                id: 'fbad2d53-ddf3-419d-8ff7-e9ef21167223',
+                label: 'Section 8',
+                isCollapsed: false,
+                type: 'section',
+                conditionallyShow: false,
+                elements: [
+                  {
+                    id: 'd4135b47-9004-4d75-aeb3-d2f6232da112',
+                    name: 'date',
+                    type: 'date',
+                    label: 'Date',
+                    readOnly: false,
+                    required: false,
+                    conditionallyShow: false,
+                    requiresAllConditionallyShowPredicates: false,
+                    isElementLookup: false,
+                    isDataLookup: false,
+                  },
+                ],
+              },
+            ],
+          },
         ],
-      },
-      {
-        id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
-        name: 'name',
-        type: 'text',
-        label: 'Name',
-        readOnly: false,
-        required: false,
-        conditionallyShow: false,
-        requiresAllConditionallyShowPredicates: false,
-        isElementLookup: false,
-        isDataLookup: false,
       },
     ]
 
@@ -469,6 +498,64 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
           value: 'Ringo',
         }),
       )
+    })
+
+    it('should work with nested values', () => {
+      const result = getElementSubmissionValue({
+        propertyName: 'date',
+        submission: { submarine: { date: '2024-03-13' } },
+        formElements,
+        formatDate: (v) => `date is ${v}`,
+        formatTime: () => '',
+        formatDateTime: () => '',
+        formatNumber: () => '',
+        formatCurrency: () => '',
+      })
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          element: expect.objectContaining({
+            id: 'd4135b47-9004-4d75-aeb3-d2f6232da112',
+          }),
+          value: 'date is 2024-03-13',
+        }),
+      )
+    })
+
+    it('should work with propertyName not in definition', () => {
+      const result = getElementSubmissionValue({
+        propertyName: 'text',
+        submission: { text: 'hello' },
+        formElements: [],
+        formatDate: () => '',
+        formatTime: () => '',
+        formatDateTime: () => '',
+        formatNumber: () => '',
+        formatCurrency: () => '',
+      })
+      expect(result?.value).toEqual('hello')
+    })
+
+    it('should work with nested propertyName not in definition', () => {
+      const result = getElementSubmissionValue({
+        propertyName: 'text',
+        submission: { text: 'hello' },
+        formElements: [
+          {
+            id: 'd4135b47-9004-4d75-aeb3-d2f6232da111',
+            type: 'page',
+            label: 'Page 1',
+            conditionallyShow: false,
+            elements: [],
+          },
+        ],
+        formatDate: () => '',
+        formatTime: () => '',
+        formatDateTime: () => '',
+        formatNumber: () => '',
+        formatCurrency: () => '',
+      })
+      expect(result).toEqual({ value: 'hello' })
     })
   })
 })
