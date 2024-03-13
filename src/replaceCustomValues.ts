@@ -14,6 +14,7 @@ import {
   NestedElementRegex,
   matchElementsTagRegex,
 } from './form-elements-regex'
+import { findFormElement } from './formElementsService'
 
 export type ReplaceInjectablesFormatters = {
   formatDateTime: (value: string) => string
@@ -165,6 +166,44 @@ const ELEMENT_VALUES: Array<{
  * @returns
  */
 export function getElementSubmissionValue({
+  propertyName,
+  submission,
+  formElements,
+  formatDate,
+  formatDateTime,
+  formatTime,
+  formatNumber,
+  formatCurrency,
+}: {
+  propertyName: string
+  formElements: FormTypes.FormElement[]
+  submission: SubmissionTypes.S3SubmissionData['submission']
+} & ReplaceInjectablesFormatters):
+  | {
+      element: FormTypes.FormElement | undefined
+      value: unknown
+    }
+  | undefined
+export function getElementSubmissionValue({
+  elementId,
+  submission,
+  formElements,
+  formatDate,
+  formatDateTime,
+  formatTime,
+  formatNumber,
+  formatCurrency,
+}: {
+  elementId: string
+  formElements: FormTypes.FormElement[]
+  submission: SubmissionTypes.S3SubmissionData['submission']
+} & ReplaceInjectablesFormatters):
+  | {
+      element: FormTypes.FormElement | undefined
+      value: unknown
+    }
+  | undefined
+export function getElementSubmissionValue({
   elementId,
   propertyName,
   submission,
@@ -179,34 +218,91 @@ export function getElementSubmissionValue({
   propertyName?: string
   formElements: FormTypes.FormElement[]
   submission: SubmissionTypes.S3SubmissionData['submission']
-} & ReplaceInjectablesFormatters):
-  | {
-      element: FormTypes.FormElement | undefined
-      value: unknown
-    }
-  | undefined {
+} & ReplaceInjectablesFormatters) {
   if (elementId === undefined && propertyName === undefined) {
     return undefined
   }
 
+  let result: ReturnType<typeof getElementSubmissionValueByName> | undefined =
+    undefined
+
+  if (elementId) {
+    result = getElementSubmissionValueById({
+      elementId,
+      formElements,
+      submission,
+    })
+  } else if (propertyName) {
+    result = getElementSubmissionValueByName({
+      propertyName,
+      formElements,
+      submission,
+    })
+  }
+
+  if (!result) {
+    return
+  }
+  return formatValue({
+    element: result.formElement,
+    unknownValue: result.unknownValue,
+    formatDate,
+    formatTime,
+    formatDateTime,
+    formatCurrency,
+    formatNumber,
+  })
+}
+
+function getElementSubmissionValueByName({
+  propertyName,
+  formElements,
+  submission,
+}: {
+  propertyName: string
+  formElements: FormTypes.FormElement[]
+  submission: SubmissionTypes.S3SubmissionData['submission']
+}):
+  | { formElement: FormTypes.FormElement | undefined; unknownValue: unknown }
+  | undefined {
+  const formElement = findFormElement(
+    formElements,
+    (element) =>
+      element.type !== 'page' &&
+      element.type !== 'section' &&
+      element.name === propertyName,
+  )
+
+  const unknownValue = submission[propertyName]
+  if (unknownValue === undefined || unknownValue === null) {
+    return undefined
+  }
+
+  return { formElement, unknownValue }
+}
+
+function getElementSubmissionValueById({
+  elementId,
+  formElements,
+  submission,
+}: {
+  elementId: string
+  formElements: FormTypes.FormElement[]
+  submission: SubmissionTypes.S3SubmissionData['submission']
+}):
+  | { formElement: FormTypes.FormElement | undefined; unknownValue: unknown }
+  | undefined {
   // make sure submission is an object
   if (Object(submission) !== submission) {
     return undefined
   }
 
   // initialise if propertyName provided and not elementId
-  let unknown: unknown = elementId ? undefined : submission[propertyName ?? '']
+  let unknown: unknown = undefined
   let formElement: FormTypes.FormElement | undefined = undefined
 
-  const matchFn = (element: FormTypes.FormElement) => {
-    if (elementId) {
-      return elementId === element.id
-    }
-    return 'name' in element && element.name === propertyName
-  }
-
   for (const element of formElements) {
-    if (matchFn(element)) {
+    if (elementId === element.id) {
       if ('name' in element) {
         unknown = submission[element.name]
         formElement = element
@@ -221,22 +317,15 @@ export function getElementSubmissionValue({
         continue
       }
 
-      const result = getElementSubmissionValue({
+      const result = getElementSubmissionValueById({
         elementId,
-        propertyName,
         formElements: element.elements,
         submission:
           newSubmissionData as SubmissionTypes.S3SubmissionData['submission'],
-        formatDate,
-        formatDateTime,
-        formatTime,
-        formatNumber,
-        formatCurrency,
       })
       if (result) {
-        return result.value !== undefined || result.value !== null
-          ? result
-          : undefined
+        unknown = result.unknownValue
+        formElement = result.formElement
       }
     }
   }
@@ -245,29 +334,44 @@ export function getElementSubmissionValue({
     return undefined
   }
 
-  switch (formElement?.type) {
+  return { unknownValue: unknown, formElement }
+}
+
+function formatValue({
+  element,
+  unknownValue,
+  formatDate,
+  formatTime,
+  formatDateTime,
+  formatCurrency,
+  formatNumber,
+}: {
+  element: FormTypes.FormElement | undefined
+  unknownValue: unknown
+} & ReplaceInjectablesFormatters) {
+  switch (element?.type) {
     case 'datetime': {
-      const value = unknown as string
-      return { element: formElement, value: formatDateTime(value) }
+      const value = unknownValue as string
+      return { element: element, value: formatDateTime(value) }
     }
     case 'date': {
-      const value = unknown as string
-      return { element: formElement, value: formatDate(value) }
+      const value = unknownValue as string
+      return { element: element, value: formatDate(value) }
     }
     case 'time': {
-      const value = unknown as string
-      return { element: formElement, value: formatTime(value) }
+      const value = unknownValue as string
+      return { element: element, value: formatTime(value) }
     }
     case 'radio':
     case 'autocomplete': {
-      const value = unknown as string
-      const option = formElement.options?.find((opt) => opt.value === value)
-      return { element: formElement, value: option?.label || value }
+      const value = unknownValue as string
+      const option = element.options?.find((opt) => opt.value === value)
+      return { element: element, value: option?.label || value }
     }
 
     case 'checkboxes': {
-      const value = unknown as string[]
-      const options = formElement.options
+      const value = unknownValue as string[]
+      const options = element.options
       const selectedOptionLabels: string[] = value.reduce(
         (labels: string[], selectedOption: string) => {
           const foundOption = options?.find((o) => o.value === selectedOption)
@@ -277,19 +381,19 @@ export function getElementSubmissionValue({
         [],
       )
       return {
-        element: formElement,
+        element: element,
         value: selectedOptionLabels.length ? selectedOptionLabels : undefined,
       }
     }
     case 'compliance': {
-      const value = unknown as {
+      const value = unknownValue as {
         value?: string
       }
-      const option = (formElement.options || []).find(
+      const option = (element.options || []).find(
         (option: FormTypes.ChoiceElementOption) => option.value === value.value,
       )
       return {
-        element: formElement,
+        element: element,
         value: {
           ...value,
           value: option?.label || value.value,
@@ -297,9 +401,9 @@ export function getElementSubmissionValue({
       }
     }
     case 'select': {
-      if (formElement.multi) {
-        const value = unknown as string[]
-        const options = formElement.options
+      if (element.multi) {
+        const value = unknownValue as string[]
+        const options = element.options
         const selectedOptionLabels: string[] = value.reduce(
           (labels: string[], selectedOption: string) => {
             const foundOption = options?.find((o) => o.value === selectedOption)
@@ -309,50 +413,50 @@ export function getElementSubmissionValue({
           [],
         )
         return {
-          element: formElement,
+          element: element,
           value: selectedOptionLabels.length ? selectedOptionLabels : undefined,
         }
       } else {
-        const value = unknown as string
-        const option = formElement.options?.find((opt) => opt.value === value)
-        return { element: formElement, value: option?.label }
+        const value = unknownValue as string
+        const option = element.options?.find((opt) => opt.value === value)
+        return { element: element, value: option?.label }
       }
     }
     case 'boolean': {
-      const value = unknown as boolean
-      return { element: formElement, value: value ? 'Yes' : 'No' }
+      const value = unknownValue as boolean
+      return { element: element, value: value ? 'Yes' : 'No' }
     }
     case 'calculation': {
-      const value = unknown as number
+      const value = unknownValue as number
       if (!Number.isNaN(value) && Number.isFinite(value)) {
         let text
-        if (formElement.displayAsCurrency) {
+        if (element.displayAsCurrency) {
           text = formatCurrency(value)
         } else {
           text = formatNumber(value)
         }
-        return { element: formElement, value: text }
+        return { element: element, value: text }
       }
       return undefined
     }
     case 'pointAddress':
     case 'geoscapeAddress': {
-      const value = unknown as
+      const value = unknownValue as
         | PointTypes.PointAddress
         | GeoscapeTypes.GeoscapeAddress
       return {
-        element: formElement,
+        element: element,
         value: value?.addressDetails?.formattedAddress || value?.addressId,
       }
     }
     case 'civicaStreetName': {
-      const value = unknown as CivicaTypes.CivicaStreetName
-      return { element: formElement, value: value?.formattedStreet }
+      const value = unknownValue as CivicaTypes.CivicaStreetName
+      return { element: element, value: value?.formattedStreet }
     }
     case 'civicaNameRecord': {
-      const value = unknown as CivicaTypes.CivicaNameRecord
+      const value = unknownValue as CivicaTypes.CivicaNameRecord
       return {
-        element: formElement,
+        element: element,
         value:
           [value?.title, value?.givenName1, value?.familyName]
             .filter((t) => t)
@@ -360,22 +464,22 @@ export function getElementSubmissionValue({
       }
     }
     case 'abn': {
-      const value = unknown as MiscTypes.ABNRecord
+      const value = unknownValue as MiscTypes.ABNRecord
       return {
-        element: formElement,
+        element: element,
         value: value ? getABNNumberFromABNRecord(value) : undefined,
       }
     }
     case 'apiNSWLiquorLicence': {
-      const value = unknown as APINSWTypes.LiquorLicenceDetails | undefined
+      const value = unknownValue as APINSWTypes.LiquorLicenceDetails | undefined
       return {
-        element: formElement,
+        element: element,
         value:
           `${value?.licenceDetail?.licenceNumber} | ${value?.licenceDetail?.licenceName}`.trim(),
       }
     }
     default: {
-      return { element: formElement, value: unknown }
+      return { element: element, value: unknownValue }
     }
   }
 }
