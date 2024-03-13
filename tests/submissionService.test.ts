@@ -480,6 +480,7 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
 
     it('should use elementId before propertyName', () => {
       const elementId = 'd4135b47-9004-4d75-aeb3-d2f6232da112'
+      //@ts-expect-error intentionally passing both in error
       const result = getElementSubmissionValue({
         elementId,
         propertyName: 'name',
@@ -500,10 +501,42 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
       )
     })
 
-    it('should work with nested values', () => {
+    it('should work with a root element after an element with elements', () => {
+      const formElements: FormTypes.FormElement[] = [
+        {
+          id: '123',
+          type: 'section',
+          label: 'Section',
+          elements: [
+            {
+              id: '456',
+              type: 'location',
+              name: 'location',
+              label: 'Location',
+              conditionallyShow: false,
+              isDataLookup: false,
+              isElementLookup: false,
+              required: false,
+            },
+          ],
+          isCollapsed: false,
+          conditionallyShow: false,
+        },
+        {
+          id: '789',
+          type: 'date',
+          name: 'date',
+          label: 'Date',
+          isDataLookup: false,
+          isElementLookup: false,
+          conditionallyShow: false,
+          required: false,
+        },
+      ]
+
       const result = getElementSubmissionValue({
         propertyName: 'date',
-        submission: { submarine: { date: '2024-03-13' } },
+        submission: { date: '2024-03-13' },
         formElements,
         formatDate: (v) => `date is ${v}`,
         formatTime: () => '',
@@ -512,14 +545,7 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
         formatCurrency: () => '',
       })
 
-      expect(result).toEqual(
-        expect.objectContaining({
-          element: expect.objectContaining({
-            id: 'd4135b47-9004-4d75-aeb3-d2f6232da112',
-          }),
-          value: 'date is 2024-03-13',
-        }),
-      )
+      expect(result?.value).toBe('date is 2024-03-13')
     })
 
     it('should work with propertyName not in definition', () => {

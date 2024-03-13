@@ -98,7 +98,7 @@ function findFormElement(
     elements: FormTypes.FormElement[],
   ) => boolean,
   parentElements: FormTypes.FormElement[] = [],
-): FormTypes.FormElement | void {
+): FormTypes.FormElement | undefined {
   for (const element of elements) {
     if (predicate(element, parentElements)) {
       return element
