@@ -1,5 +1,6 @@
 import { ConditionTypes, FormTypes } from '@oneblink/types'
 import evaluateConditionalPredicate from '../../src/conditionalLogicService/evaluateConditionalPredicate'
+import { flattenFormElements } from '../../src/formElementsService'
 
 describe('evaluateConditionalPredicate', () => {
   const predicate: ConditionTypes.ConditionalPredicate = {
@@ -41,6 +42,47 @@ describe('evaluateConditionalPredicate', () => {
     conditionallyShowPredicates: [predicate],
     isDataLookup: false,
     isElementLookup: false,
+  }
+  const nestedPredicate: ConditionTypes.ConditionalPredicate = {
+    elementId: 'formFormElement',
+    type: 'FORM',
+    predicate: predicate,
+  }
+
+  const nestedPredicateElement: FormTypes.FormElement = {
+    id: 'predicateNumber',
+    name: 'predicateNumber',
+    label: 'predicateNumber',
+    type: 'number',
+    required: false,
+    conditionallyShow: true,
+    conditionallyShowPredicates: [nestedPredicate],
+    isDataLookup: false,
+    isElementLookup: false,
+    isSlider: false,
+  }
+  const childFormFormElementPredicate: ConditionTypes.ConditionalPredicate = {
+    elementId: 'childFormFormElement',
+    type: 'FORM',
+    predicate: predicate,
+  }
+  const parentFormFormElementPredicate: ConditionTypes.ConditionalPredicate = {
+    elementId: 'parentFormFormElement',
+    type: 'FORM',
+    predicate: childFormFormElementPredicate,
+  }
+
+  const deeplyNestedPredicateElement: FormTypes.FormElement = {
+    id: 'predicateNumber',
+    name: 'predicateNumber',
+    label: 'predicateNumber',
+    type: 'number',
+    required: false,
+    conditionallyShow: true,
+    conditionallyShowPredicates: [parentFormFormElementPredicate],
+    isDataLookup: false,
+    isElementLookup: false,
+    isSlider: false,
   }
 
   test('should show root element', () => {
@@ -107,5 +149,71 @@ describe('evaluateConditionalPredicate', () => {
       },
     })
     expect(isShown).toBe(predicateElement)
+  })
+
+  test('should show element conditionally shown from element within a form element', () => {
+    const formFormElement: FormTypes.FormFormElement = {
+      id: 'formFormElement',
+      formId: 1,
+      name: 'formFormElement',
+      type: 'form',
+      conditionallyShow: false,
+      elements: [comparisonElement],
+    }
+    const isShown = evaluateConditionalPredicate({
+      predicate: nestedPredicate,
+      formElementsCtrl: {
+        flattenedElements: flattenFormElements([
+          formFormElement,
+          nestedPredicateElement,
+        ]),
+        model: {
+          formFormElement: {
+            comparisonNumber: 1,
+          },
+          predicateNumber: 1,
+        },
+      },
+    })
+
+    expect(isShown).toBe(nestedPredicateElement)
+  })
+
+  test('should show element conditionally shown from element within a deeply nested form element', () => {
+    const childFormFormElement: FormTypes.FormFormElement = {
+      id: 'childFormFormElement',
+      formId: 1,
+      name: 'childFormFormElement',
+      type: 'form',
+      conditionallyShow: false,
+      elements: [comparisonElement],
+    }
+    const parentFormFormElement: FormTypes.FormFormElement = {
+      id: 'parentFormFormElement',
+      formId: 1,
+      name: 'parentFormFormElement',
+      type: 'form',
+      conditionallyShow: false,
+      elements: [childFormFormElement],
+    }
+    const isShown = evaluateConditionalPredicate({
+      predicate: parentFormFormElementPredicate,
+      formElementsCtrl: {
+        flattenedElements: flattenFormElements([
+          parentFormFormElement,
+          deeplyNestedPredicateElement,
+        ]),
+        model: {
+          parentFormFormElement: {
+            childFormFormElement: {
+              comparisonNumber: 1,
+            },
+          },
+          predicateNumber: 1,
+        },
+      },
+    })
+
+    expect(isShown).toBe(deeplyNestedPredicateElement)
   })
 })

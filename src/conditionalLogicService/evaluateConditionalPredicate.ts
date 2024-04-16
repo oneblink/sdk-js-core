@@ -3,6 +3,7 @@ import { FormElementsCtrl } from '../types'
 import { typeCastService, formElementsService } from '..'
 import evaluateConditionalOptionsPredicate from './evaluateConditionalOptionsPredicate'
 import { conditionallyShowByPredicate } from './conditionallyShowElement'
+import { flattenFormElements } from '../formElementsService'
 
 const fnMap = {
   '>': (lhs: number, rhs: number) => lhs > rhs,
@@ -139,6 +140,28 @@ export default function evaluateConditionalPredicate({
       }
       return
     }
+    case 'FORM':
+      if (predicate.predicate) {
+        if (
+          !predicateElement ||
+          predicateElement.type !== 'form' ||
+          !predicateElement.elements
+        ) {
+          return
+        }
+        const formModel = formElementsCtrl.model[predicateElement.name] as {
+          [name: string]: unknown
+        }
+        return evaluateConditionalPredicate({
+          predicate: predicate.predicate,
+          formElementsCtrl: {
+            flattenedElements: flattenFormElements(predicateElement.elements),
+            model: formModel,
+            parentFormElementsCtrl: formElementsCtrl,
+          },
+        })
+      }
+      return
     case 'OPTIONS':
     default: {
       const optionsPredicateElement =

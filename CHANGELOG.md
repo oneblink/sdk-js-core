@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## Added
+
+- support for `FORM` predicate type in `evaluateConditionalPredicate`
+
 ## [6.0.1] - 2024-03-14
 
 ### Fixed
