@@ -152,14 +152,19 @@ export default function evaluateConditionalPredicate({
         const formModel = formElementsCtrl.model[predicateElement.name] as {
           [name: string]: unknown
         }
-        return evaluateConditionalPredicate({
-          predicate: predicate.predicate,
-          formElementsCtrl: {
-            flattenedElements: flattenFormElements(predicateElement.elements),
+        const result = conditionallyShowByPredicate(
+          {
             model: formModel,
+            flattenedElements: flattenFormElements(predicateElement.elements),
             parentFormElementsCtrl: formElementsCtrl,
           },
-        })
+          predicate.predicate,
+          [],
+        )
+
+        if (result) {
+          return predicateElement
+        }
       }
       return
     case 'OPTIONS':
