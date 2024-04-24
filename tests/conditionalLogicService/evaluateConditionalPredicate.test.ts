@@ -43,47 +43,6 @@ describe('evaluateConditionalPredicate', () => {
     isDataLookup: false,
     isElementLookup: false,
   }
-  const nestedPredicate: ConditionTypes.ConditionalPredicate = {
-    elementId: 'formFormElement',
-    type: 'FORM',
-    predicate: predicate,
-  }
-
-  const nestedPredicateElement: FormTypes.FormElement = {
-    id: 'predicateNumber',
-    name: 'predicateNumber',
-    label: 'predicateNumber',
-    type: 'number',
-    required: false,
-    conditionallyShow: true,
-    conditionallyShowPredicates: [nestedPredicate],
-    isDataLookup: false,
-    isElementLookup: false,
-    isSlider: false,
-  }
-  const childFormFormElementPredicate: ConditionTypes.ConditionalPredicate = {
-    elementId: 'childFormFormElement',
-    type: 'FORM',
-    predicate: predicate,
-  }
-  const parentFormFormElementPredicate: ConditionTypes.ConditionalPredicate = {
-    elementId: 'parentFormFormElement',
-    type: 'FORM',
-    predicate: childFormFormElementPredicate,
-  }
-
-  const deeplyNestedPredicateElement: FormTypes.FormElement = {
-    id: 'predicateNumber',
-    name: 'predicateNumber',
-    label: 'predicateNumber',
-    type: 'number',
-    required: false,
-    conditionallyShow: true,
-    conditionallyShowPredicates: [parentFormFormElementPredicate],
-    isDataLookup: false,
-    isElementLookup: false,
-    isSlider: false,
-  }
 
   test('should show root element', () => {
     const isShown = evaluateConditionalPredicate({
