@@ -73,7 +73,8 @@ const toLookupElement = (
     case 'bsb':
     case 'autocomplete':
     case 'abn':
-    case 'apiNSWLiquorLicence': {
+    case 'apiNSWLiquorLicence':
+    case 'googleAddress': {
       return e
     }
     default: {

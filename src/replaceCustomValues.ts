@@ -444,6 +444,14 @@ function formatValue({
         value: value?.addressDetails?.formattedAddress || value?.addressId,
       }
     }
+
+    //TODO: Update this with its custom value
+    case 'googleAddress': {
+      return {
+        element: element,
+        value: unknownValue,
+      }
+    }
     case 'civicaStreetName': {
       const value = unknownValue as CivicaTypes.CivicaStreetName
       return { element: element, value: value?.formattedStreet }
