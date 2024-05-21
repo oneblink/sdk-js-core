@@ -3,6 +3,7 @@ import {
   CivicaTypes,
   FormTypes,
   GeoscapeTypes,
+  GoogleTypes,
   MiscTypes,
   PointTypes,
   ScheduledTasksTypes,
@@ -444,12 +445,11 @@ function formatValue({
         value: value?.addressDetails?.formattedAddress || value?.addressId,
       }
     }
-
-    //TODO: Update this with its custom value
     case 'googleAddress': {
+      const value = unknownValue as GoogleTypes.GoogleMapsAddress
       return {
         element: element,
-        value: unknownValue,
+        value: value.formattedAddress,
       }
     }
     case 'civicaStreetName': {
