@@ -449,7 +449,7 @@ function formatValue({
       const value = unknownValue as GoogleTypes.GoogleMapsAddress
       return {
         element: element,
-        value: value.formattedAddress || value.id,
+        value: value.formatted_address || value.place_id,
       }
     }
     case 'civicaStreetName': {
