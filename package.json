@@ -1,14 +1,14 @@
 {
   "name": "@oneblink/sdk-core",
   "description": "OneBlink SDK for JavaScript (works in Browsers and NodeJS)",
-  "version": "6.2.0-beta.2",
+  "version": "6.2.0-beta.3",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
   "bugs": {
     "url": "https://github.com/oneblink/sdk-core-js/issues"
   },
   "devDependencies": {
     "@microsoft/eslint-plugin-sdl": "^0.2.0",
-    "@oneblink/release-cli": "^3.0.0",
+    "@oneblink/release-cli": "^3.2.0",
     "@oneblink/types": "github:oneblink/types",
     "@types/jest": "^29.5.0",
     "@types/lodash": "^4.14.201",
@@ -62,6 +62,7 @@
     "start": "tsc-watch",
     "test": "jest",
     "types": "npm install --save-dev github:oneblink/types",
-    "typescript": "tsc --noEmit"
+    "typescript": "tsc --noEmit",
+    "update-dependents": "oneblink-release update-dependents"
   }
 }
