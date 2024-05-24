@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - `googleAddress` to typed Lookup Elements
+- `groups` to `parseUserProfile()`
 
 ## [6.1.0] - 2024-04-30
 

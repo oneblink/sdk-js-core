@@ -77,6 +77,9 @@ export function parseUserProfile(
       typeof jwtPayload['custom:phone_number_verified'] === 'boolean'
         ? jwtPayload['custom:phone_number_verified']
         : undefined,
+    groups: Array.isArray(jwtPayload['custom:groups'])
+      ? jwtPayload['custom:groups']
+      : undefined,
   }
 
   if (
