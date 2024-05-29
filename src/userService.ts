@@ -79,7 +79,7 @@ export function parseUserProfile(
         : undefined,
     groups:
       typeof jwtPayload['custom:groups'] === 'string'
-        ? jwtPayload['custom:groups'].split(',')
+        ? jwtPayload['custom:groups'].split(',').map((group) => group.trim())
         : undefined,
   }
 
