@@ -242,4 +242,164 @@ describe('evaluateConditionalPredicate', () => {
 
     expect(isShown).toBe(parentFormFormElement)
   })
+
+  describe('Point and Geoscape Element conditional predicates', () => {
+    const conditionalPredicatePoint: ConditionTypes.ConditionalPredicate = {
+      elementId: 'predicatePoint',
+      type: 'ADDRESS_PROPERTY',
+      definition: { property: 'IS_PO_BOX_ADDRESS', value: true },
+    }
+
+    const conditionalPredicateGeoscape: ConditionTypes.ConditionalPredicate = {
+      elementId: 'predicateGeoscape',
+      type: 'ADDRESS_PROPERTY',
+      definition: { property: 'STATE_EQUALITY', value: 'NSW' },
+    }
+
+    const predicatePoint: FormTypes.PointAddressElement = {
+      id: 'predicatePoint',
+      name: 'predicatePoint',
+      label: 'predicatePoint',
+      type: 'pointAddress',
+      environmentId: '1',
+      required: false,
+      conditionallyShow: false,
+      isDataLookup: false,
+      isElementLookup: false,
+    }
+
+    const predicateGeoscape: FormTypes.GeoscapeAddressElement = {
+      id: 'predicateGeoscape',
+      name: 'predicateGeoscape',
+      label: 'predicateGeoscape',
+      type: 'geoscapeAddress',
+      required: false,
+      conditionallyShow: false,
+      isDataLookup: false,
+      isElementLookup: false,
+    }
+
+    test('should show element using NSW Point PO Box', () => {
+      const shownElement: FormTypes.FormElement = {
+        id: 'shownNumber',
+        name: 'shownNumber',
+        label: 'shownNumber',
+        type: 'number',
+        required: false,
+        isSlider: false,
+        conditionallyShow: true,
+        conditionallyShowPredicates: [conditionalPredicatePoint],
+        isDataLookup: false,
+        isElementLookup: false,
+      }
+      const isShown = evaluateConditionalPredicate({
+        predicate: conditionalPredicatePoint,
+        formElementsCtrl: {
+          flattenedElements: [predicatePoint, shownElement],
+          model: {
+            predicatePoint: {
+              dataset: 'mailAddress',
+            },
+          },
+        },
+      })
+      expect(isShown).toBe(predicatePoint)
+    })
+    test('should show element using NSW Point physical address', () => {
+      const conditionalPredicatePointNoPO: ConditionTypes.ConditionalPredicate =
+        {
+          elementId: 'predicatePoint',
+          type: 'ADDRESS_PROPERTY',
+          definition: { property: 'IS_PO_BOX_ADDRESS', value: false },
+        }
+
+      const shownElement: FormTypes.FormElement = {
+        id: 'shownNumber',
+        name: 'shownNumber',
+        label: 'shownNumber',
+        type: 'number',
+        required: false,
+        isSlider: false,
+        conditionallyShow: true,
+        conditionallyShowPredicates: [conditionalPredicatePointNoPO],
+        isDataLookup: false,
+        isElementLookup: false,
+      }
+      const isShown = evaluateConditionalPredicate({
+        predicate: conditionalPredicatePointNoPO,
+        formElementsCtrl: {
+          flattenedElements: [predicatePoint, shownElement],
+          model: {
+            predicatePoint: {
+              dataset: 'GNAF',
+            },
+          },
+        },
+      })
+      expect(isShown).toBe(predicatePoint)
+    })
+    test('should show element using NSW Point with states', () => {
+      const conditionalPredicatePointStates: ConditionTypes.ConditionalPredicate =
+        {
+          elementId: 'predicatePoint',
+          type: 'ADDRESS_PROPERTY',
+          definition: { property: 'STATE_EQUALITY', value: 'NSW' },
+        }
+
+      const shownElement: FormTypes.FormElement = {
+        id: 'shownNumber',
+        name: 'shownNumber',
+        label: 'shownNumber',
+        type: 'number',
+        required: false,
+        isSlider: false,
+        conditionallyShow: true,
+        conditionallyShowPredicates: [conditionalPredicatePointStates],
+        isDataLookup: false,
+        isElementLookup: false,
+      }
+      const isShown = evaluateConditionalPredicate({
+        predicate: conditionalPredicatePointStates,
+        formElementsCtrl: {
+          flattenedElements: [predicatePoint, shownElement],
+          model: {
+            predicatePoint: {
+              addressDetails: {
+                stateTerritory: 'NSW',
+              },
+            },
+          },
+        },
+      })
+      expect(isShown).toBe(predicatePoint)
+    })
+    test('should show element using Geoscape with States', () => {
+      const shownElement: FormTypes.FormElement = {
+        id: 'shownNumber',
+        name: 'shownNumber',
+        label: 'shownNumber',
+        type: 'number',
+        required: false,
+        isSlider: false,
+        conditionallyShow: true,
+        conditionallyShowPredicates: [conditionalPredicateGeoscape],
+        isDataLookup: false,
+        isElementLookup: false,
+      }
+      const isShown = evaluateConditionalPredicate({
+        predicate: conditionalPredicateGeoscape,
+        formElementsCtrl: {
+          flattenedElements: [predicateGeoscape, shownElement],
+          model: {
+            predicateGeoscape: {
+              addressDetails: {
+                stateTerritory: 'NSW',
+              },
+            },
+          },
+        },
+      })
+      expect(isShown).toBe(predicateGeoscape)
+    })
+  })
 })
