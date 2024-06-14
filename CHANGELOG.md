@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `ADDRESS_DETAILS` predicate type added to `conditionalLogicService.evaluateConditionalPredicate`
+
 ## [6.2.0] - 2024-06-04
 
 ### Added

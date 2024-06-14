@@ -167,6 +167,55 @@ export default function evaluateConditionalPredicate({
         }
       }
       return
+    case 'ADDRESS_PROPERTY': {
+      // Only element that should work as predicate element should be Point or Geoscape.
+      if (
+        !(
+          predicateElement.type === 'pointAddress' ||
+          predicateElement.type === 'geoscapeAddress'
+        )
+      ) {
+        return
+      }
+      if (predicateValue && typeof predicateValue === 'object') {
+        if (predicate.definition.property === 'STATE_EQUALITY') {
+          // Validate that it has the properties we want, in case submission data
+          // is incorrect but has the right element reference.
+          if (
+            'addressDetails' in predicateValue &&
+            predicateValue.addressDetails &&
+            typeof predicateValue.addressDetails === 'object' &&
+            'stateTerritory' in predicateValue.addressDetails &&
+            typeof predicateValue.addressDetails.stateTerritory === 'string'
+          ) {
+            const result =
+              predicateValue.addressDetails.stateTerritory ===
+              predicate.definition.value
+            if (result) {
+              return predicateElement
+            }
+          }
+          return
+        }
+        // If the property isn't State Equality, we are checking Physical addresses. This only exists for Point.
+        if (predicateElement.type === 'pointAddress') {
+          // If the value is true, we only want to return the element for PO Boxes. If it's false, then we only want
+          // to return element for non mail address addresses.
+          if (
+            'dataset' in predicateValue &&
+            typeof predicateValue.dataset === 'string'
+          ) {
+            const result = predicate.definition.value
+              ? predicateValue.dataset === 'mailAddress'
+              : predicateValue.dataset === 'GNAF'
+            if (result) {
+              return predicateElement
+            }
+          }
+        }
+      }
+      return
+    }
     case 'OPTIONS':
     default: {
       const optionsPredicateElement =
