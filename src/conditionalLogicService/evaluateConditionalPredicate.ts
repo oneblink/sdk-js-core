@@ -53,6 +53,11 @@ export default function evaluateConditionalPredicate({
   }
   switch (predicate.type) {
     case 'VALUE': {
+      if (Array.isArray(predicateValue)) {
+        return !predicate.hasValue === !predicateValue.length
+          ? predicateElement
+          : undefined
+      }
       return !predicate.hasValue === !predicateValue
         ? predicateElement
         : undefined
