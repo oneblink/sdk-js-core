@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.3.1] - 2024-08-07
+
 ### Changed
 
 - check if repeatable set element value is an empty array
