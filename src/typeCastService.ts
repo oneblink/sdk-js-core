@@ -227,7 +227,6 @@ const toPaymentSubmissionEvent = (
   switch (e.type) {
     case 'BPOINT':
     case 'CP_PAY':
-    case 'WESTPAC_QUICK_WEB':
     case 'WESTPAC_QUICK_STREAM':
     case 'NSW_GOV_PAY': {
       return e
