@@ -8,7 +8,7 @@ import { getRootElementValueById } from '../src/submissionService'
 import forms from './inject-forms-fixtures/valid-forms.json'
 import invalidForms from './inject-forms-fixtures/invalid-forms.json'
 
-describe('findPaymentElementValue()', () => {
+describe('getRootElementValueById()', () => {
   const createTextElement = (name: string) => {
     const textElement: FormTypes.TextElement = {
       id: name,
@@ -68,6 +68,20 @@ describe('findPaymentElementValue()', () => {
       requiresAllConditionallyShowPredicates: false,
     }
   }
+  const createFormElement = (
+    id: string,
+    elements: FormTypes.FormElement[],
+  ): FormTypes.FormFormElement => {
+    return {
+      id,
+      name: id,
+      type: 'form',
+      elements,
+      conditionallyShow: false,
+      formId: 1,
+      requiresAllConditionallyShowPredicates: false,
+    }
+  }
   const elements: FormTypes.FormElement[] = [
     createPageElement('Page1', [
       createTextElement('A'),
@@ -86,6 +100,9 @@ describe('findPaymentElementValue()', () => {
       ]),
       createTextElement('C'),
       createNumberElement('D'),
+      createFormElement('E', [
+        createFormElement('E_A', [createTextElement('E_A_A')]),
+      ]),
     ]),
     createPageElement('Page2', [createTextElement('Page2Text')]),
   ]
@@ -101,9 +118,14 @@ describe('findPaymentElementValue()', () => {
     C: 'CText',
     D: 5,
     Page2Text: 'Page 2 Text',
+    E: {
+      E_A: {
+        E_A_A: 'Nested Form Text',
+      },
+    },
   }
 
-  test('should return a nested element value within a submission object', () => {
+  test('should return an element value within a submission object', () => {
     const elementNameAndId = 'D'
     const value = getRootElementValueById(
       elementNameAndId,
@@ -121,8 +143,16 @@ describe('findPaymentElementValue()', () => {
     )
     expect(value).toBe('B_C_C_AText')
   })
-
-  test('`getPaymentValueFromPath` should return undefined when given an invalid element id', () => {
+  test('should return a nested element value in a nested form within a submission object', () => {
+    const elementNameAndId = 'E_A_A'
+    const value = getRootElementValueById(
+      elementNameAndId,
+      elements,
+      submission,
+    )
+    expect(value).toBe('Nested Form Text')
+  })
+  test('should return undefined when given an invalid element id', () => {
     const value = getRootElementValueById('abc123', elements, submission)
     expect(value).toBe(undefined)
   })
