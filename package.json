@@ -32,8 +32,8 @@
     "doc": "docs"
   },
   "engines": {
-    "node": ">=16",
-    "npm": ">=8"
+    "node": ">=18",
+    "npm": ">=10"
   },
   "files": [
     "dist"
