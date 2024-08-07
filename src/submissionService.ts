@@ -24,20 +24,40 @@ export * from './replaceCustomValues'
 export function getRootElementValueById(
   formElementId: string,
   formElements: FormTypes.FormElement[],
-  submission: SubmissionTypes.S3SubmissionData['submission'],
+  submission: SubmissionTypes.S3SubmissionData['submission'] | undefined,
 ): unknown {
   for (const formElement of formElements) {
-    if (formElement.type === 'page' || formElement.type === 'section') {
-      const value = getRootElementValueById(
-        formElementId,
-        formElement.elements,
-        submission,
-      )
-      if (value !== undefined) {
-        return value
+    switch (formElement.type) {
+      case 'section':
+      case 'page': {
+        const value = getRootElementValueById(
+          formElementId,
+          formElement.elements,
+          submission,
+        )
+        if (value !== undefined) {
+          return value
+        }
+        break
       }
-    } else if (formElement.id === formElementId) {
-      return submission[formElement.name]
+      case 'form': {
+        const value = getRootElementValueById(
+          formElementId,
+          formElement.elements || [],
+          submission?.[
+            formElement.name
+          ] as SubmissionTypes.S3SubmissionData['submission'],
+        )
+        if (value !== undefined) {
+          return value
+        }
+        break
+      }
+      default: {
+        if (formElement.id === formElementId) {
+          return submission?.[formElement.name]
+        }
+      }
     }
   }
 }
