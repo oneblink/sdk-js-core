@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - **[BREAKING]** support for NodeJS 16
 
+### Changed
+
+- `formElementsService.getRootElementValueById()` to support retrieving submission data from nested forms
+
 ## [6.3.1] - 2024-08-07
 
 ### Changed
