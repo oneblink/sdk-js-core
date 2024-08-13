@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [7.0.0] - 2024-08-13
+
 ### Removed
 
 - **[BREAKING]** support for NodeJS 16
