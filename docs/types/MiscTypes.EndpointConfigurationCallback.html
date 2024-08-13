@@ -16,7 +16,7 @@
 <li><a href="../modules/MiscTypes.html">MiscTypes</a></li>
 <li><a href="MiscTypes.EndpointConfigurationCallback.html">EndpointConfigurationCallback</a></li></ul>
 <h1>Type alias EndpointConfigurationCallback</h1></div>
-<div class="tsd-signature">Endpoint<wbr/>Configuration<wbr/>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span>configuration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span><br/><span>        </span>secret<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>        </span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;CALLBACK&quot;</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-signature">Endpoint<wbr/>Configuration<wbr/>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span>configuration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span><br/><span>        </span>organisationManagedSecretId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>        </span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;CALLBACK&quot;</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-comment tsd-typography">
 <a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
   <h3>Examples</h3>
@@ -28,14 +28,15 @@
 <h4>Type declaration</h4>
 <ul class="tsd-parameters">
 <li class="tsd-parameter">
-<h5>configuration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span>secret<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></h5>
+<h5>configuration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span>organisationManagedSecretId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></h5>
 <div class="tsd-comment tsd-typography"><p>The configuration of the endpoint.</p>
 </div>
 <ul class="tsd-parameters">
 <li class="tsd-parameter">
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> secret<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
-<div class="tsd-comment tsd-typography"><p>Secret string used for verifying the authenticity of the request made
-from the OneBlink system.</p>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> organisation<wbr/>Managed<wbr/>Secret<wbr/>Id<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>The identifier for the organisation managed secret that is associated
+with the endpoint. Should represent the secret string used for verifying
+the authenticity of the request made from the OneBlink system.</p>
 </div></li>
 <li class="tsd-parameter">
 <h5>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
@@ -118,5 +119,8 @@ from the OneBlink system.</p>
 <li class="current tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-external"><a href="MiscTypes.EndpointConfigurationCallback.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Endpoint<wbr/>Configuration<wbr/>Callback</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-external"><a href="MiscTypes.GenericObject.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Generic<wbr/>Object</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-external"><a href="MiscTypes.IdResource.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Id<wbr/>Resource</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-external"><a href="MiscTypes.NewCustomerSecret.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>New<wbr/>Customer<wbr/>Secret</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-external"><a href="MiscTypes.NewOrganisationManagedSecret.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>New<wbr/>Organisation<wbr/>Managed<wbr/>Secret</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-external"><a href="MiscTypes.OrganisationManagedSecret.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Organisation<wbr/>Managed<wbr/>Secret</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-external"><a href="MiscTypes.StatesAndTerritories.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>States<wbr/>And<wbr/>Territories</a></li></ul></nav></div></div>
 <div class="overlay"></div><script src="../assets/main.js"></script></body></html>
