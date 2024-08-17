@@ -11,15 +11,16 @@ export default function evaluateConditionalOptionsPredicate({
 }): boolean {
   return predicate.optionIds.some((optionId) => {
     const option = predicateElement.options?.find((o) => o.id === optionId)
-    if (option) {
+    const optionValue = option?.value ?? optionId
+    if (optionValue) {
       if (Array.isArray(value)) {
         return value.some((modelValue) => {
-          return modelValue === option.value
+          return modelValue === optionValue
         })
       } else if (predicateElement.type === 'compliance' && value) {
-        return option.value === (value as { value: unknown }).value
+        return optionValue === (value as { value: unknown }).value
       } else {
-        return option.value === value
+        return optionValue === value
       }
     } else {
       return false
