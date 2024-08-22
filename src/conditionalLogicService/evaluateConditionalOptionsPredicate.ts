@@ -23,18 +23,34 @@ export default function evaluateConditionalOptionsPredicate({
    *
    * Eg
    *
-   * { options: [ { id: 'abc123', label: 'German Shephard',
-   * value:'germanShepherd', attributes: [{ elementId: 'xyz456', optionIds:
-   * ['aaa111']}]}] }
+   *     const element = {
+   *       ...elementProps,
+   *       options: [
+   *         {
+   *           id: 'abc123',
+   *           label: 'German Shepherd',
+   *           value: 'germanShepherd',
+   *           attributes: [{ elementId: 'xyz456', optionIds: ['aaa111'] }],
+   *         },
+   *       ],
+   *     }
    *
    * If a predicate option is not found the optionIds property of the predicate
    * argument will contain the dynamic list option's attribute value.
    *
    * Eg
    *
-   * { options: [ { id: 'abc123', label: 'German Shephard',
-   * value:'germanShepherd', attributes: [{ elementId: 'xyz456', optionIds:
-   * ['dog']}]}] }
+   *     const element = {
+   *       ...elementProps,
+   *       options: [
+   *         {
+   *           id: 'abc123',
+   *           label: 'German Shepherd',
+   *           value: 'germanShepherd',
+   *           attributes: [{ elementId: 'xyz456', optionIds: ['dog'] }],
+   *         },
+   *       ],
+   *     }
    */
   return predicate.optionIds.some((optionId) => {
     const option = predicateElement.options?.find((o) => o.id === optionId)
