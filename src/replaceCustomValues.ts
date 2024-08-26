@@ -694,3 +694,177 @@ export function replaceInjectablesWithSubmissionValues(
     hadAllInjectablesReplaced,
   }
 }
+
+/**
+ * Process a resource with injectable element values to turn a single resource
+ * (could be a single) into multiple resources. e.g. `"{ELEMENT:Parent_Name}:
+ * {ELEMENT:Children|Child_Name}"` with the following submission data:
+ *
+ * ```json
+ * {
+ *   "Parent_Name": "John",
+ *   "Children": [
+ *     {
+ *       "Child_Name": "Jane"
+ *     },
+ *     {
+ *       "Child_Name": "Tom"
+ *     }
+ *   ]
+ * }
+ * ```
+ *
+ * Would result in the following resources:
+ *
+ * - `"John: Jane"`
+ * - `"John: Tom"`
+ *
+ * #### Example
+ *
+ * ```js
+ * const emailAddresses = processInjectableResource(
+ *   '{ELEMENT:People|Email_Address}',
+ *   {
+ *     People: [
+ *       {
+ *         Email_Address: 'user@oneblink.io',
+ *       },
+ *       {
+ *         Email_Address: 'admin@oneblink.io',
+ *       },
+ *     ],
+ *   },
+ *   [
+ *     {
+ *       id: '18dcd3e0-6e2f-462e-803b-e24562d9fa6d',
+ *       type: 'repeatableSet',
+ *       name: 'People',
+ *       label: 'People',
+ *       elements: [
+ *         {
+ *           id: 'd0902113-3f77-4070-adbd-ca3ae95ce091',
+ *           type: 'email',
+ *           name: 'Email_Address',
+ *           label: 'Email_Address',
+ *         },
+ *       ],
+ *     },
+ *   ],
+ *   (resource, submission, formElements) => {
+ *     const { text } = replaceInjectablesWithElementValues(resource, {
+ *       submission,
+ *       formElements,
+ *       // other options
+ *     })
+ *     return text
+ *   },
+ * )
+ * // emailAddresses === ["user@oneblink.io", "admin@oneblink.io"]
+ * ```
+ *
+ * @param resource The resource that contains properties that support injection
+ *   or a string
+ * @param submission The form submission data to process
+ * @param formElements The form elements to process
+ * @param injector A function to inject values, this allows custom formatters to
+ *   be used. Return `undefined` to prevent the injection from recursively
+ *   continuing.
+ * @param replacer An optional function to replace nested injectables when
+ *   creating multiple resources from repeatable sets. Only required if the
+ *   `resource` param is not a `string`.
+ * @returns
+ */
+export function processInjectableResource<T>(
+  resource: T,
+  submission: SubmissionTypes.S3SubmissionData['submission'],
+  formElements: FormTypes.FormElement[],
+  injector: (
+    resource: T,
+    submission: SubmissionTypes.S3SubmissionData['submission'],
+    formElements: FormTypes.FormElement[],
+  ) =>
+    | [injectedText: string, resourceKey: string, newResource: T]
+    | string
+    | undefined,
+  replacer: (resource: T, replaceAll: (resourceText: string) => string) => T = (
+    resource,
+    replaceAll,
+  ) => replaceAll(String(resource)) as T,
+): Map<string, T> {
+  const newResources: Map<string, T> = new Map<string, T>()
+
+  const injectorResult = injector(resource, submission, formElements)
+  if (!injectorResult) {
+    return newResources
+  }
+
+  const [text, resourceKey, newResource] =
+    typeof injectorResult === 'string'
+      ? [injectorResult, injectorResult, injectorResult as T]
+      : injectorResult
+
+  // Find nested form elements
+  const matches: Map<string, boolean> = new Map()
+  matchElementsTagRegex(
+    {
+      text,
+      excludeNestedElements: false,
+    },
+    ({ elementName }) => {
+      const [repeatableSetElementName, ...elementNames] = elementName.split('|')
+      matches.set(repeatableSetElementName, !!elementNames.length)
+    },
+  )
+
+  if (matches.size) {
+    matches.forEach((hasNestedFormElements, repeatableSetElementName) => {
+      if (hasNestedFormElements) {
+        // Attempt to create a new resource for each entry in the repeatable set.
+        const entries = submission?.[repeatableSetElementName]
+        if (Array.isArray(entries)) {
+          const repeatableSetElement = findFormElement(
+            formElements,
+            (formElement) => {
+              return (
+                'name' in formElement &&
+                formElement.name === repeatableSetElementName
+              )
+            },
+          )
+          if (
+            repeatableSetElement &&
+            'elements' in repeatableSetElement &&
+            Array.isArray(repeatableSetElement.elements)
+          ) {
+            for (const entry of entries) {
+              const replacedResource = replacer(newResource, (resourceText) => {
+                return resourceText.replaceAll(
+                  `{ELEMENT:${repeatableSetElementName}|`,
+                  '{ELEMENT:',
+                )
+              })
+              const nestedResources = processInjectableResource(
+                replacedResource,
+                entry,
+                repeatableSetElement.elements,
+                injector,
+                replacer,
+              )
+              if (nestedResources.size) {
+                nestedResources.forEach((nestedResource, nestedResourceKey) => {
+                  if (!newResources.has(nestedResourceKey)) {
+                    newResources.set(nestedResourceKey, nestedResource)
+                  }
+                })
+              }
+            }
+          }
+        }
+      }
+    })
+  } else {
+    newResources.set(resourceKey, newResource)
+  }
+
+  return newResources
+}
