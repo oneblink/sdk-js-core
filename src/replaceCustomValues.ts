@@ -697,18 +697,19 @@ export function replaceInjectablesWithSubmissionValues(
 
 /**
  * Process a resource with injectable element values to turn a single resource
- * (could be a single) into multiple resources. e.g. `"{ELEMENT:Parent_Name}:
- * {ELEMENT:Children|Child_Name}"` with the following submission data:
+ * (could be a single) into multiple resources. e.g.
+ * `"{ELEMENT:Children|Child_Name} {ELEMENT:Family_Name}"` with the following
+ * submission data:
  *
  * ```json
  * {
- *   "Parent_Name": "John",
+ *   "Family_Name": "Smith",
  *   "Children": [
  *     {
- *       "Child_Name": "Jane"
+ *       "Child_Name": "John"
  *     },
  *     {
- *       "Child_Name": "Tom"
+ *       "Child_Name": "Jane"
  *     }
  *   ]
  * }
@@ -716,8 +717,8 @@ export function replaceInjectablesWithSubmissionValues(
  *
  * Would result in the following resources:
  *
- * - `"John: Jane"`
- * - `"John: Tom"`
+ * - `"John Smith"`
+ * - `"Jane Smith"`
  *
  * #### Example
  *

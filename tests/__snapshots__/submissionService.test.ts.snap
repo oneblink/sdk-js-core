@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`processInjectableResource should correctly replace nested injectables 1`] = `
+Map {
+  "John is part of the Smith family" => "John is part of the Smith family",
+  "Jane is part of the Smith family" => "Jane is part of the Smith family",
+}
+`;
+
+exports[`processInjectableResource should handle missing element values gracefully 1`] = `Map {}`;
+
+exports[`processInjectableResource should handle multiple replacements correctly 1`] = `
+Map {
+  "Smith Smith" => "Smith Smith",
+}
+`;
+
+exports[`processInjectableResource should handle single element without iteration 1`] = `
+Map {
+  "Smith" => "Smith",
+}
+`;
+
+exports[`processInjectableResource should replace injectable values correctly 1`] = `
+Map {
+  "John Smith" => "John Smith",
+  "Jane Smith" => "Jane Smith",
+}
+`;
+
+exports[`processInjectableResource should replace injectable values correctly when resource is not a string 1`] = `
+[
+  {
+    "book_title": "The Adventures of Superman",
+    "favorite_sentence": "It was a bright cold day in April, and the clocks were striking thirteen.",
+  },
+  {
+    "book_title": "The Adventures of Wonder Woman",
+    "favorite_sentence": "It was a bright cold day in April, and the clocks were striking thirteen.",
+  },
+  {
+    "book_title": "The Mysterious Case of Sherlock Holmes",
+    "favorite_sentence": "Elementary, my dear Watson.",
+  },
+  {
+    "book_title": "The Mysterious Case of Hercule Poirot",
+    "favorite_sentence": "Elementary, my dear Watson.",
+  },
+  {
+    "book_title": "Strange Times in Gotham",
+    "favorite_sentence": "It was the best of times, it was the worst of times.",
+  },
+  {
+    "book_title": "Strange Times in Metropolis",
+    "favorite_sentence": "It was the best of times, it was the worst of times.",
+  },
+  {
+    "book_title": "The Journey of Superman",
+    "favorite_sentence": "Not all those who wander are lost.",
+  },
+  {
+    "book_title": "The Journey of Wonder Woman",
+    "favorite_sentence": "Not all those who wander are lost.",
+  },
+  {
+    "book_title": "Brave Nights",
+    "favorite_sentence": "To be, or not to be, that is the question.",
+  },
+  {
+    "book_title": "Mysterious Nights",
+    "favorite_sentence": "To be, or not to be, that is the question.",
+  },
+]
+`;
+
+exports[`processInjectableResource should return an empty array if no injectables are present 1`] = `
+Map {
+  "No injectables here" => "No injectables here",
+}
+`;
