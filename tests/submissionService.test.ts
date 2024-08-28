@@ -817,27 +817,6 @@ describe('processInjectableResource', () => {
             ],
           },
           {
-            id: 'element3',
-            type: 'repeatableSet',
-            name: 'detectives',
-            label: 'Detectives',
-            conditionallyShow: false,
-            elements: [
-              {
-                id: 'element4',
-                name: 'name',
-                type: 'text',
-                label: 'Name',
-                readOnly: false,
-                required: false,
-                conditionallyShow: false,
-                requiresAllConditionallyShowPredicates: false,
-                isElementLookup: false,
-                isDataLookup: false,
-              },
-            ],
-          },
-          {
             id: 'element5',
             type: 'repeatableSet',
             name: 'cities',
