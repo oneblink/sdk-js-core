@@ -694,3 +694,210 @@ export function replaceInjectablesWithSubmissionValues(
     hadAllInjectablesReplaced,
   }
 }
+
+/**
+ * Process a resource with injectable element values to turn a single resource
+ * (could be a single) into multiple resources. e.g.
+ * `"{ELEMENT:Children|Child_Name} {ELEMENT:Family_Name}"` with the following
+ * submission data:
+ *
+ * ```json
+ * {
+ *   "Family_Name": "Smith",
+ *   "Children": [
+ *     {
+ *       "Child_Name": "John"
+ *     },
+ *     {
+ *       "Child_Name": "Jane"
+ *     }
+ *   ]
+ * }
+ * ```
+ *
+ * Would result in the following resources:
+ *
+ * - `"John Smith"`
+ * - `"Jane Smith"`
+ *
+ * #### Example
+ *
+ * ```js
+ * const emailAddresses = processInjectablesInCustomResource({
+ *   resource: '{ELEMENT:People|Email_Address}',
+ *   submission: {
+ *     People: [
+ *       {
+ *         Email_Address: 'user@oneblink.io',
+ *       },
+ *       {
+ *         Email_Address: 'admin@oneblink.io',
+ *       },
+ *     ],
+ *   },
+ *   formElements: [
+ *     {
+ *       id: '18dcd3e0-6e2f-462e-803b-e24562d9fa6d',
+ *       type: 'repeatableSet',
+ *       name: 'People',
+ *       label: 'People',
+ *       elements: [
+ *         {
+ *           id: 'd0902113-3f77-4070-adbd-ca3ae95ce091',
+ *           type: 'email',
+ *           name: 'Email_Address',
+ *           label: 'Email_Address',
+ *         },
+ *       ],
+ *     },
+ *   ],
+ *   replaceRootInjectables: (resource, submission, formElements) => {
+ *     const { text } = replaceInjectablesWithElementValues(resource, {
+ *       submission,
+ *       formElements,
+ *       excludeNestedElements: true,
+ *       // other options
+ *     })
+ *     return text
+ *   },
+ * })
+ * // emailAddresses === ["user@oneblink.io", "admin@oneblink.io"]
+ * ```
+ *
+ * @param options
+ * @returns
+ */
+export function processInjectablesInCustomResource<T>({
+  resource,
+  submission,
+  formElements,
+  replaceRootInjectables,
+  prepareNestedInjectables = (resource, prepare) =>
+    prepare(String(resource)) as T,
+}: {
+  /** The resource that contains properties that support injection or a string */
+  resource: T
+  /** The form submission data to process */
+  submission: SubmissionTypes.S3SubmissionData['submission']
+  /** The form elements to process */
+  formElements: FormTypes.FormElement[]
+  /**
+   * A function to inject values, this allows custom formatters to be used.
+   * Return `undefined` to prevent the injection from recursively continuing.
+   *
+   * @param resource The current resource that contains properties that support
+   *   injection or a string
+   * @param submission The current form submission data to process (may be an
+   *   entry in a repeatable set)
+   * @param formElements The current form elements to process (may be the
+   *   elements from a repeatable set)
+   * @returns
+   */
+  replaceRootInjectables: (
+    resource: T,
+    submission: SubmissionTypes.S3SubmissionData['submission'],
+    formElements: FormTypes.FormElement[],
+  ) =>
+    | [injectedText: string, resourceKey: string, newResource: T]
+    | string
+    | undefined
+  /**
+   * An optional function to replace nested injectables when creating multiple
+   * resources from repeatable sets. Only required if the `resource` param is
+   * not a `string`.
+   *
+   * @param resource The current resource that contains properties that support
+   *   injection or a string
+   * @param prepare A function to prepare the resource string(s) for another
+   *   iteration
+   * @returns
+   */
+  prepareNestedInjectables?: (
+    resource: T,
+    preparer: (resourceText: string) => string,
+  ) => T
+}): Map<string, T> {
+  const newResources: Map<string, T> = new Map<string, T>()
+
+  const injectorResult = replaceRootInjectables(
+    resource,
+    submission,
+    formElements,
+  )
+  if (!injectorResult) {
+    return newResources
+  }
+
+  const [text, resourceKey, newResource] =
+    typeof injectorResult === 'string'
+      ? [injectorResult, injectorResult, injectorResult as T]
+      : injectorResult
+
+  // Find nested form elements
+  const matches: Map<string, boolean> = new Map()
+  matchElementsTagRegex(
+    {
+      text,
+      excludeNestedElements: false,
+    },
+    ({ elementName }) => {
+      const [repeatableSetElementName, ...elementNames] = elementName.split('|')
+      matches.set(repeatableSetElementName, !!elementNames.length)
+    },
+  )
+
+  if (matches.size) {
+    matches.forEach((hasNestedFormElements, repeatableSetElementName) => {
+      if (hasNestedFormElements) {
+        // Attempt to create a new resource for each entry in the repeatable set.
+        const entries = submission?.[repeatableSetElementName]
+        if (Array.isArray(entries)) {
+          const repeatableSetElement = findFormElement(
+            formElements,
+            (formElement) => {
+              return (
+                'name' in formElement &&
+                formElement.name === repeatableSetElementName
+              )
+            },
+          )
+          if (
+            repeatableSetElement &&
+            'elements' in repeatableSetElement &&
+            Array.isArray(repeatableSetElement.elements)
+          ) {
+            for (const entry of entries) {
+              const replacedResource = prepareNestedInjectables(
+                newResource,
+                (resourceText) => {
+                  return resourceText.replaceAll(
+                    `{ELEMENT:${repeatableSetElementName}|`,
+                    '{ELEMENT:',
+                  )
+                },
+              )
+              const nestedResources = processInjectablesInCustomResource<T>({
+                resource: replacedResource,
+                submission: entry,
+                formElements: repeatableSetElement.elements,
+                replaceRootInjectables,
+                prepareNestedInjectables,
+              })
+              if (nestedResources.size) {
+                nestedResources.forEach((nestedResource, nestedResourceKey) => {
+                  if (!newResources.has(nestedResourceKey)) {
+                    newResources.set(nestedResourceKey, nestedResource)
+                  }
+                })
+              }
+            }
+          }
+        }
+      }
+    })
+  } else {
+    newResources.set(resourceKey, newResource)
+  }
+
+  return newResources
+}

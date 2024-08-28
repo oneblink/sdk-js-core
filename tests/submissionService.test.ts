@@ -1,8 +1,13 @@
-import { FormTypes, ScheduledTasksTypes } from '@oneblink/types'
+import {
+  FormTypes,
+  ScheduledTasksTypes,
+  SubmissionTypes,
+} from '@oneblink/types'
 import {
   replaceInjectablesWithElementValues,
   replaceInjectablesWithSubmissionValues,
   getElementSubmissionValue,
+  processInjectablesInCustomResource,
 } from '../src/submissionService'
 
 describe('replaceInjectablesWithSubmissionValues()', () => {
@@ -583,5 +588,315 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
       })
       expect(result).toEqual({ value: 'hello' })
     })
+  })
+})
+
+describe('processInjectablesInCustomResource', () => {
+  const formElements: FormTypes.FormElement[] = [
+    {
+      id: 'element1',
+      name: 'Family_Name',
+      type: 'text',
+      label: 'Family Name',
+      readOnly: false,
+      required: false,
+      conditionallyShow: false,
+      requiresAllConditionallyShowPredicates: false,
+      isElementLookup: false,
+      isDataLookup: false,
+    },
+    {
+      id: 'element2',
+      type: 'repeatableSet',
+      name: 'Children',
+      label: 'Children',
+      conditionallyShow: false,
+      elements: [
+        {
+          id: 'element3',
+          name: 'Child_Name',
+          type: 'text',
+          label: 'Child Name',
+          readOnly: false,
+          required: false,
+          conditionallyShow: false,
+          requiresAllConditionallyShowPredicates: false,
+          isElementLookup: false,
+          isDataLookup: false,
+        },
+      ],
+    },
+  ]
+
+  const submission: SubmissionTypes.S3SubmissionData['submission'] = {
+    Family_Name: 'Smith',
+    Children: [
+      {
+        Child_Name: 'John',
+      },
+      {
+        Child_Name: 'Jane',
+      },
+    ],
+  }
+
+  const replaceRootInjectables = (
+    text: string,
+    entry: SubmissionTypes.S3SubmissionData['submission'],
+    elements: FormTypes.FormElement[],
+  ) => {
+    return replaceInjectablesWithElementValues(text, {
+      userProfile: undefined,
+      task: undefined,
+      taskGroup: undefined,
+      taskGroupInstance: undefined,
+      formatDateTime: (value) => new Date(value).toString(),
+      formatDate: (value) => new Date(value).toDateString(),
+      formatTime: (value) => new Date(value).toTimeString(),
+      formatNumber: (value) => value.toString(),
+      formatCurrency: (value) => value.toFixed(2),
+      submission: entry,
+      formElements: elements,
+      excludeNestedElements: true,
+    }).text
+  }
+
+  it('should replace injectable values correctly', () => {
+    const resource = '{ELEMENT:Children|Child_Name} {ELEMENT:Family_Name}'
+    const result = processInjectablesInCustomResource({
+      resource,
+      submission,
+      formElements,
+      replaceRootInjectables,
+    })
+
+    expect(result).toMatchSnapshot()
+  })
+
+  it('should handle single element without iteration', () => {
+    const resource = '{ELEMENT:Family_Name}'
+    const result = processInjectablesInCustomResource({
+      resource,
+      submission,
+      formElements,
+      replaceRootInjectables,
+    })
+
+    expect(result).toMatchSnapshot()
+  })
+
+  it('should handle missing element values gracefully', () => {
+    const resource = '{ELEMENT:Non_Existing_Element}'
+    const result = processInjectablesInCustomResource({
+      resource,
+      submission,
+      formElements,
+      replaceRootInjectables,
+    })
+
+    expect(result).toMatchSnapshot()
+  })
+
+  it('should correctly replace nested injectables', () => {
+    const resource =
+      '{ELEMENT:Children|Child_Name} is part of the {ELEMENT:Family_Name} family'
+    const result = processInjectablesInCustomResource({
+      resource,
+      submission,
+      formElements,
+      replaceRootInjectables,
+    })
+
+    expect(result).toMatchSnapshot()
+  })
+
+  it('should return an empty array if no injectables are present', () => {
+    const resource = 'No injectables here'
+    const result = processInjectablesInCustomResource({
+      resource,
+      submission,
+      formElements,
+      replaceRootInjectables,
+    })
+
+    expect(result).toMatchSnapshot()
+  })
+
+  it('should handle multiple replacements correctly', () => {
+    const resource = '{ELEMENT:Family_Name} {ELEMENT:Family_Name}'
+    const result = processInjectablesInCustomResource({
+      resource,
+      submission,
+      formElements,
+      replaceRootInjectables,
+    })
+
+    expect(result).toMatchSnapshot()
+  })
+
+  it('should replace injectable values correctly when resource is not a string', () => {
+    type Book = {
+      book_title: string
+      favorite_sentence: string
+    }
+    const books: Book[] = [
+      {
+        book_title: 'The Adventures of {ELEMENT:heros|name}',
+        favorite_sentence:
+          'It was a bright cold day in April, and the clocks were striking thirteen.',
+      },
+      {
+        book_title: 'The Mysterious Case of {ELEMENT:detectives|name}',
+        favorite_sentence: 'Elementary, my dear Watson.',
+      },
+      {
+        book_title: 'Strange Times in {ELEMENT:cities|name}',
+        favorite_sentence:
+          'It was the best of times, it was the worst of times.',
+      },
+      {
+        book_title: 'The Journey of {ELEMENT:heros|name}',
+        favorite_sentence: 'Not all those who wander are lost.',
+      },
+      {
+        book_title: '{ELEMENT:adjectives|name} Nights',
+        favorite_sentence: 'To be, or not to be, that is the question.',
+      },
+    ]
+
+    const result = books.reduce<Book[]>((memo, book) => {
+      const map = processInjectablesInCustomResource<Book>({
+        resource: book,
+        submission: {
+          heros: [{ name: 'Superman' }, { name: 'Wonder Woman' }],
+          detectives: [{ name: 'Sherlock Holmes' }, { name: 'Hercule Poirot' }],
+          cities: [{ name: 'Gotham' }, { name: 'Metropolis' }],
+          adjectives: [{ name: 'Brave' }, { name: 'Mysterious' }],
+        },
+        formElements: [
+          {
+            id: 'element1',
+            type: 'repeatableSet',
+            name: 'heros',
+            label: 'Heros',
+            conditionallyShow: false,
+            elements: [
+              {
+                id: 'element2',
+                name: 'name',
+                type: 'text',
+                label: 'Name',
+                readOnly: false,
+                required: false,
+                conditionallyShow: false,
+                requiresAllConditionallyShowPredicates: false,
+                isElementLookup: false,
+                isDataLookup: false,
+              },
+            ],
+          },
+          {
+            id: 'element3',
+            type: 'repeatableSet',
+            name: 'detectives',
+            label: 'Detectives',
+            conditionallyShow: false,
+            elements: [
+              {
+                id: 'element4',
+                name: 'name',
+                type: 'text',
+                label: 'Name',
+                readOnly: false,
+                required: false,
+                conditionallyShow: false,
+                requiresAllConditionallyShowPredicates: false,
+                isElementLookup: false,
+                isDataLookup: false,
+              },
+            ],
+          },
+          {
+            id: 'element5',
+            type: 'repeatableSet',
+            name: 'cities',
+            label: 'Cities',
+            conditionallyShow: false,
+            elements: [
+              {
+                id: 'element6',
+                name: 'name',
+                type: 'text',
+                label: 'Name',
+                readOnly: false,
+                required: false,
+                conditionallyShow: false,
+                requiresAllConditionallyShowPredicates: false,
+                isElementLookup: false,
+                isDataLookup: false,
+              },
+            ],
+          },
+          {
+            id: 'element7',
+            type: 'repeatableSet',
+            name: 'adjectives',
+            label: 'Adjectives',
+            conditionallyShow: false,
+            elements: [
+              {
+                id: 'element8',
+                name: 'name',
+                type: 'text',
+                label: 'Name',
+                readOnly: false,
+                required: false,
+                conditionallyShow: false,
+                requiresAllConditionallyShowPredicates: false,
+                isElementLookup: false,
+                isDataLookup: false,
+              },
+            ],
+          },
+        ],
+        replaceRootInjectables: (book, entry, elements) => {
+          const book_title = replaceInjectablesWithElementValues(
+            book.book_title,
+            {
+              userProfile: undefined,
+              task: undefined,
+              taskGroup: undefined,
+              taskGroupInstance: undefined,
+              formatDateTime: (value) => new Date(value).toString(),
+              formatDate: (value) => new Date(value).toDateString(),
+              formatTime: (value) => new Date(value).toTimeString(),
+              formatNumber: (value) => value.toString(),
+              formatCurrency: (value) => value.toFixed(2),
+              submission: entry,
+              formElements: elements,
+              excludeNestedElements: true,
+            },
+          ).text
+          return [
+            book_title,
+            book_title,
+            {
+              ...book,
+              book_title,
+            } as Book,
+          ]
+        },
+        prepareNestedInjectables: (book, preparer) => {
+          return {
+            ...book,
+            book_title: preparer(book.book_title),
+          }
+        },
+      })
+
+      return [...memo, ...map.values()]
+    }, [])
+
+    expect(result).toMatchSnapshot()
   })
 })
