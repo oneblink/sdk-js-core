@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- `submissionService.processInjectableResource()`
+- `submissionService.processInjectablesInCustomResource()`
 
 ## [7.0.0] - 2024-08-13
 

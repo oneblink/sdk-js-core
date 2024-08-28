@@ -7,7 +7,7 @@ import {
   replaceInjectablesWithElementValues,
   replaceInjectablesWithSubmissionValues,
   getElementSubmissionValue,
-  processInjectableResource,
+  processInjectablesInCustomResource,
 } from '../src/submissionService'
 
 describe('replaceInjectablesWithSubmissionValues()', () => {
@@ -591,7 +591,7 @@ describe('replaceInjectablesWithSubmissionValues()', () => {
   })
 })
 
-describe('processInjectableResource', () => {
+describe('processInjectablesInCustomResource', () => {
   const formElements: FormTypes.FormElement[] = [
     {
       id: 'element1',
@@ -640,7 +640,7 @@ describe('processInjectableResource', () => {
     ],
   }
 
-  const injector = (
+  const replaceRootInjectables = (
     text: string,
     entry: SubmissionTypes.S3SubmissionData['submission'],
     elements: FormTypes.FormElement[],
@@ -663,36 +663,36 @@ describe('processInjectableResource', () => {
 
   it('should replace injectable values correctly', () => {
     const resource = '{ELEMENT:Children|Child_Name} {ELEMENT:Family_Name}'
-    const result = processInjectableResource(
+    const result = processInjectablesInCustomResource({
       resource,
       submission,
       formElements,
-      injector,
-    )
+      replaceRootInjectables,
+    })
 
     expect(result).toMatchSnapshot()
   })
 
   it('should handle single element without iteration', () => {
     const resource = '{ELEMENT:Family_Name}'
-    const result = processInjectableResource(
+    const result = processInjectablesInCustomResource({
       resource,
       submission,
       formElements,
-      injector,
-    )
+      replaceRootInjectables,
+    })
 
     expect(result).toMatchSnapshot()
   })
 
   it('should handle missing element values gracefully', () => {
     const resource = '{ELEMENT:Non_Existing_Element}'
-    const result = processInjectableResource(
+    const result = processInjectablesInCustomResource({
       resource,
       submission,
       formElements,
-      injector,
-    )
+      replaceRootInjectables,
+    })
 
     expect(result).toMatchSnapshot()
   })
@@ -700,36 +700,36 @@ describe('processInjectableResource', () => {
   it('should correctly replace nested injectables', () => {
     const resource =
       '{ELEMENT:Children|Child_Name} is part of the {ELEMENT:Family_Name} family'
-    const result = processInjectableResource(
+    const result = processInjectablesInCustomResource({
       resource,
       submission,
       formElements,
-      injector,
-    )
+      replaceRootInjectables,
+    })
 
     expect(result).toMatchSnapshot()
   })
 
   it('should return an empty array if no injectables are present', () => {
     const resource = 'No injectables here'
-    const result = processInjectableResource(
+    const result = processInjectablesInCustomResource({
       resource,
       submission,
       formElements,
-      injector,
-    )
+      replaceRootInjectables,
+    })
 
     expect(result).toMatchSnapshot()
   })
 
   it('should handle multiple replacements correctly', () => {
     const resource = '{ELEMENT:Family_Name} {ELEMENT:Family_Name}'
-    const result = processInjectableResource(
+    const result = processInjectablesInCustomResource({
       resource,
       submission,
       formElements,
-      injector,
-    )
+      replaceRootInjectables,
+    })
 
     expect(result).toMatchSnapshot()
   })
@@ -765,15 +765,15 @@ describe('processInjectableResource', () => {
     ]
 
     const result = books.reduce<Book[]>((memo, book) => {
-      const map = processInjectableResource<Book>(
-        book,
-        {
+      const map = processInjectablesInCustomResource<Book>({
+        resource: book,
+        submission: {
           heros: [{ name: 'Superman' }, { name: 'Wonder Woman' }],
           detectives: [{ name: 'Sherlock Holmes' }, { name: 'Hercule Poirot' }],
           cities: [{ name: 'Gotham' }, { name: 'Metropolis' }],
           adjectives: [{ name: 'Brave' }, { name: 'Mysterious' }],
         },
-        [
+        formElements: [
           {
             id: 'element1',
             type: 'repeatableSet',
@@ -859,7 +859,7 @@ describe('processInjectableResource', () => {
             ],
           },
         ],
-        (book, entry, elements) => {
+        replaceRootInjectables: (book, entry, elements) => {
           const book_title = replaceInjectablesWithElementValues(
             book.book_title,
             {
@@ -886,13 +886,13 @@ describe('processInjectableResource', () => {
             } as Book,
           ]
         },
-        (book, replaceAll) => {
+        prepareNestedInjectables: (book, preparer) => {
           return {
             ...book,
-            book_title: replaceAll(book.book_title),
+            book_title: preparer(book.book_title),
           }
         },
-      )
+      })
 
       return [...memo, ...map.values()]
     }, [])

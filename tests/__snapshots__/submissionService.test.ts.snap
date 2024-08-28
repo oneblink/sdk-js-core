@@ -1,34 +1,34 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`processInjectableResource should correctly replace nested injectables 1`] = `
+exports[`processInjectablesInCustomResource should correctly replace nested injectables 1`] = `
 Map {
   "John is part of the Smith family" => "John is part of the Smith family",
   "Jane is part of the Smith family" => "Jane is part of the Smith family",
 }
 `;
 
-exports[`processInjectableResource should handle missing element values gracefully 1`] = `Map {}`;
+exports[`processInjectablesInCustomResource should handle missing element values gracefully 1`] = `Map {}`;
 
-exports[`processInjectableResource should handle multiple replacements correctly 1`] = `
+exports[`processInjectablesInCustomResource should handle multiple replacements correctly 1`] = `
 Map {
   "Smith Smith" => "Smith Smith",
 }
 `;
 
-exports[`processInjectableResource should handle single element without iteration 1`] = `
+exports[`processInjectablesInCustomResource should handle single element without iteration 1`] = `
 Map {
   "Smith" => "Smith",
 }
 `;
 
-exports[`processInjectableResource should replace injectable values correctly 1`] = `
+exports[`processInjectablesInCustomResource should replace injectable values correctly 1`] = `
 Map {
   "John Smith" => "John Smith",
   "Jane Smith" => "Jane Smith",
 }
 `;
 
-exports[`processInjectableResource should replace injectable values correctly when resource is not a string 1`] = `
+exports[`processInjectablesInCustomResource should replace injectable values correctly when resource is not a string 1`] = `
 [
   {
     "book_title": "The Adventures of Superman",
@@ -73,7 +73,7 @@ exports[`processInjectableResource should replace injectable values correctly wh
 ]
 `;
 
-exports[`processInjectableResource should return an empty array if no injectables are present 1`] = `
+exports[`processInjectablesInCustomResource should return an empty array if no injectables are present 1`] = `
 Map {
   "No injectables here" => "No injectables here",
 }

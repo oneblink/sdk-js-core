@@ -723,9 +723,9 @@ export function replaceInjectablesWithSubmissionValues(
  * #### Example
  *
  * ```js
- * const emailAddresses = processInjectableResource(
- *   '{ELEMENT:People|Email_Address}',
- *   {
+ * const emailAddresses = processInjectablesInCustomResource({
+ *   resource: '{ELEMENT:People|Email_Address}',
+ *   submission: {
  *     People: [
  *       {
  *         Email_Address: 'user@oneblink.io',
@@ -735,7 +735,7 @@ export function replaceInjectablesWithSubmissionValues(
  *       },
  *     ],
  *   },
- *   [
+ *   formElements: [
  *     {
  *       id: '18dcd3e0-6e2f-462e-803b-e24562d9fa6d',
  *       type: 'repeatableSet',
@@ -751,50 +751,78 @@ export function replaceInjectablesWithSubmissionValues(
  *       ],
  *     },
  *   ],
- *   (resource, submission, formElements) => {
+ *   replaceRootInjectables: (resource, submission, formElements) => {
  *     const { text } = replaceInjectablesWithElementValues(resource, {
  *       submission,
  *       formElements,
+ *       excludeNestedElements: true,
  *       // other options
  *     })
  *     return text
  *   },
- * )
+ * })
  * // emailAddresses === ["user@oneblink.io", "admin@oneblink.io"]
  * ```
  *
- * @param resource The resource that contains properties that support injection
- *   or a string
- * @param submission The form submission data to process
- * @param formElements The form elements to process
- * @param injector A function to inject values, this allows custom formatters to
- *   be used. Return `undefined` to prevent the injection from recursively
- *   continuing.
- * @param replacer An optional function to replace nested injectables when
- *   creating multiple resources from repeatable sets. Only required if the
- *   `resource` param is not a `string`.
+ * @param options
  * @returns
  */
-export function processInjectableResource<T>(
-  resource: T,
-  submission: SubmissionTypes.S3SubmissionData['submission'],
-  formElements: FormTypes.FormElement[],
-  injector: (
+export function processInjectablesInCustomResource<T>({
+  resource,
+  submission,
+  formElements,
+  replaceRootInjectables,
+  prepareNestedInjectables = (resource, preparer) =>
+    preparer(String(resource)) as T,
+}: {
+  /** The resource that contains properties that support injection or a string */
+  resource: T
+  /** The form submission data to process */
+  submission: SubmissionTypes.S3SubmissionData['submission']
+  /** The form elements to process */
+  formElements: FormTypes.FormElement[]
+  /**
+   * A function to inject values, this allows custom formatters to be used.
+   * Return `undefined` to prevent the injection from recursively continuing.
+   *
+   * @param resource The current resource that contains properties that support
+   *   injection or a string
+   * @param submission The current form submission data to process (may be an
+   *   entry in a repeatable set)
+   * @param formElements The current form elements to process (may be the
+   *   elements from a repeatable set)
+   * @returns
+   */
+  replaceRootInjectables: (
     resource: T,
     submission: SubmissionTypes.S3SubmissionData['submission'],
     formElements: FormTypes.FormElement[],
   ) =>
     | [injectedText: string, resourceKey: string, newResource: T]
     | string
-    | undefined,
-  replacer: (resource: T, replaceAll: (resourceText: string) => string) => T = (
-    resource,
-    replaceAll,
-  ) => replaceAll(String(resource)) as T,
-): Map<string, T> {
+    | undefined
+  /**
+   * An optional function to replace nested injectables when creating multiple
+   * resources from repeatable sets. Only required if the `resource` param is
+   * not a `string`.
+   *
+   * @param resource The current resource that contains properties that support
+   *   injection or a string
+   * @param preparer A function to prepare
+   * @returns
+   */
+  prepareNestedInjectables?: (
+    resource: T,
+    preparer: (resourceText: string) => string,
+  ) => T
+}): Map<string, T> {
   const newResources: Map<string, T> = new Map<string, T>()
 
-  const injectorResult = injector(resource, submission, formElements)
+  const injectorResult = replaceRootInjectables(
+    resource,
+    submission,
+    formElements,
+  )
   if (!injectorResult) {
     return newResources
   }
@@ -838,19 +866,22 @@ export function processInjectableResource<T>(
             Array.isArray(repeatableSetElement.elements)
           ) {
             for (const entry of entries) {
-              const replacedResource = replacer(newResource, (resourceText) => {
-                return resourceText.replaceAll(
-                  `{ELEMENT:${repeatableSetElementName}|`,
-                  '{ELEMENT:',
-                )
-              })
-              const nestedResources = processInjectableResource(
-                replacedResource,
-                entry,
-                repeatableSetElement.elements,
-                injector,
-                replacer,
+              const replacedResource = prepareNestedInjectables(
+                newResource,
+                (resourceText) => {
+                  return resourceText.replaceAll(
+                    `{ELEMENT:${repeatableSetElementName}|`,
+                    '{ELEMENT:',
+                  )
+                },
               )
+              const nestedResources = processInjectablesInCustomResource<T>({
+                resource: replacedResource,
+                submission: entry,
+                formElements: repeatableSetElement.elements,
+                replaceRootInjectables,
+                prepareNestedInjectables,
+              })
               if (nestedResources.size) {
                 nestedResources.forEach((nestedResource, nestedResourceKey) => {
                   if (!newResources.has(nestedResourceKey)) {
