@@ -772,8 +772,8 @@ export function processInjectablesInCustomResource<T>({
   submission,
   formElements,
   replaceRootInjectables,
-  prepareNestedInjectables = (resource, preparer) =>
-    preparer(String(resource)) as T,
+  prepareNestedInjectables = (resource, prepare) =>
+    prepare(String(resource)) as T,
 }: {
   /** The resource that contains properties that support injection or a string */
   resource: T
@@ -808,7 +808,8 @@ export function processInjectablesInCustomResource<T>({
    *
    * @param resource The current resource that contains properties that support
    *   injection or a string
-   * @param preparer A function to prepare
+   * @param prepare A function to prepare the resource string(s) for another
+   *   iteration
    * @returns
    */
   prepareNestedInjectables?: (
