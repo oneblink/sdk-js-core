@@ -88,3 +88,13 @@ export * as schedulingService from './schedulingService'
  * ```
  */
 export * as fileUploadService from './fileUploadService'
+/**
+ * ## Webhook Subscription Service
+ *
+ * Helper functions for handling Webhook subscriptions
+ *
+ * ```js
+ * import { webhookSubscriptionService } from '@oneblink/sdk-core'
+ * ```
+ */
+export * as webhookSubscriptionService from './webhookSubscriptionService'
