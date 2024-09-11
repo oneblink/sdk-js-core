@@ -76,18 +76,6 @@ describe('getDisplayDetailsFromFormSubmissionPayment', () => {
         'billerCode',
       )
     })
-
-    it('No datetime format', () => {
-      const details = paymentService.getDisplayDetailsFromFormSubmissionPayment(
-        {
-          formSubmissionPayment,
-          formatCurrency,
-        },
-      )
-      expect(details.find((d) => d.key === 'createdDateTime')?.value).toBe(
-        '2024-09-11T12:00:00.000Z',
-      )
-    })
   })
   describe('Bpoint', () => {
     const formSubmissionPayment: SubmissionTypes.FormSubmissionPayment = {
@@ -124,17 +112,6 @@ describe('getDisplayDetailsFromFormSubmissionPayment', () => {
         },
       )
       expect(details).toMatchSnapshot()
-    })
-    it('No datetime format', () => {
-      const details = paymentService.getDisplayDetailsFromFormSubmissionPayment(
-        {
-          formSubmissionPayment,
-          formatCurrency,
-        },
-      )
-      expect(details.find((d) => d.key === 'processedDateTime')?.value).toBe(
-        '2024-09-11T12:00:00.000Z',
-      )
     })
   })
   describe('CP Pay', () => {
@@ -237,17 +214,6 @@ describe('getDisplayDetailsFromFormSubmissionPayment', () => {
       )
       expect(details).toMatchSnapshot()
     })
-    it('No datetime format', () => {
-      const details = paymentService.getDisplayDetailsFromFormSubmissionPayment(
-        {
-          formSubmissionPayment: formSubmissionPaymentv2,
-          formatCurrency,
-        },
-      )
-      expect(details.find((d) => d.key === 'createdDateTime')?.value).toBe(
-        '2024-09-11T12:00:00.000Z',
-      )
-    })
   })
 
   describe('Westpac', () => {
@@ -287,18 +253,6 @@ describe('getDisplayDetailsFromFormSubmissionPayment', () => {
         },
       )
       expect(details).toMatchSnapshot()
-    })
-
-    it('No datetime format', () => {
-      const details = paymentService.getDisplayDetailsFromFormSubmissionPayment(
-        {
-          formSubmissionPayment,
-          formatCurrency,
-        },
-      )
-      expect(details.find((d) => d.key === 'settlementDate')?.value).toBe(
-        '2024-09-11T12:00:00.000Z',
-      )
     })
   })
 })
