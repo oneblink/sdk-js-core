@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `getDisplayDetailsFromFormSubmissionPayment` to `paymentService`
 
+## [7.2.0] - 2024-09-10
+
 ## [7.1.0] - 2024-09-03
 
 ### Added
