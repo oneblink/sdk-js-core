@@ -1,0 +1,206 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getDisplayDetailsFromFormSubmissionPayment Bpoint gets the correct details 1`] = `
+[
+  {
+    "key": "receiptNumber",
+    "label": "Receipt Number",
+    "value": "receiptNumber",
+  },
+  {
+    "key": "crn1",
+    "label": "CRN 1",
+    "value": "crn1",
+  },
+  {
+    "key": "crn2",
+    "label": "CRN 2",
+    "value": "crn2",
+  },
+  {
+    "key": "crn3",
+    "label": "CRN 3",
+    "value": "crn3",
+  },
+  {
+    "key": "billerCode",
+    "label": "Biller Code",
+    "value": "billerCode",
+  },
+  {
+    "key": "creditCardMask",
+    "label": "Card Number",
+    "value": "creditCardMask",
+  },
+  {
+    "key": "amount",
+    "label": "Amount",
+    "value": "$123.45",
+  },
+  {
+    "key": "surchargeAmount",
+    "label": "Surcharge Amount",
+    "value": "$12.34",
+  },
+  {
+    "key": "processedDateTime",
+    "label": "Processed Date Time",
+    "value": "11/09/2024 12:00:00 PM",
+  },
+]
+`;
+
+exports[`getDisplayDetailsFromFormSubmissionPayment CP Pay gets the correct details - v1 1`] = `
+[
+  {
+    "key": "transactionId",
+    "label": "Transaction Id",
+    "value": "123",
+  },
+  {
+    "key": "orderNumber",
+    "label": "Order Number",
+    "value": "orderNumber",
+  },
+  {
+    "key": "paymentType",
+    "label": "Payment Type",
+    "value": "Credit/Debit Card",
+  },
+  {
+    "key": "creditCardMask",
+    "label": "Card Number",
+    "value": "xxxx xxxx xxxx 1234",
+  },
+  {
+    "key": "amount",
+    "label": "Amount",
+    "value": "$123.45",
+  },
+  {
+    "key": "createdDateTime",
+    "label": "Created At",
+    "value": "11/09/2024 12:00:00 PM",
+  },
+]
+`;
+
+exports[`getDisplayDetailsFromFormSubmissionPayment CP Pay gets the correct details - v2 1`] = `
+[
+  {
+    "key": "transactionId",
+    "label": "Transaction Id",
+    "value": "123",
+  },
+  {
+    "key": "orderNumber",
+    "label": "Order Number",
+    "value": "externalReferenceId",
+  },
+  {
+    "key": "paymentType",
+    "label": "Payment Type",
+    "value": "CreditDebitCard",
+  },
+  {
+    "key": "creditCardMask",
+    "label": "Card Number",
+    "value": "xxxx xxxx xxxx 1234",
+  },
+  {
+    "key": "amount",
+    "label": "Amount",
+    "value": "$123.45",
+  },
+  {
+    "key": "createdDateTime",
+    "label": "Created At",
+    "value": "11/09/2024 12:00:00 PM",
+  },
+]
+`;
+
+exports[`getDisplayDetailsFromFormSubmissionPayment NSW Gov Pay gets the correct details 1`] = `
+[
+  {
+    "key": "completionReference",
+    "label": "Completion Reference",
+    "value": "111111111111",
+  },
+  {
+    "key": "paymentReference",
+    "label": "Payment Reference",
+    "value": "222222222222",
+  },
+  {
+    "key": "bankReference",
+    "label": "Bank Reference",
+    "value": "333333333333",
+  },
+  {
+    "key": "paymentMethod",
+    "label": "Payment Method",
+    "value": "CARD",
+  },
+  {
+    "key": "creditCardMask",
+    "label": "Card Number",
+    "value": "xxxx xxxx xxxx 4242",
+  },
+  {
+    "key": "amount",
+    "label": "Amount",
+    "value": "$123.45",
+  },
+  {
+    "key": "surchargeAmount",
+    "label": "Surcharge Amount",
+    "value": "$12.34",
+  },
+  {
+    "key": "surchargeGST",
+    "label": "Surcharge GST",
+    "value": "$2.34",
+  },
+  {
+    "key": "createdDateTime",
+    "label": "Created Date Time",
+    "value": "11/09/2024 12:00:00 PM",
+  },
+]
+`;
+
+exports[`getDisplayDetailsFromFormSubmissionPayment Westpac gets the correct details 1`] = `
+[
+  {
+    "key": "receiptNumber",
+    "label": "Receipt Number",
+    "value": "receiptNumber",
+  },
+  {
+    "key": "paymentReferenceNumber",
+    "label": "Payment Reference",
+    "value": "paymentReferenceNumber",
+  },
+  {
+    "key": "customerReferenceNumber",
+    "label": "Customer Reference Number",
+    "value": "customerReferenceNumber",
+  },
+  {
+    "key": "amount",
+    "label": "Amount",
+    "value": "$123.45",
+  },
+  {
+    "key": "surchargeAmount",
+    "label": "Surcharge Amount",
+    "value": "$12.34",
+  },
+  {
+    "key": "settlementDate",
+    "label": "Settlement Date",
+    "value": "11/09/2024 12:00:00 PM",
+  },
+]
+`;
