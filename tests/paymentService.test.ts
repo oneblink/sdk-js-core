@@ -115,43 +115,6 @@ describe('getDisplayDetailsFromFormSubmissionPayment', () => {
     })
   })
   describe('CP Pay', () => {
-    // const determineDetails = () => {
-    //   switch (paymentTransaction.cpPayVersion) {
-    //     case 'v2': {
-    //       return {
-    //         transactionId: paymentTransaction.result.id,
-    //         orderNumber:
-    //           paymentTransaction.result.externalReferenceId ?? undefined,
-    //         paymentType: paymentTransaction.result.paymentType,
-    //         creditCardMask: paymentTransaction.result.lastFour
-    //           ? `xxxx xxxx xxxx ${paymentTransaction.result.lastFour}`
-    //           : undefined,
-    //         amount:
-    //           paymentTransaction.result.amount !== undefined
-    //             ? formatCurrency(paymentTransaction.result.amount)
-    //             : 'Unknown',
-    //         createdDateTime: paymentTransaction.result.createdOnUtc,
-    //       }
-    //     }
-    //     default: {
-    //       return {
-    //         transactionId: paymentTransaction.transactionId,
-    //         orderNumber: paymentTransaction.orderNumber ?? undefined,
-    //         paymentType:
-    //           paymentTransaction.paymentTypeId === 1
-    //             ? 'Credit/Debit Card'
-    //             : paymentTransaction.paymentTypeId === 2
-    //             ? 'ACH'
-    //             : undefined,
-    //         creditCardMask: paymentTransaction.lastFour
-    //           ? `xxxx xxxx xxxx ${paymentTransaction.lastFour}`
-    //           : undefined,
-    //         amount: formatCurrency(paymentTransaction.amount),
-    //         createdDateTime: paymentTransaction.createdAt,
-    //       }
-    //     }
-    //   }
-    // }
     const formSubmissionPaymentv1: SubmissionTypes.FormSubmissionPayment = {
       type: 'CP_PAY',
       id: '1',
