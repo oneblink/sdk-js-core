@@ -1,0 +1,248 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getDisplayDetailsFromFormSubmissionPayment Bpoint gets the correct details 1`] = `
+[
+  {
+    "key": "receiptNumber",
+    "label": "Receipt Number",
+    "type": "text",
+    "value": "receiptNumber",
+  },
+  {
+    "key": "crn1",
+    "label": "CRN 1",
+    "type": "text",
+    "value": "crn1",
+  },
+  {
+    "key": "crn2",
+    "label": "CRN 2",
+    "type": "text",
+    "value": "crn2",
+  },
+  {
+    "key": "crn3",
+    "label": "CRN 3",
+    "type": "text",
+    "value": "crn3",
+  },
+  {
+    "key": "billerCode",
+    "label": "Biller Code",
+    "type": "text",
+    "value": "billerCode",
+  },
+  {
+    "key": "creditCardMask",
+    "label": "Card Number",
+    "type": "text",
+    "value": "creditCardMask",
+  },
+  {
+    "key": "amount",
+    "label": "Amount",
+    "type": "text",
+    "value": "$123.45",
+  },
+  {
+    "key": "surchargeAmount",
+    "label": "Surcharge Amount",
+    "type": "text",
+    "value": "$12.34",
+  },
+  {
+    "key": "processedDateTime",
+    "label": "Processed Date Time",
+    "type": "datetime",
+    "value": "11/09/2024 12:00:00 PM",
+  },
+]
+`;
+
+exports[`getDisplayDetailsFromFormSubmissionPayment CP Pay gets the correct details - v1 1`] = `
+[
+  {
+    "key": "transactionId",
+    "label": "Transaction Id",
+    "type": "text",
+    "value": "123",
+  },
+  {
+    "key": "orderNumber",
+    "label": "Order Number",
+    "type": "text",
+    "value": "orderNumber",
+  },
+  {
+    "key": "paymentType",
+    "label": "Payment Type",
+    "type": "text",
+    "value": "Credit/Debit Card",
+  },
+  {
+    "key": "creditCardMask",
+    "label": "Card Number",
+    "type": "text",
+    "value": "xxxx xxxx xxxx 1234",
+  },
+  {
+    "key": "amount",
+    "label": "Amount",
+    "type": "text",
+    "value": "$123.45",
+  },
+  {
+    "key": "createdDateTime",
+    "label": "Created At",
+    "type": "datetime",
+    "value": "11/09/2024 12:00:00 PM",
+  },
+]
+`;
+
+exports[`getDisplayDetailsFromFormSubmissionPayment CP Pay gets the correct details - v2 1`] = `
+[
+  {
+    "key": "transactionId",
+    "label": "Transaction Id",
+    "type": "text",
+    "value": "123",
+  },
+  {
+    "key": "orderNumber",
+    "label": "Order Number",
+    "type": "text",
+    "value": "externalReferenceId",
+  },
+  {
+    "key": "paymentType",
+    "label": "Payment Type",
+    "type": "text",
+    "value": "CreditDebitCard",
+  },
+  {
+    "key": "creditCardMask",
+    "label": "Card Number",
+    "type": "text",
+    "value": "xxxx xxxx xxxx 1234",
+  },
+  {
+    "key": "amount",
+    "label": "Amount",
+    "type": "text",
+    "value": "$123.45",
+  },
+  {
+    "key": "createdDateTime",
+    "label": "Created At",
+    "type": "datetime",
+    "value": "11/09/2024 12:00:00 PM",
+  },
+]
+`;
+
+exports[`getDisplayDetailsFromFormSubmissionPayment NSW Gov Pay gets the correct details 1`] = `
+[
+  {
+    "key": "completionReference",
+    "label": "Completion Reference",
+    "type": "text",
+    "value": "111111111111",
+  },
+  {
+    "key": "paymentReference",
+    "label": "Payment Reference",
+    "type": "text",
+    "value": "222222222222",
+  },
+  {
+    "key": "bankReference",
+    "label": "Bank Reference",
+    "type": "text",
+    "value": "333333333333",
+  },
+  {
+    "key": "paymentMethod",
+    "label": "Payment Method",
+    "type": "text",
+    "value": "CARD",
+  },
+  {
+    "key": "billerCode",
+    "label": "BPay Biller Code",
+    "type": "text",
+    "value": undefined,
+  },
+  {
+    "key": "creditCardMask",
+    "label": "Card Number",
+    "type": "text",
+    "value": "xxxx xxxx xxxx 4242",
+  },
+  {
+    "key": "amount",
+    "label": "Amount",
+    "type": "text",
+    "value": "$123.45",
+  },
+  {
+    "key": "surchargeAmount",
+    "label": "Surcharge Amount",
+    "type": "text",
+    "value": "$12.34",
+  },
+  {
+    "key": "surchargeGST",
+    "label": "Surcharge GST",
+    "type": "text",
+    "value": "$2.34",
+  },
+  {
+    "key": "createdDateTime",
+    "label": "Created Date Time",
+    "type": "datetime",
+    "value": "11/09/2024 12:00:00 PM",
+  },
+]
+`;
+
+exports[`getDisplayDetailsFromFormSubmissionPayment Westpac gets the correct details 1`] = `
+[
+  {
+    "key": "receiptNumber",
+    "label": "Receipt Number",
+    "type": "text",
+    "value": "receiptNumber",
+  },
+  {
+    "key": "paymentReferenceNumber",
+    "label": "Payment Reference",
+    "type": "text",
+    "value": "paymentReferenceNumber",
+  },
+  {
+    "key": "customerReferenceNumber",
+    "label": "Customer Reference Number",
+    "type": "text",
+    "value": "customerReferenceNumber",
+  },
+  {
+    "key": "amount",
+    "label": "Amount",
+    "type": "text",
+    "value": "$123.45",
+  },
+  {
+    "key": "surchargeAmount",
+    "label": "Surcharge Amount",
+    "type": "text",
+    "value": "$12.34",
+  },
+  {
+    "key": "settlementDate",
+    "label": "Settlement Date",
+    "type": "text",
+    "value": "11/09/2024 12:00:00 PM",
+  },
+]
+`;
