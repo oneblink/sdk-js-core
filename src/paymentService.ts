@@ -213,9 +213,7 @@ export const getDisplayDetailsFromFormSubmissionPayment = ({
         {
           key: 'createdDateTime',
           label: 'Created Date Time',
-          value: formatDateTime
-            ? formatDateTime(formSubmissionPayment.createdAt)
-            : formSubmissionPayment.createdAt,
+          value: formatDateTime(formSubmissionPayment.createdAt),
         },
       ]
     }
@@ -268,9 +266,7 @@ export const getDisplayDetailsFromFormSubmissionPayment = ({
         {
           key: 'processedDateTime',
           label: 'Processed Date Time',
-          value: formatDateTime
-            ? formatDateTime(paymentTransaction.ProcessedDateTime)
-            : paymentTransaction.ProcessedDateTime,
+          value: formatDateTime(paymentTransaction.ProcessedDateTime),
         },
       ]
     }
@@ -421,9 +417,7 @@ export const getDisplayDetailsFromFormSubmissionPayment = ({
         {
           key: 'settlementDate',
           label: 'Settlement Date',
-          value: formatDateTime
-            ? formatDateTime(paymentTransaction.settlementDate)
-            : paymentTransaction.settlementDate,
+          value: formatDateTime(paymentTransaction.settlementDate),
         },
       ]
     }
