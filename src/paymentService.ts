@@ -141,141 +141,167 @@ export const getDisplayDetailsFromFormSubmissionPayment = (
     ReplaceInjectablesFormatters,
     'formatCurrency' | 'formatDate' | 'formatDateTime'
   >,
-): PaymentDisplayDetail[] => {
+):
+  | {
+      amount: {
+        value: number
+        formatted: string
+      }
+      paymentDisplayDetails: PaymentDisplayDetail[]
+    }
+  | undefined => {
   switch (formSubmissionPayment.type) {
     case 'NSW_GOV_PAY': {
       const { paymentTransaction } = formSubmissionPayment
       if (!paymentTransaction || !paymentTransaction.agencyCompletionPayment) {
-        return []
+        return
       }
-      return [
-        {
-          key: 'completionReference',
-          label: 'Completion Reference',
-          value:
-            paymentTransaction.agencyCompletionPayment
-              .paymentCompletionReference,
-        },
-        {
-          key: 'paymentReference',
-          label: 'Payment Reference',
-          value: paymentTransaction.agencyCompletionPayment.paymentReference,
-        },
-        {
-          key: 'bankReference',
-          label: 'Bank Reference',
-          value: paymentTransaction.agencyCompletionPayment.bankReference,
-        },
-        {
-          key: 'paymentMethod',
-          label: 'Payment Method',
-          value: paymentTransaction.agencyCompletionPayment.paymentMethod,
-        },
-        ...(paymentTransaction.agencyCompletionPayment.paymentMethod ===
-          'BPAY' && paymentTransaction.agencyCompletionPayment.bPay?.billerCode
-          ? [
-              {
-                key: 'billerCode',
-                label: 'BPay Biller Code',
-                value:
-                  paymentTransaction.agencyCompletionPayment.bPay.billerCode,
-              },
-            ]
-          : []),
-        ...(paymentTransaction.agencyCompletionPayment.paymentMethod === 'CARD'
-          ? [
-              {
-                key: 'creditCardMask',
-                label: 'Card Number',
-                value: `xxxx xxxx xxxx ${paymentTransaction.agencyCompletionPayment.card?.last4Digits}`,
-              },
-            ]
-          : []),
-        {
-          key: 'amount',
-          label: 'Amount',
-          value: formatCurrency(
-            paymentTransaction.agencyCompletionPayment.amount,
-          ),
-        },
-        {
-          key: 'surchargeAmount',
-          label: 'Surcharge Amount',
-          value: formatCurrency(
-            paymentTransaction.agencyCompletionPayment.surcharge,
-          ),
-        },
-        {
-          key: 'surchargeGST',
-          label: 'Surcharge GST',
-          value: formatCurrency(
-            paymentTransaction.agencyCompletionPayment.surchargeGst,
-          ),
-        },
-        {
-          key: 'createdDateTime',
-          label: 'Created Date Time',
-          value: formatDateTime(formSubmissionPayment.createdAt),
-        },
-      ]
+
+      const amount = {
+        value: paymentTransaction.agencyCompletionPayment.amount,
+        formatted: formatCurrency(
+          paymentTransaction.agencyCompletionPayment.amount,
+        ),
+      }
+      return {
+        amount,
+        paymentDisplayDetails: [
+          {
+            key: 'completionReference',
+            label: 'Completion Reference',
+            value:
+              paymentTransaction.agencyCompletionPayment
+                .paymentCompletionReference,
+          },
+          {
+            key: 'paymentReference',
+            label: 'Payment Reference',
+            value: paymentTransaction.agencyCompletionPayment.paymentReference,
+          },
+          {
+            key: 'bankReference',
+            label: 'Bank Reference',
+            value: paymentTransaction.agencyCompletionPayment.bankReference,
+          },
+          {
+            key: 'paymentMethod',
+            label: 'Payment Method',
+            value: paymentTransaction.agencyCompletionPayment.paymentMethod,
+          },
+          ...(paymentTransaction.agencyCompletionPayment.paymentMethod ===
+            'BPAY' &&
+          paymentTransaction.agencyCompletionPayment.bPay?.billerCode
+            ? [
+                {
+                  key: 'billerCode',
+                  label: 'BPay Biller Code',
+                  value:
+                    paymentTransaction.agencyCompletionPayment.bPay.billerCode,
+                },
+              ]
+            : []),
+          ...(paymentTransaction.agencyCompletionPayment.paymentMethod ===
+          'CARD'
+            ? [
+                {
+                  key: 'creditCardMask',
+                  label: 'Card Number',
+                  value: `xxxx xxxx xxxx ${paymentTransaction.agencyCompletionPayment.card?.last4Digits}`,
+                },
+              ]
+            : []),
+          {
+            key: 'amount',
+            label: 'Amount',
+            value: amount.formatted,
+          },
+          {
+            key: 'surchargeAmount',
+            label: 'Surcharge Amount',
+            value: formatCurrency(
+              paymentTransaction.agencyCompletionPayment.surcharge,
+            ),
+          },
+          {
+            key: 'surchargeGST',
+            label: 'Surcharge GST',
+            value: formatCurrency(
+              paymentTransaction.agencyCompletionPayment.surchargeGst,
+            ),
+          },
+          {
+            key: 'createdDateTime',
+            label: 'Created Date Time',
+            value: formatDateTime(formSubmissionPayment.createdAt),
+          },
+        ],
+      }
     }
     case 'BPOINT': {
       const { paymentTransaction } = formSubmissionPayment
       if (!paymentTransaction) {
-        return []
+        return
       }
-      return [
-        {
-          key: 'receiptNumber',
-          label: 'Receipt Number',
-          value: paymentTransaction.ReceiptNumber,
-        },
-        {
-          key: 'crn1',
-          label: 'CRN 1',
-          value: paymentTransaction.Crn1,
-        },
-        {
-          key: 'crn2',
-          label: 'CRN 2',
-          value: paymentTransaction.Crn2,
-        },
-        {
-          key: 'crn3',
-          label: 'CRN 3',
-          value: paymentTransaction.Crn3,
-        },
-        {
-          key: 'billerCode',
-          label: 'Biller Code',
-          value: paymentTransaction.BillerCode,
-        },
-        {
-          key: 'creditCardMask',
-          label: 'Card Number',
-          value: paymentTransaction.CardDetails.MaskedCardNumber,
-        },
-        {
-          key: 'amount',
-          label: 'Amount',
-          value: formatCurrency(paymentTransaction.Amount / 100),
-        },
-        {
-          key: 'surchargeAmount',
-          label: 'Surcharge Amount',
-          value: formatCurrency(paymentTransaction.AmountSurcharge / 100),
-        },
-        {
-          key: 'processedDateTime',
-          label: 'Processed Date Time',
-          value: formatDateTime(paymentTransaction.ProcessedDateTime),
-        },
-      ]
+      const amountValue = paymentTransaction.Amount / 100
+      const amount = {
+        value: amountValue,
+        formatted: formatCurrency(amountValue),
+      }
+      return {
+        amount,
+        paymentDisplayDetails: [
+          {
+            key: 'receiptNumber',
+            label: 'Receipt Number',
+            value: paymentTransaction.ReceiptNumber,
+          },
+          {
+            key: 'crn1',
+            label: 'CRN 1',
+            value: paymentTransaction.Crn1,
+          },
+          {
+            key: 'crn2',
+            label: 'CRN 2',
+            value: paymentTransaction.Crn2,
+          },
+          {
+            key: 'crn3',
+            label: 'CRN 3',
+            value: paymentTransaction.Crn3,
+          },
+          {
+            key: 'billerCode',
+            label: 'Biller Code',
+            value: paymentTransaction.BillerCode,
+          },
+          {
+            key: 'creditCardMask',
+            label: 'Card Number',
+            value: paymentTransaction.CardDetails.MaskedCardNumber,
+          },
+          {
+            key: 'amount',
+            label: 'Amount',
+            value: amount.formatted,
+          },
+          {
+            key: 'surchargeAmount',
+            label: 'Surcharge Amount',
+            value: formatCurrency(paymentTransaction.AmountSurcharge / 100),
+          },
+          {
+            key: 'processedDateTime',
+            label: 'Processed Date Time',
+            value: formatDateTime(paymentTransaction.ProcessedDateTime),
+          },
+        ],
+      }
     }
     case 'CP_PAY': {
       const { paymentTransaction } = formSubmissionPayment
       if (!paymentTransaction) {
-        return []
+        return
       }
 
       const determineDetails = () => {
@@ -291,8 +317,16 @@ export const getDisplayDetailsFromFormSubmissionPayment = (
                 : undefined,
               amount:
                 paymentTransaction.result.amount !== undefined
-                  ? formatCurrency(paymentTransaction.result.amount)
-                  : 'Unknown',
+                  ? {
+                      value: paymentTransaction.result.amount,
+                      formatted: formatCurrency(
+                        paymentTransaction.result.amount,
+                      ),
+                    }
+                  : {
+                      value: NaN,
+                      formatted: 'Unknown',
+                    },
               createdDateTime: paymentTransaction.result.createdOnUtc,
             }
           }
@@ -309,7 +343,10 @@ export const getDisplayDetailsFromFormSubmissionPayment = (
               creditCardMask: paymentTransaction.lastFour
                 ? `xxxx xxxx xxxx ${paymentTransaction.lastFour}`
                 : undefined,
-              amount: formatCurrency(paymentTransaction.amount),
+              amount: {
+                value: paymentTransaction.amount,
+                formatted: formatCurrency(paymentTransaction.amount),
+              },
               createdDateTime: paymentTransaction.createdAt,
             }
           }
@@ -324,104 +361,109 @@ export const getDisplayDetailsFromFormSubmissionPayment = (
         amount,
         createdDateTime,
       } = determineDetails()
-      const result = []
+      const paymentDisplayDetails = []
       if (transactionId) {
-        result.push({
+        paymentDisplayDetails.push({
           key: 'transactionId',
           label: 'Transaction Id',
           value: transactionId,
         })
       }
       if (orderNumber) {
-        result.push({
+        paymentDisplayDetails.push({
           key: 'orderNumber',
           label: 'Order Number',
           value: orderNumber,
         })
       }
       if (paymentType) {
-        result.push({
+        paymentDisplayDetails.push({
           key: 'paymentType',
           label: 'Payment Type',
           value: paymentType,
         })
       }
       if (creditCardMask) {
-        result.push({
+        paymentDisplayDetails.push({
           key: 'creditCardMask',
           label: 'Card Number',
           value: creditCardMask,
         })
       }
-      if (amount) {
-        result.push({
-          key: 'amount',
-          label: 'Amount',
-          value: amount,
-        })
-      }
+      paymentDisplayDetails.push({
+        key: 'amount',
+        label: 'Amount',
+        value: amount.formatted,
+      })
       if (createdDateTime) {
-        result.push({
+        paymentDisplayDetails.push({
           key: 'createdDateTime',
           label: 'Created At',
           value: formatDateTime(createdDateTime),
         })
       }
 
-      return result
+      return {
+        amount,
+        paymentDisplayDetails,
+      }
     }
     case 'WESTPAC_QUICK_STREAM': {
       const { paymentTransaction } = formSubmissionPayment
       if (!paymentTransaction) {
-        return []
+        return
       }
 
-      return [
-        {
-          key: 'receiptNumber',
-          label: 'Receipt Number',
-          value: paymentTransaction.receiptNumber,
-        },
-        {
-          key: 'paymentReferenceNumber',
-          label: 'Payment Reference',
-          value: paymentTransaction.paymentReferenceNumber,
-        },
-        {
-          key: 'customerReferenceNumber',
-          label: 'Customer Reference Number',
-          value: paymentTransaction.customerReferenceNumber,
-        },
-        ...(paymentTransaction.totalAmount
-          ? [
-              {
-                key: 'amount',
-                label: 'Amount',
-                value: formatCurrency(
-                  parseFloat(paymentTransaction.totalAmount.amount.toString()),
-                ),
-              },
-            ]
-          : []),
-        ...(paymentTransaction.surchargeAmount.amount
-          ? [
-              {
-                key: 'surchargeAmount',
-                label: 'Surcharge Amount',
-                value: formatCurrency(
-                  parseFloat(
-                    paymentTransaction.surchargeAmount.amount.toString(),
+      const amount = {
+        value: paymentTransaction.totalAmount.amount,
+        formatted: formatCurrency(
+          parseFloat(paymentTransaction.totalAmount.amount.toString()),
+        ),
+      }
+
+      return {
+        amount,
+        paymentDisplayDetails: [
+          {
+            key: 'receiptNumber',
+            label: 'Receipt Number',
+            value: paymentTransaction.receiptNumber,
+          },
+          {
+            key: 'paymentReferenceNumber',
+            label: 'Payment Reference',
+            value: paymentTransaction.paymentReferenceNumber,
+          },
+          {
+            key: 'customerReferenceNumber',
+            label: 'Customer Reference Number',
+            value: paymentTransaction.customerReferenceNumber,
+          },
+          {
+            key: 'amount',
+            label: 'Amount',
+            value: amount.formatted,
+          },
+          ...(paymentTransaction.surchargeAmount.amount
+            ? [
+                {
+                  key: 'surchargeAmount',
+                  label: 'Surcharge Amount',
+                  value: formatCurrency(
+                    parseFloat(
+                      paymentTransaction.surchargeAmount.amount.toString(),
+                    ),
                   ),
-                ),
-              },
-            ]
-          : []),
-        {
-          key: 'settlementDate',
-          label: 'Settlement Date',
-          value: formatDate(paymentTransaction.settlementDate),
-        },
-      ]
+                },
+              ]
+            : []),
+          {
+            key: 'settlementDate',
+            label: 'Settlement Date',
+            value: formatDate(paymentTransaction.settlementDate),
+          },
+        ],
+      }
     }
   }
 }

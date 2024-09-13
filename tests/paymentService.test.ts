@@ -69,9 +69,10 @@ describe('getDisplayDetailsFromFormSubmissionPayment', () => {
         formatters,
       )
 
-      expect(details.find((d) => d.key === 'billerCode')?.value).toBe(
-        'billerCode',
-      )
+      expect(
+        details?.paymentDisplayDetails.find((d) => d.key === 'billerCode')
+          ?.value,
+      ).toBe('billerCode')
     })
   })
   describe('Bpoint', () => {
