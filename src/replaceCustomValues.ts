@@ -18,10 +18,15 @@ import {
 import { findFormElement, flattenFormElements } from './formElementsService'
 
 export type ReplaceInjectablesFormatters = {
+  /** A function to format any date/times. */
   formatDateTime: (value: string) => string
+  /** A function to format any dates. */
   formatDate: (value: string) => string
+  /** A function to format any times. */
   formatTime: (value: string) => string
+  /** A function to format any numbers. */
   formatNumber: (value: number) => string
+  /** A function to format any numbers as currency. */
   formatCurrency: (value: number) => string
 }
 
