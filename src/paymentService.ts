@@ -116,30 +116,32 @@ type PaymentDisplayDetail = {
  *
  * ```js
  * const detailItems =
- *   paymentService.getDisplayDetailsFromFormSubmissionPayment({
+ *   paymentService.getDisplayDetailsFromFormSubmissionPayment(
  *     formSubmissionPayment,
- *     formatCurrency,
- *   })
+ *     {
+ *       formatCurrency,
+ *       formatDateTime,
+ *       formatDate,
+ *     },
+ *   )
  * ```
  *
+ * @param formSubmissionPayment
  * @param options
  * @returns
  */
-export const getDisplayDetailsFromFormSubmissionPayment = ({
-  formSubmissionPayment,
-  formatCurrency,
-  formatDateTime,
-}: {
+export const getDisplayDetailsFromFormSubmissionPayment = (
   /** The form submission payment to get the details from */
-  formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
-  /** A function to format any curreny values */
-  formatCurrency: ReplaceInjectablesFormatters['formatCurrency']
-  /**
-   * A function to format any dates. If this is not passed, datetimes will be
-   * returned as iso strings.
-   */
-  formatDateTime: ReplaceInjectablesFormatters['formatDateTime']
-}): PaymentDisplayDetail[] => {
+  formSubmissionPayment: SubmissionTypes.FormSubmissionPayment,
+  {
+    formatCurrency,
+    formatDateTime,
+    formatDate,
+  }: Pick<
+    ReplaceInjectablesFormatters,
+    'formatCurrency' | 'formatDate' | 'formatDateTime'
+  >,
+): PaymentDisplayDetail[] => {
   switch (formSubmissionPayment.type) {
     case 'NSW_GOV_PAY': {
       const { paymentTransaction } = formSubmissionPayment
@@ -417,7 +419,7 @@ export const getDisplayDetailsFromFormSubmissionPayment = ({
         {
           key: 'settlementDate',
           label: 'Settlement Date',
-          value: formatDateTime(paymentTransaction.settlementDate),
+          value: formatDate(paymentTransaction.settlementDate),
         },
       ]
     }

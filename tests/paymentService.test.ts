@@ -2,8 +2,11 @@ import { SubmissionTypes } from '@oneblink/types'
 import { paymentService } from '../src'
 
 describe('getDisplayDetailsFromFormSubmissionPayment', () => {
-  const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`
-  const formatDateTime = () => '11/09/2024 12:00:00 PM'
+  const formatters = {
+    formatCurrency: (amount: number) => `$${amount.toFixed(2)}`,
+    formatDateTime: () => '11/09/2024 12:00:00 PM',
+    formatDate: () => '11/09/2024',
+  }
 
   describe('NSW Gov Pay', () => {
     const formSubmissionPayment: SubmissionTypes.FormSubmissionPayment = {
@@ -43,11 +46,8 @@ describe('getDisplayDetailsFromFormSubmissionPayment', () => {
 
     it('gets the correct details', () => {
       const details = paymentService.getDisplayDetailsFromFormSubmissionPayment(
-        {
-          formSubmissionPayment,
-          formatCurrency,
-          formatDateTime,
-        },
+        formSubmissionPayment,
+        formatters,
       )
       expect(details).toMatchSnapshot()
     })
@@ -55,21 +55,18 @@ describe('getDisplayDetailsFromFormSubmissionPayment', () => {
     it('using BPAY', () => {
       const details = paymentService.getDisplayDetailsFromFormSubmissionPayment(
         {
-          formSubmissionPayment: {
-            ...formSubmissionPayment,
-            paymentTransaction: {
-              ...formSubmissionPayment.paymentTransaction,
-              // @ts-expect-error Wrong
-              agencyCompletionPayment: {
-                ...formSubmissionPayment.paymentTransaction
-                  .agencyCompletionPayment,
-                paymentMethod: 'BPAY',
-              },
+          ...formSubmissionPayment,
+          paymentTransaction: {
+            ...formSubmissionPayment.paymentTransaction,
+            // @ts-expect-error Wrong
+            agencyCompletionPayment: {
+              ...formSubmissionPayment.paymentTransaction
+                .agencyCompletionPayment,
+              paymentMethod: 'BPAY',
             },
           },
-          formatCurrency,
-          formatDateTime,
         },
+        formatters,
       )
 
       expect(details.find((d) => d.key === 'billerCode')?.value).toBe(
@@ -105,11 +102,8 @@ describe('getDisplayDetailsFromFormSubmissionPayment', () => {
     }
     it('gets the correct details', () => {
       const details = paymentService.getDisplayDetailsFromFormSubmissionPayment(
-        {
-          formSubmissionPayment,
-          formatCurrency,
-          formatDateTime,
-        },
+        formSubmissionPayment,
+        formatters,
       )
       expect(details).toMatchSnapshot()
     })
@@ -158,22 +152,16 @@ describe('getDisplayDetailsFromFormSubmissionPayment', () => {
 
     it('gets the correct details - v1', () => {
       const details = paymentService.getDisplayDetailsFromFormSubmissionPayment(
-        {
-          formSubmissionPayment: formSubmissionPaymentv1,
-          formatCurrency,
-          formatDateTime,
-        },
+        formSubmissionPaymentv1,
+        formatters,
       )
       expect(details).toMatchSnapshot()
     })
 
     it('gets the correct details - v2', () => {
       const details = paymentService.getDisplayDetailsFromFormSubmissionPayment(
-        {
-          formSubmissionPayment: formSubmissionPaymentv2,
-          formatCurrency,
-          formatDateTime,
-        },
+        formSubmissionPaymentv2,
+        formatters,
       )
       expect(details).toMatchSnapshot()
     })
@@ -209,11 +197,8 @@ describe('getDisplayDetailsFromFormSubmissionPayment', () => {
 
     it('gets the correct details', () => {
       const details = paymentService.getDisplayDetailsFromFormSubmissionPayment(
-        {
-          formSubmissionPayment,
-          formatCurrency,
-          formatDateTime,
-        },
+        formSubmissionPayment,
+        formatters,
       )
       expect(details).toMatchSnapshot()
     })
