@@ -25,7 +25,7 @@ import { conditionalLogicService } from '.'
 export function checkForSchedulingEvent(
   definition: FormTypes.Form,
   submission: SubmissionTypes.S3SubmissionData['submission'],
-): SubmissionEventTypes.SchedulingSubmissionEvent | undefined {
+): SubmissionEventTypes.FormSchedulingEvent | undefined {
   const schedulingSubmissionEvents = definition.schedulingEvents || []
   return schedulingSubmissionEvents.find((schedulingSubmissionEvent) =>
     conditionalLogicService.evaluateConditionalPredicates({
