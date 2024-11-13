@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [7.3.1] - 2024-11-13
+
 ### Changed
 
 - return type for `schedulingService.checkFormSchedulingEvent` to `FormSchedulingEvent`
