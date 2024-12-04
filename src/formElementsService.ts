@@ -169,6 +169,10 @@ function parseDynamicFormElementOptions(
           typeof option.displayAlways === 'boolean'
             ? option.displayAlways
             : undefined
+        const imageUrl =
+          typeof option.imageUrl === 'string' && option.imageUrl
+            ? option.imageUrl
+            : undefined
         const attributes = Array.isArray(option.attributes)
           ? option.attributes.reduce<
               FormTypes.DynamicChoiceElementOptionAttribute[]
@@ -195,6 +199,7 @@ function parseDynamicFormElementOptions(
           colour,
           attributes,
           displayAlways,
+          imageUrl,
           options: Array.isArray(option.options)
             ? parseDynamicFormElementOptions(option.options)
             : undefined,
